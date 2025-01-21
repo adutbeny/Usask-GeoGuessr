@@ -1,6 +1,8 @@
-# cmpt370 SWAGTOWN
+# CMPT370 SWAGTOWN
 
-## Important:
+## PULL BEFORE YOU START WORKING
+
+# Branches:
 IntelliJ doesn't let you work out of the main branch, so keep all of the work in the master branch, then everytime we hit like a certain checkpoint, we can merge back a good copy into the main branch. Once we have more things going on we can worry about working within our own branches and whatnot.
 
 I left the default readme in case anyone needs the info.
