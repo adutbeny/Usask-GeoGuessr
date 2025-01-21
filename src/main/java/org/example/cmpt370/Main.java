@@ -16,6 +16,7 @@ public class Main extends Application {
         Setup setup = new Setup();
         Scene scene = new Scene(setup);
         stage.setTitle("Usask Geoguesser");
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
     }
