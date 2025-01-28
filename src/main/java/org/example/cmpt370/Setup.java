@@ -20,6 +20,6 @@ public class Setup extends StackPane {
 
         // Ensures View receives inputs
         v.requestFocus();
-        this.getChildren().add(v);
+        this.getChildren().addAll(v);
     }
 }
