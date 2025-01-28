@@ -1,17 +1,13 @@
 package org.example.cmpt370;
 
 import javafx.application.Application;
-import javafx.beans.property.SetProperty;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-
-import java.io.IOException;
 
 /** This class runs the application */
 public class Main extends Application {
     @Override
-    public void start(Stage stage) throws IOException {
+    public void start(Stage stage) {
 
         Setup setup = new Setup();
         Scene scene = new Scene(setup);
