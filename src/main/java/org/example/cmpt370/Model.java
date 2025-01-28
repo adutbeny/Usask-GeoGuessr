@@ -1,8 +1,7 @@
 package org.example.cmpt370;
 
 /* Property of swagtown
- * CMPT370
- */
+ * CMPT370 */
 
 import java.util.ArrayList;
 import java.util.List;

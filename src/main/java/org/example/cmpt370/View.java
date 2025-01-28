@@ -1,8 +1,7 @@
 package org.example.cmpt370;
 
 /* Property of swagtown
- * CMPT370
- */
+ * CMPT370 */
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.layout.StackPane;
@@ -18,7 +17,7 @@ public class View extends StackPane implements Subscriber {
 
     public View() {
         this.myCanvas = new Canvas(1000,1000);
-        this.getChildren().add(myCanvas);
+        this.getChildren().addAll(myCanvas);
     }
 
     /** Connect Model */

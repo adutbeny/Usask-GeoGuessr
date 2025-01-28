@@ -1,8 +1,7 @@
 package org.example.cmpt370;
 
 /* Property of swagtown
- * CMPT370
- */
+ * CMPT370 */
 
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
