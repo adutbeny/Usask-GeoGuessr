@@ -10,9 +10,11 @@ public class Main extends Application {
     public void start(Stage stage) {
 
         Setup setup = new Setup();
-        Scene scene = new Scene(setup);
-        stage.setTitle("Usask Geoguesser");
+        Scene scene = new Scene(setup, 1200, 800);
+        scene.getStylesheets().addAll("buttonstyle.css");   // adds button styling
+        stage.setTitle("Usask GeoGuessr");
         stage.setResizable(false);
+
         stage.setScene(scene);
         stage.show();
     }
