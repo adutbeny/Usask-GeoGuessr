@@ -1,0 +1,25 @@
+/* Property of swagtown
+ * Style layout for buttons
+ * dont ask me about it
+ */
+
+.button {
+    -fx-background-color: #006400;
+    -fx-text-fill: white;
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+    -fx-padding: 10px 20px;
+    -fx-border-radius: 10px;
+    -fx-background-radius: 10px;
+    -fx-border-color: #003d00;
+    -fx-border-width: 2px;
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: #008000;
+}
+
+.button:pressed {
+    -fx-background-color: #004d00;
+}
