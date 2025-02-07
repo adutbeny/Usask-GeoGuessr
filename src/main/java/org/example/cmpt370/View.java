@@ -3,8 +3,17 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.control.Button;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.TextAlignment;
 
 /** Class that handles all display output
  * Needs to be updated by the Model each time
@@ -15,9 +24,54 @@ public class View extends StackPane implements Subscriber {
     private Model model;
     private Canvas myCanvas;
 
+    /** Constructor -
+     * Runs all start up to create initial display when program starts */
     public View() {
-        this.myCanvas = new Canvas(1000,1000);
-        this.getChildren().addAll(myCanvas);
+        this.myCanvas = new Canvas(1200,800);
+        GraphicsContext gc = myCanvas.getGraphicsContext2D();
+
+        // background
+        Image background = new Image("map2.jpeg");
+        ImageView bv = new ImageView(background);
+        // Set the image to fill the window
+        bv.setFitWidth(1200);
+        bv.setFitHeight(800);
+        bv.setPreserveRatio(true);
+
+        // adds semi-transparent backing
+        gc.setFill(new Color(1, 1, 1, 0.5));
+        gc.fillRect(200, 0, 400, 800);
+
+        // logo
+        Image l = new Image("usaskcrest.png");
+        ImageView logo = new ImageView(l);
+        logo.setFitHeight(150);
+        logo.setFitWidth(150);
+        logo.setPreserveRatio(true);
+        logo.setTranslateX(-200);
+        logo.setTranslateY(-250);
+
+        // title
+        gc.setFill(Color.BLACK);
+        gc.setFont(new Font("Arial", 38));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.fillText("Usask GeoGuessr", 400, 250);
+
+        // setup buttons
+        Button quickplay = new Button("Quickplay");
+        quickplay.setPrefWidth(200);
+        Button login = new Button("Log-In");
+        login.setPrefWidth(200);
+        Button createAcc = new Button("Create Account");
+        createAcc.setPrefWidth(200);
+
+        VBox buttonStack = new VBox(25, quickplay, login, createAcc);
+        // set below text
+        buttonStack.setTranslateX(300);
+        buttonStack.setTranslateY(350);
+
+        // add all to layout in order!!!
+        this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
     }
 
     /** Connect Model */
