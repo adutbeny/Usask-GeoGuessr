@@ -4,7 +4,6 @@ package org.example.cmpt370;
  * CMPT370 */
 
 import java.util.*;
-import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -25,6 +24,7 @@ public class View extends StackPane implements Subscriber {
     private Model model;
     private Canvas myCanvas;
     private GraphicsContext gc;
+    private ArrayList<Button> activeButtons;
 
     /** Constructor -
      * Runs all start up to create initial display when program starts */
@@ -73,6 +73,9 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // add all to layout in order!!!
+        this.activeButtons.add(quickplay);
+        this.activeButtons.add(login);
+        this.activeButtons.add(createAcc);
         this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
     }
 
