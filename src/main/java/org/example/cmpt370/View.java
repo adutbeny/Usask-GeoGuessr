@@ -24,13 +24,19 @@ public class View extends StackPane implements Subscriber {
     private Model model;
     private Canvas myCanvas;
     private GraphicsContext gc;
-    private ArrayList<Button> activeButtons;
+    // Buttons (so that the controller can set handlers)
+    public Button quickplay;
+    public Button login;
+    public Button createAcc;
+    public Button easy;
+    public Button medium;
+    public Button hard;
 
     /** Constructor -
      * Runs all start up to create initial display when program starts */
     public View() {
         this.myCanvas = new Canvas(1200,800);
-        this.gc = myCanvas.getGraphicsContext2D();
+        this.gc = this.myCanvas.getGraphicsContext2D();
 
         // background
         Image background = new Image("map2.jpeg");
@@ -41,8 +47,8 @@ public class View extends StackPane implements Subscriber {
         bv.setPreserveRatio(true);
 
         // adds semi-transparent backing
-        gc.setFill(new Color(1, 1, 1, 0.5));
-        gc.fillRect(200, 0, 400, 800);
+        this.gc.setFill(new Color(1, 1, 1, 0.5));
+        this.gc.fillRect(200, 0, 400, 800);
 
         // logo
         Image l = new Image("usaskcrest.png");
@@ -60,23 +66,29 @@ public class View extends StackPane implements Subscriber {
         gc.fillText("Usask GeoGuessr", 400, 250);
 
         // setup buttons
-        Button quickplay = new Button("Quickplay");
-        quickplay.setPrefWidth(200);
-        Button login = new Button("Log-In");
-        login.setPrefWidth(200);
-        Button createAcc = new Button("Create Account");
-        createAcc.setPrefWidth(200);
+        // for this window
+        this.quickplay = new Button("Quickplay");
+        this.quickplay.setPrefWidth(200);
+        this.login = new Button("Log-In");
+        this.login.setPrefWidth(200);
+        this.createAcc = new Button("Create Account");
+        this.createAcc.setPrefWidth(200);
+        // buttons for later windows
+        this.easy = new Button("Novice Navigator");
+        this.easy.setPrefWidth(200);
+        this.medium = new Button("Seasonal Searcher");
+        this.medium.setPrefWidth(200);
+        this.hard = new Button("Expert Explorer");
+        this.setPrefWidth(200);
+        // TODO: add future buttons here
 
-        VBox buttonStack = new VBox(25, quickplay, login, createAcc);
+        VBox buttonStack = new VBox(25, this.quickplay, this.login, this.createAcc);
         // set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
 
         // add all to layout in order!!!
-        this.activeButtons.add(quickplay);
-        this.activeButtons.add(login);
-        this.activeButtons.add(createAcc);
-        this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
+        this.getChildren().addAll(bv,this.myCanvas, logo, buttonStack);
     }
 
     public void selectDifficultyWindow() {
@@ -112,15 +124,7 @@ public class View extends StackPane implements Subscriber {
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("Select Difficulty", 400, 250);
 
-        // setup buttons
-        Button quickplay = new Button("Novice Navigator");
-        quickplay.setPrefWidth(200);
-        Button login = new Button("Seasonal Searcher");
-        login.setPrefWidth(200);
-        Button createAcc = new Button("Expert Explorer");
-        createAcc.setPrefWidth(200);
-
-        VBox buttonStack = new VBox(25, quickplay, login, createAcc);
+        VBox buttonStack = new VBox(25, this.easy, this.medium, this.hard);
         // set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
@@ -150,5 +154,8 @@ public class View extends StackPane implements Subscriber {
     @Override
     public void modelUpdated() {
         // call needed methods based on what changed
+        if (this.model.getCurrentWindow() == DISPLAY.DIFF) {
+            selectDifficultyWindow();
+        }
     }
 }
