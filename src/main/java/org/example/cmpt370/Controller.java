@@ -20,6 +20,8 @@ public class Controller {
     public Controller(View view) {
         view.quickplay.setOnAction(event -> {
             this.model.showDifficultyWindow();
+            // TODO: will need to disable leaderboards/hgihscore if
+            // this becomes like an "offline" mode
         });
         view.login.setOnAction(event -> {
             // TODO: attach accounts here
