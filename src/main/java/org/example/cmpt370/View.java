@@ -85,7 +85,7 @@ public class View extends StackPane implements Subscriber {
 
         // title
         gc.setFill(Color.BLACK);
-        gc.setFont(new Font("Arial", 38));
+        gc.setFont(new Font("Courier Prime", 38));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("Usask GeoGuessr", 400, 270);
         VBox buttonStack = new VBox(25, this.quickplay, this.login, this.createAcc);
@@ -94,9 +94,11 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // add all to layout in order!!!
-        this.getChildren().addAll(bv,this.myCanvas, logo, buttonStack);
+        this.getChildren().addAll(bv, this.myCanvas, logo, buttonStack);
     }
 
+    /** Shows window with buttons to select difficulty
+     * Same other components as startup */
     public void selectDifficultyWindow() {
         // clear any objects in view
         this.getChildren().setAll();
@@ -126,7 +128,7 @@ public class View extends StackPane implements Subscriber {
 
         // title
         gc.setFill(Color.BLACK);
-        gc.setFont(new Font("Arial", 38));
+        gc.setFont(new Font("Courier Prime", 38));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("Select Difficulty", 400, 270);
 
@@ -137,6 +139,44 @@ public class View extends StackPane implements Subscriber {
 
         // add all to layout in order!!!
         this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
+    }
+
+    /** Displays window that will be used during main playing area runtime */
+    public void selectGameplayWindow() {
+        // clear any objects in view
+        this.getChildren().setAll();
+        // reset canvas
+        this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        // dark green background
+        this.gc.setFill(Color.DARKGREEN);
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        // outlines for username, score
+        this.gc.setFill(Color.BLACK);
+        this.gc.fillRoundRect(100, 50, 200, 50, 20, 20);
+        this.gc.fillRoundRect(350, 50, 200, 50, 20, 20);
+
+        // Draw Labels for Buttons
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(new Font("Courier Prime", 20));
+        this.gc.fillText("Username", 200, 80);
+        //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
+        this.gc.fillText("POINTS/LEVEL", 450, 80);
+        //gc.fillText(String.valueOf(this.model.getScore()), 450, 80);
+        this.gc.fillText("Round: " + this.model.getRound() + "/5", 1120, 75);
+
+        // Draw Photo Area
+        this.gc.setFill(Color.BLACK);
+        this.gc.fillRect(150, 200, 600, 400);
+        // TODO: change this with actual photo from model
+
+        // Draw Map Area
+        this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
+        this.gc.fillRect(800, 250, 300, 300);
+        // TODO: replace this with connection to actual map API
+
+        this.getChildren().add(this.myCanvas);
     }
 
     /** Connect Model */
@@ -157,12 +197,16 @@ public class View extends StackPane implements Subscriber {
     }
 
 
+    /** Gets called when the model signals a change,
+     * then based on what state the model is in, show/update
+     * the appropriate window */
     @Override
     public void modelUpdated() {
         // call needed methods based on what changed
         switch (this.model.getCurrentWindow()) {
             case STARTUP -> selectMainMenu();
             case DIFF -> selectDifficultyWindow();
+            case GAMEPLAY -> selectGameplayWindow();
         }
     }
 }
