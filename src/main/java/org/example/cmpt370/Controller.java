@@ -32,13 +32,13 @@ public class Controller {
             this.model.showDifficultyWindow();
         });
         view.easy.setOnAction(event -> {
-            this.model.selectImageSet("/BeginnerPhotos.csv");
+            this.model.selectPictureSet("/BeginnerPhotos.csv");
         });
         view.medium.setOnAction(event -> {
-            this.model.selectImageSet("/MediumPictures.csv");
+            this.model.selectPictureSet("/MediumPictures.csv");
         });
         view.hard.setOnAction(event -> {
-            this.model.selectImageSet("/HardPictures.csv");
+            this.model.selectPictureSet("/HardPictures.csv");
         });
     }
 
