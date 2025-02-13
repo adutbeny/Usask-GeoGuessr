@@ -18,12 +18,21 @@ enum DISPLAY {
  * This is where we pass in the coordinates of mouse locations */
 public class Model {
 
+    // Model attributes
     private ArrayList<Subscriber> subscribers;
-    private DISPLAY currentWindow = DISPLAY.STARTUP;
+    private DISPLAY currentWindow;
+    // user attributes
+    private String username;
+    private int score;
+    private int highscore;
+    private int round;
+    // etc...
 
     /** Constructor */
     public Model() {
         this.subscribers = new ArrayList<Subscriber>();
+        this.round = 1;
+        this.currentWindow = DISPLAY.STARTUP;
     }
 
     /** Add any displays to the list of objects updated on
@@ -47,12 +56,33 @@ public class Model {
      * etc
      */
 
+    /** GETTERS */
     public DISPLAY getCurrentWindow() {
         return currentWindow;
     }
+    public String getUsername() {
+        return username;
+    }
+    public int getScore() {
+        return score;
+    }
+    public int getHighscore() {
+        return highscore;
+    }
+    public int getRound() {
+        return round;
+    }
 
+    /** Prompts View to show select difficulty display */
     public void showDifficultyWindow() {
         this.currentWindow = DISPLAY.DIFF;
         notifySubscribers();
     }
+
+    /** Prompts View to show main gameplay window */
+    public void showGameplayWindow() {
+        this.currentWindow = DISPLAY.GAMEPLAY;
+        notifySubscribers();
+    }
+
 }
