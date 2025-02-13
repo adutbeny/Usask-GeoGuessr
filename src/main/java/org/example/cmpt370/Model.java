@@ -4,7 +4,6 @@ package org.example.cmpt370;
  * CMPT370 */
 
 import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.*;
@@ -25,6 +24,7 @@ public class Model {
     // Model attributes
     private ArrayList<Subscriber> subscribers;
     private ArrayList<Picture> pictures;
+    private int picIndex;
     private DISPLAY currentWindow; // This field's value will tell the view what to do
     // user attributes
     private String username;
@@ -38,6 +38,7 @@ public class Model {
         this.subscribers = new ArrayList<>();
         this.pictures = new ArrayList<>();
         this.round = 1;
+        this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
     }
 
@@ -58,14 +59,13 @@ public class Model {
      * calculateDistance()
      * nextImage()
      * showMap()
-     * selectImageSet()
      * etc
      */
 
     /** Populates pictures array with the passed csv to it
      * @param csv filepath to appropriate csv
      */
-    public void selectImageSet(String csv) {
+    public void selectPictureSet(String csv) {
         this.pictures.clear(); // Clear any existing data before loading new data
         // FileReader needs to catch IO Errors so we'll use try/catch
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
@@ -83,6 +83,7 @@ public class Model {
             System.err.println("Error loading pictures: " + e.getMessage());
         }
 
+        Collections.shuffle(this.pictures); // put in random order
         this.showGameplayWindow();
     }
 
@@ -101,6 +102,15 @@ public class Model {
     }
     public int getRound() {
         return round;
+    }
+
+    /** Gets the next picture from the shuffled array
+     * Works such that we won't get duplicates in the same round
+     * and doesn't skip the first one */
+    public Picture getNextPic() {
+        Picture current = this.pictures.get(this.picIndex);
+        this.picIndex++;
+        return current;
     }
 
     /** Prompts View to show start-up display */
