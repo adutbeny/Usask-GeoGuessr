@@ -3,7 +3,6 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import java.util.*;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -14,6 +13,8 @@ import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+
+import java.util.Objects;
 
 /** Class that handles all display output
  * Needs to be updated by the Model each time
@@ -63,19 +64,20 @@ public class View extends StackPane implements Subscriber {
      */
     public void selectMainMenu() {
         // background
-        Image background = new Image("map2.jpeg");
-        ImageView bv = new ImageView(background);
+        // completely idiotic but this is how you have to load an image
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/map2.jpeg")).toExternalForm());
+        ImageView bg = new ImageView(background);
         // Set the image to fill the window
-        bv.setFitWidth(1200);
-        bv.setFitHeight(800);
-        bv.setPreserveRatio(true);
+        bg.setFitWidth(1200);
+        bg.setFitHeight(800);
+        bg.setPreserveRatio(true);
 
         // adds semi-transparent backing
         this.gc.setFill(new Color(1, 1, 1, 0.5));
         this.gc.fillRect(200, 0, 400, 800);
 
         // logo
-        Image l = new Image("usaskcrest.png");
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
         ImageView logo = new ImageView(l);
         logo.setFitHeight(150);
         logo.setFitWidth(150);
@@ -94,7 +96,7 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // add all to layout in order!!!
-        this.getChildren().addAll(bv, this.myCanvas, logo, buttonStack);
+        this.getChildren().addAll(bg, this.myCanvas, logo, buttonStack);
     }
 
     /** Shows window with buttons to select difficulty
@@ -106,7 +108,7 @@ public class View extends StackPane implements Subscriber {
         gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
         // background
-        Image background = new Image("map2.jpeg");
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/map2.jpeg")).toExternalForm());
         ImageView bv = new ImageView(background);
         // Set the image to fill the window
         bv.setFitWidth(1200);
@@ -118,7 +120,7 @@ public class View extends StackPane implements Subscriber {
         gc.fillRect(200, 0, 400, 800);
 
         // logo
-        Image l = new Image("usaskcrest.png");
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
         ImageView logo = new ImageView(l);
         logo.setFitHeight(150);
         logo.setFitWidth(150);
