@@ -6,9 +6,9 @@ package org.example.cmpt370;
 import java.util.*;
 
 enum DISPLAY {
-    DEFAULT,
+    STARTUP,
     DIFF,
-    MAIN,
+    GAMEPLAY,
     LEADERBOARD
     //etc.
 }
@@ -19,7 +19,7 @@ enum DISPLAY {
 public class Model {
 
     private ArrayList<Subscriber> subscribers;
-    private DISPLAY currentWindow = DISPLAY.DEFAULT;
+    private DISPLAY currentWindow = DISPLAY.STARTUP;
 
     /** Constructor */
     public Model() {
