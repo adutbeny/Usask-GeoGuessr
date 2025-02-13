@@ -20,7 +20,7 @@ public class Controller {
     public Controller(View view) {
         view.quickplay.setOnAction(event -> {
             this.model.showDifficultyWindow();
-            // TODO: will need to disable leaderboards/hgihscore if
+            // TODO: will need to disable leaderboards/high-score if
             // this becomes like an "offline" mode
         });
         view.login.setOnAction(event -> {
@@ -32,19 +32,13 @@ public class Controller {
             this.model.showDifficultyWindow();
         });
         view.easy.setOnAction(event -> {
-            // TODO: call model method to create easy photo library
-            // which will tell view to change window
-            this.model.showGameplayWindow();    // can move this to end of model method
+            this.model.selectImageSet("/BeginnerPhotos.csv");
         });
         view.medium.setOnAction(event -> {
-            // TODO: call model method to create medium photo library
-            // which will tell view to change window
-            this.model.showGameplayWindow();
+            this.model.selectImageSet("/MediumPictures.csv");
         });
         view.hard.setOnAction(event -> {
-            // TODO: call model method to create hard photo library
-            // which will tell view to change window
-            this.model.showGameplayWindow();
+            this.model.selectImageSet("/HardPictures.csv");
         });
     }
 
