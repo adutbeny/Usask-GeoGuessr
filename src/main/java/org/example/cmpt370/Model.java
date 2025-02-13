@@ -3,6 +3,10 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import java.io.BufferedReader;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 enum DISPLAY {
@@ -20,7 +24,8 @@ public class Model {
 
     // Model attributes
     private ArrayList<Subscriber> subscribers;
-    private DISPLAY currentWindow;
+    private ArrayList<Picture> pictures;
+    private DISPLAY currentWindow; // This field's value will tell the view what to do
     // user attributes
     private String username;
     private int score;
@@ -30,7 +35,8 @@ public class Model {
 
     /** Constructor */
     public Model() {
-        this.subscribers = new ArrayList<Subscriber>();
+        this.subscribers = new ArrayList<>();
+        this.pictures = new ArrayList<>();
         this.round = 1;
         this.currentWindow = DISPLAY.STARTUP;
     }
@@ -56,6 +62,30 @@ public class Model {
      * etc
      */
 
+    /** Populates pictures array with the passed csv to it
+     * @param csv filepath to appropriate csv
+     */
+    public void selectImageSet(String csv) {
+        this.pictures.clear(); // Clear any existing data before loading new data
+        // FileReader needs to catch IO Errors so we'll use try/catch
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
+            String line;
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(","); // Split by comma
+
+                String path = parts[0].trim();
+                double latitude = Double.parseDouble(parts[1].trim());
+                double longitude = Double.parseDouble(parts[2].trim());
+
+                pictures.add(new Picture(path, latitude, longitude)); // Add to list
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Error loading pictures: " + e.getMessage());
+        }
+
+        this.showGameplayWindow();
+    }
+
     /** GETTERS */
     public DISPLAY getCurrentWindow() {
         return currentWindow;
@@ -71,6 +101,12 @@ public class Model {
     }
     public int getRound() {
         return round;
+    }
+
+    /** Prompts View to show start-up display */
+    public void showStartupWindow() {
+        this.currentWindow = DISPLAY.STARTUP;
+        notifySubscribers();
     }
 
     /** Prompts View to show select difficulty display */
