@@ -38,6 +38,30 @@ public class View extends StackPane implements Subscriber {
         this.myCanvas = new Canvas(1200,800);
         this.gc = this.myCanvas.getGraphicsContext2D();
 
+        // setup buttons
+        // for this window
+        this.quickplay = new Button("Quickplay");
+        this.quickplay.setPrefWidth(200);
+        this.login = new Button("Log-In");
+        this.login.setPrefWidth(200);
+        this.createAcc = new Button("Create Account");
+        this.createAcc.setPrefWidth(200);
+        // buttons for later windows
+        this.easy = new Button("Novice Navigator");
+        this.easy.setPrefWidth(200);
+        this.medium = new Button("Seasonal Searcher");
+        this.medium.setPrefWidth(200);
+        this.hard = new Button("Expert Explorer");
+        this.hard.setPrefWidth(200);
+        // TODO: add future buttons here
+
+        selectMainMenu();
+    }
+
+    /** Method to show main start up screen
+     * Brought this out of the constructor so we can go back to it if needed
+     */
+    public void selectMainMenu() {
         // background
         Image background = new Image("map2.jpeg");
         ImageView bv = new ImageView(background);
@@ -63,25 +87,7 @@ public class View extends StackPane implements Subscriber {
         gc.setFill(Color.BLACK);
         gc.setFont(new Font("Arial", 38));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("Usask GeoGuessr", 400, 250);
-
-        // setup buttons
-        // for this window
-        this.quickplay = new Button("Quickplay");
-        this.quickplay.setPrefWidth(200);
-        this.login = new Button("Log-In");
-        this.login.setPrefWidth(200);
-        this.createAcc = new Button("Create Account");
-        this.createAcc.setPrefWidth(200);
-        // buttons for later windows
-        this.easy = new Button("Novice Navigator");
-        this.easy.setPrefWidth(200);
-        this.medium = new Button("Seasonal Searcher");
-        this.medium.setPrefWidth(200);
-        this.hard = new Button("Expert Explorer");
-        this.setPrefWidth(200);
-        // TODO: add future buttons here
-
+        gc.fillText("Usask GeoGuessr", 400, 270);
         VBox buttonStack = new VBox(25, this.quickplay, this.login, this.createAcc);
         // set below text
         buttonStack.setTranslateX(300);
@@ -122,7 +128,7 @@ public class View extends StackPane implements Subscriber {
         gc.setFill(Color.BLACK);
         gc.setFont(new Font("Arial", 38));
         gc.setTextAlign(TextAlignment.CENTER);
-        gc.fillText("Select Difficulty", 400, 250);
+        gc.fillText("Select Difficulty", 400, 270);
 
         VBox buttonStack = new VBox(25, this.easy, this.medium, this.hard);
         // set below text
@@ -154,8 +160,9 @@ public class View extends StackPane implements Subscriber {
     @Override
     public void modelUpdated() {
         // call needed methods based on what changed
-        if (this.model.getCurrentWindow() == DISPLAY.DIFF) {
-            selectDifficultyWindow();
+        switch (this.model.getCurrentWindow()) {
+            case STARTUP -> selectMainMenu();
+            case DIFF -> selectDifficultyWindow();
         }
     }
 }
