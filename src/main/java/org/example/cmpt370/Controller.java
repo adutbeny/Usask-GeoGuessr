@@ -34,14 +34,17 @@ public class Controller {
         view.easy.setOnAction(event -> {
             // TODO: call model method to create easy photo library
             // which will tell view to change window
+            this.model.showGameplayWindow();    // can move this to end of model method
         });
         view.medium.setOnAction(event -> {
             // TODO: call model method to create medium photo library
             // which will tell view to change window
+            this.model.showGameplayWindow();
         });
         view.hard.setOnAction(event -> {
             // TODO: call model method to create hard photo library
             // which will tell view to change window
+            this.model.showGameplayWindow();
         });
     }
 
@@ -50,6 +53,8 @@ public class Controller {
         this.model = m;
     }
 
+
+    // All of these will probably end up being unused...
     /** Handling method for when the mouse is pressed
      * @param e the mouse event */
     public void handlePressed(MouseEvent e) {}
