@@ -12,7 +12,36 @@ public class Controller {
 
     Model model;
 
-    public Controller() {}
+    /** Controller Constructor
+     * @param view takes view as a argument to set up handling
+     *             for all the buttons, without a permanent
+     *             connection which would break the MVC architecture
+     */
+    public Controller(View view) {
+        view.quickplay.setOnAction(event -> {
+            this.model.showDifficultyWindow();
+        });
+        view.login.setOnAction(event -> {
+            // TODO: attach accounts here
+            this.model.showDifficultyWindow();
+        });
+        view.createAcc.setOnAction(event -> {
+            // TODO: attach accounts here
+            this.model.showDifficultyWindow();
+        });
+        view.easy.setOnAction(event -> {
+            // TODO: call model method to create easy photo library
+            // which will tell view to change window
+        });
+        view.medium.setOnAction(event -> {
+            // TODO: call model method to create medium photo library
+            // which will tell view to change window
+        });
+        view.hard.setOnAction(event -> {
+            // TODO: call model method to create hard photo library
+            // which will tell view to change window
+        });
+    }
 
     /** Attach Model */
     public void setModel(Model m) {
