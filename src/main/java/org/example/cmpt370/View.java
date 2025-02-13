@@ -170,15 +170,21 @@ public class View extends StackPane implements Subscriber {
 
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
-        this.gc.fillRect(150, 200, 600, 400);
-        // TODO: change this with actual photo from model
+        this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
+        Picture curr = this.model.getNextPic();
+        Image current = new Image(Objects.requireNonNull(getClass().getResource(curr.getPath())).toExternalForm());
+        ImageView c = new ImageView(current);
+        c.setPreserveRatio(true);
+        c.setFitHeight(400);
+        c.setFitWidth(600);
+        c.setTranslateX(-150);
 
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
         // TODO: replace this with connection to actual map API
 
-        this.getChildren().add(this.myCanvas);
+        this.getChildren().addAll(this.myCanvas, c);
     }
 
     /** Connect Model */
