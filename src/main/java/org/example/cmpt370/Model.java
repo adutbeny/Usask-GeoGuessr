@@ -5,12 +5,21 @@ package org.example.cmpt370;
 
 import java.util.*;
 
+enum DISPLAY {
+    DEFAULT,
+    DIFF,
+    MAIN,
+    LEADERBOARD
+    //etc.
+}
+
 /** Class that manages all the data
  * Controller calls Model methods to act on things like pictures
  * This is where we pass in the coordinates of mouse locations */
 public class Model {
 
     private ArrayList<Subscriber> subscribers;
+    private DISPLAY currentWindow = DISPLAY.DEFAULT;
 
     /** Constructor */
     public Model() {
@@ -23,7 +32,11 @@ public class Model {
     public void addSubscriber(Subscriber sub) {
         this.subscribers.add(sub);
     }
-
+    public void notifySubscribers() {
+        for (Subscriber sub : this.subscribers) {
+            sub.modelUpdated();
+        }
+    }
 
     /* TODO:
      * things we will probably need
@@ -33,4 +46,13 @@ public class Model {
      * selectImageSet()
      * etc
      */
+
+    public DISPLAY getCurrentWindow() {
+        return currentWindow;
+    }
+
+    public void showDifficultyWindow() {
+        this.currentWindow = DISPLAY.DIFF;
+        notifySubscribers();
+    }
 }
