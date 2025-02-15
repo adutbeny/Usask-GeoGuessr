@@ -31,11 +31,11 @@ public class View extends StackPane implements Subscriber {
         GraphicsContext gc = myCanvas.getGraphicsContext2D();
 
         // background
-        Image background = new Image("map2.jpeg");
+        Image background = new Image("3.jpg");
         ImageView bv = new ImageView(background);
         // Set the image to fill the window
-        bv.setFitWidth(1200);
-        bv.setFitHeight(800);
+        bv.setFitWidth(1800);
+        bv.setFitHeight(950);
         bv.setPreserveRatio(true);
 
         // adds semi-transparent backing
