@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Campus Map</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 400px;
+            height: 400px;
+            background-color: #006400;
+        }
+        #map {
+            width: 400px;
+            height: 400px;
+        }
+    </style>
+    <script>
+        function initMap() {
+            const campusBounds = {
+                north: 52.1345,
+                south: 52.1172,
+                west: -106.6547,
+                east: -106.6215
+            };
+
+            // creates the map
+            new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 52.13, lng: -106.63 },
+                zoom: 15,
+                mapTypeId: "satellite",
+                restriction: {
+                    latLngBounds: campusBounds,
+                    strictBounds: true
+                }
+            });
+        }
+    </script>
+    <script
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKAGrVlkSOCmxmG8yPlGZ1A_j4GkKvzGE&callback=initMap">
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+</html>

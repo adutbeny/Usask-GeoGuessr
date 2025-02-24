@@ -9,10 +9,20 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.charset.StandardCharsets;
+
+
 
 import java.util.Objects;
 
@@ -26,6 +36,8 @@ public class View extends StackPane implements Subscriber {
     private Canvas myCanvas;
     private GraphicsContext gc;
     // Buttons (so that the controller can set handlers)
+
+
     public Button quickplay;
     public Button login;
     public Button createAcc;
@@ -172,19 +184,46 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
         Picture curr = this.model.getNextPic();
-        Image current = new Image(Objects.requireNonNull(getClass().getResource(curr.getPath())).toExternalForm());
-        ImageView c = new ImageView(current);
-        c.setPreserveRatio(true);
-        c.setFitHeight(400);
-        c.setFitWidth(600);
-        c.setTranslateX(-150);
+        ImageView c = null;
+        if (curr == null) {
+            this.gc.setFill(Color.WHITE);
+            this.gc.fillText("No pictures loaded!", 450, 400);
+        } else {
+            Image current = new Image(Objects.requireNonNull(
+                            getClass().getResource(curr.getPath()))
+                    .toExternalForm()
+            );
+            c = new ImageView(current);
+            c.setPreserveRatio(true);
+            c.setFitHeight(400);
+            c.setFitWidth(600);
+            c.setTranslateX(-150);
+        }
+
 
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
         // TODO: replace this with connection to actual map API
 
-        this.getChildren().addAll(this.myCanvas, c);
+        WebView mapView = new WebView();
+        mapView.setPrefSize(400, 400);
+
+        // positins the webview which will be our map
+        mapView.setTranslateX(775);  // may need to try different offsets this is x bottome is y
+        mapView.setTranslateY(200);
+
+        // loads map api with html file
+        WebEngine engine = mapView.getEngine();
+
+        //this is checking for errors its not loading correctly
+        engine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
+        engine.setOnAlert(event -> System.out.println("WebView Alert: " + event.getData()));
+        engine.setJavaScriptEnabled(true);
+
+        engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
+
+        this.getChildren().addAll(this.myCanvas, c, mapView);
     }
 
     /** Connect Model */

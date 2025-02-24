@@ -67,6 +67,7 @@ public class Model {
      */
     public void selectPictureSet(String csv) {
         this.pictures.clear(); // Clear any existing data before loading new data
+        this.picIndex = 0;
         // FileReader needs to catch IO Errors so we'll use try/catch
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
             String line;
@@ -108,6 +109,9 @@ public class Model {
      * Works such that we won't get duplicates in the same round
      * and doesn't skip the first one */
     public Picture getNextPic() {
+        if (pictures.isEmpty()) {
+            return null;
+        }
         Picture current = this.pictures.get(this.picIndex);
         this.picIndex++;
         return current;
