@@ -9,6 +9,7 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
 
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -187,7 +188,7 @@ public class View extends StackPane implements Subscriber {
         ImageView c = null;
         if (curr == null) {
             this.gc.setFill(Color.WHITE);
-            this.gc.fillText("No pictures loaded!", 450, 400);
+            this.gc.fillText("No pictures loaded", 450, 400);
         } else {
             Image current = new Image(Objects.requireNonNull(
                             getClass().getResource(curr.getPath()))
@@ -206,12 +207,14 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillRect(800, 250, 300, 300);
         // TODO: replace this with connection to actual map API
 
-        WebView mapView = new WebView();
-        mapView.setPrefSize(400, 400);
+        Pane layout = new Pane();
+        layout.setPrefSize(1200, 800);
 
-        // positins the webview which will be our map
-        mapView.setTranslateX(775);  // may need to try different offsets this is x bottome is y
-        mapView.setTranslateY(200);
+        WebView mapView = new WebView();
+
+        mapView.setPrefSize(400, 400);
+        mapView.relocate(775, 200);
+
 
         // loads map api with html file
         WebEngine engine = mapView.getEngine();
@@ -223,16 +226,18 @@ public class View extends StackPane implements Subscriber {
 
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
         mapView.setOnMouseEntered(event -> {
-            mapView.setScaleX(2.0);
-            mapView.setScaleY(2.0);
+            mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
+            mapView.relocate(0, 100);
         });
 
         mapView.setOnMouseExited(event -> {
-            mapView.setScaleX(1.0);
-            mapView.setScaleY(1.0);
+            mapView.setPrefSize(400, 400);
+            mapView.relocate(775, 200);
         });
 
-        this.getChildren().addAll(this.myCanvas, c, mapView);
+        layout.getChildren().add(mapView);
+
+        this.getChildren().addAll(this.myCanvas, c, layout);
     }
 
     /** Connect Model */
