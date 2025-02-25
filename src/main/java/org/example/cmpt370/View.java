@@ -222,6 +222,15 @@ public class View extends StackPane implements Subscriber {
         engine.setJavaScriptEnabled(true);
 
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
+        mapView.setOnMouseEntered(event -> {
+            mapView.setScaleX(2.0);
+            mapView.setScaleY(2.0);
+        });
+
+        mapView.setOnMouseExited(event -> {
+            mapView.setScaleX(1.0);
+            mapView.setScaleY(1.0);
+        });
 
         this.getChildren().addAll(this.myCanvas, c, mapView);
     }
