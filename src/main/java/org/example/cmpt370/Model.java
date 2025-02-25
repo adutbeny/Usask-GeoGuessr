@@ -6,6 +6,9 @@ package org.example.cmpt370;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 enum DISPLAY {
@@ -41,7 +44,7 @@ public class Model {
         this.round = 1;
         this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
-        this.internet = isInternet();
+        this.internet = isInternetConnected();
     }
 
     /** Add any displays to the list of objects updated on
@@ -99,6 +102,9 @@ public class Model {
     public int getRound() {
         return round;
     }
+    public boolean getInternetStatus() {
+        return this.internet;
+    }
 
     /** Gets the next picture from the shuffled array
      * Works such that we won't get duplicates in the same round
@@ -116,6 +122,8 @@ public class Model {
     public Picture getCurrentPicture() {
         return currentPicture;
     }
+
+    /* METHODS TO CHANGE VIEW */
 
     /** Prompts View to show start-up display */
     public void showStartupWindow() {
@@ -158,10 +166,21 @@ public class Model {
         return connector;
     }
 
-    private boolean isInternet() {
-//        try {
-//            URL test = new URL("https:nonsensemedia.ca");
-//        }
-        return false;
+    private boolean isInternetConnected() {
+        try {
+            URL test = new URL("https://git.cs.usask.ca");
+            URLConnection connection = test.openConnection();
+            connection.connect();
+
+            return true;
+
+        } catch (RuntimeException e) {
+            // failed to connect due to network
+            return false;
+        } catch (IOException e) {
+            // failed due to error in url
+            System.out.println("Error in getting URL connection test");
+            return false;
+        }
     }
 }
