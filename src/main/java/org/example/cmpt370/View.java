@@ -22,8 +22,6 @@ import javafx.scene.text.TextAlignment;
 
 import netscape.javascript.JSObject;
 
-
-
 import java.util.Objects;
 
 /** Class that handles all display output
@@ -35,16 +33,17 @@ public class View extends StackPane implements Subscriber {
     private Model model;
     private Canvas myCanvas;
     private GraphicsContext gc;
+
     // Buttons (so that the controller can set handlers)
-
-
+    // main menu
     public Button quickplay;
     public Button login;
     public Button createAcc;
+    // select diff
     public Button easy;
     public Button medium;
     public Button hard;
-
+    // gameplay loop
     public Button submit;
 
     /** Constructor -
@@ -54,7 +53,7 @@ public class View extends StackPane implements Subscriber {
         this.gc = this.myCanvas.getGraphicsContext2D();
 
         // setup buttons
-        // for this window
+        // for main window
         this.quickplay = new Button("Quickplay");
         this.quickplay.setPrefWidth(200);
         this.login = new Button("Log-In");
