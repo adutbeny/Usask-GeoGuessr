@@ -26,10 +26,8 @@ public class Model {
     private ArrayList<Picture> pictures;
     private int picIndex;
     private DISPLAY currentWindow; // This field's value will tell the view what to do
-    // user attributes
-    private String username;
-    private int score;
-    private int highscore;
+
+    private User user;
     private int round;
     private JavaConnector connector;
     private Picture currentPicture;
@@ -56,17 +54,19 @@ public class Model {
         }
     }
 
+    /** Take info from login and load into class instance */
+    public void loggedIn() {
+        // set up user stuff here
+    }
+
     /* TODO:
      * things we will probably need
-     * calculateDistance()
      * nextImage()
-     * showMap()
      * etc
      */
 
     /** Populates pictures array with the passed csv to it
-     * @param csv filepath to appropriate csv
-     */
+     * @param csv filepath to appropriate csv */
     public void selectPictureSet(String csv) {
         this.pictures.clear(); // Clear any existing data before loading new data
         this.picIndex = 0;
@@ -93,15 +93,6 @@ public class Model {
     /** GETTERS */
     public DISPLAY getCurrentWindow() {
         return currentWindow;
-    }
-    public String getUsername() {
-        return username;
-    }
-    public int getScore() {
-        return score;
-    }
-    public int getHighscore() {
-        return highscore;
     }
     public int getRound() {
         return round;
@@ -142,7 +133,9 @@ public class Model {
         notifySubscribers();
     }
 
-    /** this is to calculate the distances in meters between two cordinates**/
+    /* MAP METHODS */
+
+    /** this is to calculate the distances in meters between two cordinates **/
     public static double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000;
         double latDistance = Math.toRadians(lat2 - lat1);
