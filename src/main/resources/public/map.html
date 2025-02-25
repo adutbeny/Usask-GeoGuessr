@@ -17,6 +17,7 @@
         }
     </style>
     <script>
+        let marker;
         function initMap() {
             const campusBounds = {
                 north: 52.139,
@@ -53,6 +54,15 @@
                 const lat = event.latLng.lat();
                 const lng = event.latLng.lng();
                 alert(`Coordinates: ${lat}, ${lng}`);
+
+                if (!marker) { // creates new marker if we havnt already made one
+                    marker = new google.maps.Marker({
+                        position: event.latLng,
+                        map: map
+                    });
+                } else {    // if marker already exists then move the existing one to new clicked position
+                    marker.setPosition(event.latLng)
+                }
             });
         }
     </script>
