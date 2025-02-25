@@ -19,9 +19,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.charset.StandardCharsets;
+import netscape.javascript.JSObject;
 
 
 
@@ -46,6 +44,8 @@ public class View extends StackPane implements Subscriber {
     public Button medium;
     public Button hard;
 
+    public Button submit;
+
     /** Constructor -
      * Runs all start up to create initial display when program starts */
     public View() {
@@ -67,6 +67,10 @@ public class View extends StackPane implements Subscriber {
         this.medium.setPrefWidth(200);
         this.hard = new Button("Expert Explorer");
         this.hard.setPrefWidth(200);
+
+        // button for submitting
+        this.submit = new Button("Submit");
+        this.submit.setPrefWidth(200);
         // TODO: add future buttons here
 
         selectMainMenu();
@@ -201,11 +205,15 @@ public class View extends StackPane implements Subscriber {
             c.setTranslateX(-150);
         }
 
-
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
         // TODO: replace this with connection to actual map API
+
+        VBox buttonStack = new VBox(25, this.submit);
+        // set below text
+        buttonStack.setTranslateX(350);
+        buttonStack.setTranslateY(700);
 
         Pane layout = new Pane();
         layout.setPrefSize(1200, 800);
@@ -224,20 +232,28 @@ public class View extends StackPane implements Subscriber {
         engine.setOnAlert(event -> System.out.println("WebView Alert: " + event.getData()));
         engine.setJavaScriptEnabled(true);
 
+        // this is for connecting the html to our java so we can get the coords
+        JavaConnector connector = new JavaConnector();
+        JSObject window = (JSObject) engine.executeScript("window");
+        window.setMember("javaApp", connector);
+        model.setJavaConnector(connector); //store in model
+
+        //load the map from the html file
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
+
+
+        // here we resize the map if the mouse hovers over it so we get a better view
         mapView.setOnMouseEntered(event -> {
             mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
             mapView.relocate(0, 100);
         });
-
         mapView.setOnMouseExited(event -> {
             mapView.setPrefSize(400, 400);
             mapView.relocate(775, 200);
         });
 
         layout.getChildren().add(mapView);
-
-        this.getChildren().addAll(this.myCanvas, c, layout);
+        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     }
 
     /** Connect Model */

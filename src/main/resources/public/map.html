@@ -63,6 +63,9 @@
                 } else {    // if marker already exists then move the existing one to new clicked position
                     marker.setPosition(event.latLng)
                 }
+                if (window.javaApp && window.javaApp.updateMarkerCoordinates) {
+                    window.javaApp.updateMarkerCoordinates(lat, lng);
+                }
             });
         }
     </script>

@@ -40,6 +40,32 @@ public class Controller {
         view.hard.setOnAction(event -> {
             this.model.selectPictureSet("/HardPictures.csv");
         });
+        view.submit.setOnAction(event -> {
+            System.out.println("you Suck");
+            // get the current picture from model
+            Picture currentPicture = model.getCurrentPicture();
+            // make sure it exists
+            if (currentPicture == null) {
+                System.out.println("No picture loaded.");
+                return;
+            }
+
+            // get the marker coordinates from model
+            JavaConnector connector = model.getJavaConnector();
+            if (connector == null) {
+                System.out.println("Marker coordinates not set.");
+                return;
+            }
+            double pictureLat = currentPicture.getLatitude();
+            double pictureLng = currentPicture.getLongitude();
+
+            // Get marker coordinates from your connector:
+            double markerLat = connector.getMarkerLat();
+            double markerLng = connector.getMarkerLng();
+
+            double distance = Model.haversine(pictureLat, pictureLng, markerLat, markerLng);
+            System.out.println("Distance between picture and marker: " + distance + " km");
+        });
     }
 
     /** Attach Model */
