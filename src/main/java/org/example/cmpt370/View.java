@@ -11,6 +11,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 
+import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
@@ -73,7 +74,7 @@ public class View extends StackPane implements Subscriber {
         this.submit.setPrefWidth(200);
         // TODO: add future buttons here
 
-        selectMainMenu();
+        //selectMainMenu();     moved this to setModel method
     }
 
     /** Method to show main start up screen
@@ -107,7 +108,17 @@ public class View extends StackPane implements Subscriber {
         gc.setFont(new Font("Courier Prime", 38));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("Usask GeoGuessr", 400, 270);
-        VBox buttonStack = new VBox(25, this.quickplay, this.login, this.createAcc);
+
+        VBox buttonStack = new VBox(25, this.quickplay);
+        // if we have internet connection, display login buttons
+        if (this.model.getInternetStatus()) {
+            buttonStack.getChildren().addAll(this.login, this.createAcc);
+        } else {
+            // no internet, display text message indicating this
+            Text noInternet = new Text("Internet unavailable, playing offline...");
+            // TODO - need to check this and see if it looks good
+            buttonStack.getChildren().add(noInternet);
+        }
         // set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
@@ -266,6 +277,8 @@ public class View extends StackPane implements Subscriber {
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
+        selectMainMenu();
+        // Change this to a different window if you want to test a specific feature
     }
 
     /** Attaches itself to controller so that we can receive
