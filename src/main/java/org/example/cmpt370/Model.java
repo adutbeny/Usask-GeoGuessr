@@ -29,6 +29,7 @@ public class Model {
 
     private User user;
     private int round;
+    private boolean internet;
     private JavaConnector connector;
     private Picture currentPicture;
     // etc...
@@ -40,6 +41,7 @@ public class Model {
         this.round = 1;
         this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
+        this.internet = isInternet();
     }
 
     /** Add any displays to the list of objects updated on
@@ -156,5 +158,10 @@ public class Model {
         return connector;
     }
 
-
+    private boolean isInternet() {
+//        try {
+//            URL test = new URL("https:nonsensemedia.ca");
+//        }
+        return false;
+    }
 }

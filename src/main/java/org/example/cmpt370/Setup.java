@@ -8,8 +8,8 @@ public class Setup extends StackPane {
 
     public Setup() {
         // Instantiate
-        View v = new View();
         Model m = new Model();
+        View v = new View();
         Controller c = new Controller(v);
 
         // Connect MVC layout
