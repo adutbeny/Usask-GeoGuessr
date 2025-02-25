@@ -273,6 +273,21 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     }
 
+    // TODO: these
+    /** Displays fields to enter user information
+     * Needs to connect to database to verify credentials
+     * and then once verified should create User instance in model */
+    public void loginWindow() {
+
+    }
+
+    /** Displays fields to enter user information
+     * Needs to connect to database to create new entry in the DB
+     * and then once verified should create User instance in model
+     * overall should be pretty similar to login but with different handling */
+    public void createAccWindow() {
+
+    }
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
