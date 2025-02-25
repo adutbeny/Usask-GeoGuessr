@@ -8,6 +8,8 @@ public class JavaConnector {
     public void updateMarkerCoordinates(double lat, double lng) {
         this.markerLat = lat;
         this.markerLng = lng;
+        // debugging
+        System.out.println("JavaConnector succesfully updated: " + lat + ", " + lng);
     }
 
     public double getMarkerLat() {

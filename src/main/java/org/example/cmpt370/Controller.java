@@ -56,15 +56,24 @@ public class Controller {
                 System.out.println("Marker coordinates not set.");
                 return;
             }
+
+            // get pictures longitude and latitude, print statements for debugging
+            // TODO: the cords are not alligning at all we need to fix it somehow
             double pictureLat = currentPicture.getLatitude();
+            System.out.println("picture latitude:" + pictureLat);
             double pictureLng = currentPicture.getLongitude();
+            System.out.println("picture longitude:" + pictureLng);
 
-            // Get marker coordinates from your connector:
+
+            // Gets marker coordinates from connector
             double markerLat = connector.getMarkerLat();
+            System.out.println("marker latitude:" + markerLat);
             double markerLng = connector.getMarkerLng();
+            System.out.println("marker longitude:" + markerLng);
 
+            // find distance between and print to console for now
             double distance = Model.haversine(pictureLat, pictureLng, markerLat, markerLng);
-            System.out.println("Distance between picture and marker: " + distance + " km");
+            System.out.println("You got: " + distance + " meters away!");
         });
     }
 

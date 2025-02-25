@@ -234,8 +234,15 @@ public class View extends StackPane implements Subscriber {
 
         // this is for connecting the html to our java so we can get the coords
         JavaConnector connector = new JavaConnector();
-        JSObject window = (JSObject) engine.executeScript("window");
-        window.setMember("javaApp", connector);
+        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) engine.executeScript("window");
+                window.setMember("javaApp", connector);
+                // for debugging
+                System.out.println("JavaConnector set on JS window");
+            }
+        });
+
         model.setJavaConnector(connector); //store in model
 
         //load the map from the html file
