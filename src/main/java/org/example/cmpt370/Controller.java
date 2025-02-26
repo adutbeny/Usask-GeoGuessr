@@ -12,13 +12,43 @@ public class Controller {
 
     Model model;
 
-    public Controller() {}
+    /** Controller Constructor
+     * @param view takes view as a argument to set up handling
+     *             for all the buttons, without a permanent
+     *             connection which would break the MVC architectureg
+     */
+    public Controller(View view) {
+        view.quickplay.setOnAction(event -> {
+            this.model.showDifficultyWindow();
+            // TODO: will need to disable leaderboards/high-score if
+            // this becomes like an "offline" mode
+        });
+        view.login.setOnAction(event -> {
+            // TODO: attach accounts here
+            this.model.showDifficultyWindow();
+        });
+        view.createAcc.setOnAction(event -> {
+            // TODO: attach accounts here
+            this.model.showDifficultyWindow();
+        });
+        view.easy.setOnAction(event -> {
+            this.model.selectPictureSet("/BeginnerPhotos.csv");
+        });
+        view.medium.setOnAction(event -> {
+            this.model.selectPictureSet("/MediumPictures.csv");
+        });
+        view.hard.setOnAction(event -> {
+            this.model.selectPictureSet("/HardPictures.csv");
+        });
+    }
 
     /** Attach Model */
     public void setModel(Model m) {
         this.model = m;
     }
 
+
+    // All of these will probably end up being unused...
     /** Handling method for when the mouse is pressed
      * @param e the mouse event */
     public void handlePressed(MouseEvent e) {}

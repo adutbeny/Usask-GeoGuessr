@@ -10,7 +10,7 @@ public class Setup extends StackPane {
         // Instantiate
         View v = new View();
         Model m = new Model();
-        Controller c = new Controller();
+        Controller c = new Controller(v);
 
         // Connect MVC layout
         m.addSubscriber(v);
