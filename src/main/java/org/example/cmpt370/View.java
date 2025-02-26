@@ -9,10 +9,18 @@ import javafx.scene.control.Button;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
+import javafx.scene.layout.Pane;
+
+import javafx.scene.text.Text;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
+
+import netscape.javascript.JSObject;
 
 import java.util.Objects;
 
@@ -25,13 +33,18 @@ public class View extends StackPane implements Subscriber {
     private Model model;
     private Canvas myCanvas;
     private GraphicsContext gc;
+
     // Buttons (so that the controller can set handlers)
+    // main menu
     public Button quickplay;
     public Button login;
     public Button createAcc;
+    // select diff
     public Button easy;
     public Button medium;
     public Button hard;
+    // gameplay loop
+    public Button submit;
 
     /** Constructor -
      * Runs all start up to create initial display when program starts */
@@ -40,7 +53,7 @@ public class View extends StackPane implements Subscriber {
         this.gc = this.myCanvas.getGraphicsContext2D();
 
         // setup buttons
-        // for this window
+        // for main window
         this.quickplay = new Button("Quickplay");
         this.quickplay.setPrefWidth(200);
         this.login = new Button("Log-In");
@@ -54,9 +67,13 @@ public class View extends StackPane implements Subscriber {
         this.medium.setPrefWidth(200);
         this.hard = new Button("Expert Explorer");
         this.hard.setPrefWidth(200);
+
+        // button for submitting
+        this.submit = new Button("Submit");
+        this.submit.setPrefWidth(200);
         // TODO: add future buttons here
 
-        selectMainMenu();
+        //selectMainMenu();     moved this to setModel method
     }
 
     /** Method to show main start up screen
@@ -90,7 +107,17 @@ public class View extends StackPane implements Subscriber {
         gc.setFont(new Font("Courier Prime", 38));
         gc.setTextAlign(TextAlignment.CENTER);
         gc.fillText("Usask GeoGuessr", 400, 270);
-        VBox buttonStack = new VBox(25, this.quickplay, this.login, this.createAcc);
+
+        VBox buttonStack = new VBox(25, this.quickplay);
+        // if we have internet connection, display login buttons
+        if (this.model.getInternetStatus()) {
+            buttonStack.getChildren().addAll(this.login, this.createAcc);
+        } else {
+            // no internet, display text message indicating this
+            Text noInternet = new Text("Internet unavailable, playing offline...");
+            // TODO - need to check this and see if it looks good
+            buttonStack.getChildren().add(noInternet);
+        }
         // set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
@@ -172,24 +199,100 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
         Picture curr = this.model.getNextPic();
-        Image current = new Image(Objects.requireNonNull(getClass().getResource(curr.getPath())).toExternalForm());
-        ImageView c = new ImageView(current);
-        c.setPreserveRatio(true);
-        c.setFitHeight(400);
-        c.setFitWidth(600);
-        c.setTranslateX(-150);
+        ImageView c = null;
+        if (curr == null) {
+            this.gc.setFill(Color.WHITE);
+            this.gc.fillText("No pictures loaded", 450, 400);
+        } else {
+            Image current = new Image(Objects.requireNonNull(
+                            getClass().getResource(curr.getPath()))
+                    .toExternalForm()
+            );
+            c = new ImageView(current);
+            c.setPreserveRatio(true);
+            c.setFitHeight(400);
+            c.setFitWidth(600);
+            c.setTranslateX(-150);
+        }
 
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
-        // TODO: replace this with connection to actual map API
 
-        this.getChildren().addAll(this.myCanvas, c);
+
+        VBox buttonStack = new VBox(25, this.submit);
+        // set below text
+        buttonStack.setTranslateX(500);
+        buttonStack.setTranslateY(725);
+
+        Pane layout = new Pane();
+        layout.setPrefSize(1200, 800);
+
+        WebView mapView = new WebView();
+
+        mapView.setPrefSize(400, 400);
+        mapView.relocate(775, 200);
+
+
+        // loads map api with html file
+        WebEngine engine = mapView.getEngine();
+
+        //this is checking for errors its not loading correctly
+        engine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
+        engine.setOnAlert(event -> System.out.println("WebView Alert: " + event.getData()));
+        engine.setJavaScriptEnabled(true);
+
+        // this is for connecting the html to our java so we can get the coords
+        JavaConnector connector = new JavaConnector();
+        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                JSObject window = (JSObject) engine.executeScript("window");
+                window.setMember("javaApp", connector);
+                // for debugging
+                System.out.println("JavaConnector set on JS window");
+            }
+        });
+
+        model.setJavaConnector(connector); //store in model
+
+        //load the map from the html file
+        engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
+
+
+        // here we resize the map if the mouse hovers over it so we get a better view
+        mapView.setOnMouseEntered(event -> {
+            mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
+            mapView.relocate(0, 100);
+        });
+        mapView.setOnMouseExited(event -> {
+            mapView.setPrefSize(400, 400);
+            mapView.relocate(775, 200);
+        });
+
+        layout.getChildren().add(mapView);
+        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     }
 
+    // TODO: these
+    /** Displays fields to enter user information
+     * Needs to connect to database to verify credentials
+     * and then once verified should create User instance in model */
+    public void loginWindow() {
+
+    }
+
+    /** Displays fields to enter user information
+     * Needs to connect to database to create new entry in the DB
+     * and then once verified should create User instance in model
+     * overall should be pretty similar to login but with different handling */
+    public void createAccWindow() {
+
+    }
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
+        selectMainMenu();
+        // Change this to a different window if you want to test a specific feature
     }
 
     /** Attaches itself to controller so that we can receive

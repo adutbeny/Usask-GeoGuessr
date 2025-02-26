@@ -6,6 +6,9 @@ package org.example.cmpt370;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.*;
 
 enum DISPLAY {
@@ -26,11 +29,12 @@ public class Model {
     private ArrayList<Picture> pictures;
     private int picIndex;
     private DISPLAY currentWindow; // This field's value will tell the view what to do
-    // user attributes
-    private String username;
-    private int score;
-    private int highscore;
+
+    private User user;
     private int round;
+    private boolean internet;
+    private JavaConnector connector;
+    private Picture currentPicture;
     // etc...
 
     /** Constructor */
@@ -40,6 +44,7 @@ public class Model {
         this.round = 1;
         this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
+        this.internet = isInternetConnected();
     }
 
     /** Add any displays to the list of objects updated on
@@ -54,19 +59,22 @@ public class Model {
         }
     }
 
+    /** Take info from login and load into class instance */
+    public void loggedIn() {
+        // set up user stuff here
+    }
+
     /* TODO:
      * things we will probably need
-     * calculateDistance()
      * nextImage()
-     * showMap()
      * etc
      */
 
     /** Populates pictures array with the passed csv to it
-     * @param csv filepath to appropriate csv
-     */
+     * @param csv filepath to appropriate csv */
     public void selectPictureSet(String csv) {
         this.pictures.clear(); // Clear any existing data before loading new data
+        this.picIndex = 0;
         // FileReader needs to catch IO Errors so we'll use try/catch
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
             String line;
@@ -91,27 +99,31 @@ public class Model {
     public DISPLAY getCurrentWindow() {
         return currentWindow;
     }
-    public String getUsername() {
-        return username;
-    }
-    public int getScore() {
-        return score;
-    }
-    public int getHighscore() {
-        return highscore;
-    }
     public int getRound() {
         return round;
+    }
+    public boolean getInternetStatus() {
+        return this.internet;
     }
 
     /** Gets the next picture from the shuffled array
      * Works such that we won't get duplicates in the same round
      * and doesn't skip the first one */
     public Picture getNextPic() {
+        if (pictures.isEmpty()) {
+            return null;
+        }
         Picture current = this.pictures.get(this.picIndex);
         this.picIndex++;
+        this.currentPicture = current;
         return current;
     }
+    /** getter for current picture **/
+    public Picture getCurrentPicture() {
+        return currentPicture;
+    }
+
+    /* METHODS TO CHANGE VIEW */
 
     /** Prompts View to show start-up display */
     public void showStartupWindow() {
@@ -131,4 +143,44 @@ public class Model {
         notifySubscribers();
     }
 
+    /* MAP METHODS */
+
+    /** this is to calculate the distances in meters between two cordinates **/
+    public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+        final int R = 6371000;
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lonDistance = Math.toRadians(lon2 - lon1);
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        double result = R * c;
+        return Math.round(result);
+    }
+    /** setter for java connector **/
+    public void setJavaConnector(JavaConnector connector) {
+        this.connector = connector;
+    }
+    /** getter for java connector **/
+    public JavaConnector getJavaConnector() {
+        return connector;
+    }
+
+    private boolean isInternetConnected() {
+        try {
+            URL test = new URL("https://git.cs.usask.ca");
+            URLConnection connection = test.openConnection();
+            connection.connect();
+
+            return true;
+
+        } catch (RuntimeException e) {
+            // failed to connect due to network
+            return false;
+        } catch (IOException e) {
+            // failed due to error in url
+            System.out.println("Error in getting URL connection test");
+            return false;
+        }
+    }
 }

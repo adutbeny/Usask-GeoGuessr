@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Campus Map</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #005100;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script>
+        let marker;
+        function initMap() {
+            const campusBounds = {
+                north: 52.139,
+                south: 52.125,
+                west: -106.6547,
+                east: -106.6215
+            };
+
+            // creates the map
+            const map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 52.13, lng: -106.63 },
+                zoom: 15,
+                mapTypeId: "satellite",
+
+                // this makes so zooming in doesnt turn the view sideways
+                tilt: 0,
+                heading: 0,
+
+                restriction: {
+                    latLngBounds: campusBounds,
+                    strictBounds: true
+                },
+                // making the map a little cleaner by removing default things
+                streetViewControl: false,
+                mapTypeControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+                zoomControl: false,
+
+            });
+            // this prints to console the coords of where a mouse was clicked on the map
+            // we need to use this information to calculate the distances from real point to point clicked
+            map.addListener("click", (event) => {
+                const lat = event.latLng.lat();
+                const lng = event.latLng.lng();
+                alert(`Coordinates: ${lat}, ${lng}`);
+
+                if (!marker) { // creates new marker if we havnt already made one
+                    marker = new google.maps.Marker({
+                        position: event.latLng,
+                        map: map
+                    });
+                } else {    // if marker already exists then move the existing one to new clicked position
+                    marker.setPosition(event.latLng)
+                }
+                if (window.javaApp && typeof window.javaApp.updateMarkerCoordinates == "function") {
+                    alert("Calling updateMarkerCoordinates..."); // debugging
+                    window.javaApp.updateMarkerCoordinates(lat, lng);
+                } else {
+                    alert("Calling updateMarkerCoordinates... FAILED"); //debugging
+                }
+            });
+        }
+    </script>
+    <script
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKAGrVlkSOCmxmG8yPlGZ1A_j4GkKvzGE&callback=initMap">
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+</html>

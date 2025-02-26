@@ -40,6 +40,40 @@ public class Controller {
         view.hard.setOnAction(event -> {
             this.model.selectPictureSet("/HardPictures.csv");
         });
+        view.submit.setOnAction(event -> {
+            // get the current picture from model
+            Picture currentPicture = model.getCurrentPicture();
+            // make sure it exists
+            if (currentPicture == null) {
+                System.out.println("No picture loaded.");
+                return;
+            }
+
+            // get the marker coordinates from model
+            JavaConnector connector = model.getJavaConnector();
+            if (connector == null) {
+                System.out.println("Marker coordinates not set.");
+                return;
+            }
+
+            // get pictures longitude and latitude, print statements for debugging
+            // TODO: the cords are not alligning at all we need to fix it somehow
+            double pictureLat = currentPicture.getLatitude();
+            System.out.println("picture latitude:" + pictureLat);
+            double pictureLng = currentPicture.getLongitude();
+            System.out.println("picture longitude:" + pictureLng);
+
+
+            // Gets marker coordinates from connector
+            double markerLat = connector.getMarkerLat();
+            System.out.println("marker latitude:" + markerLat);
+            double markerLng = connector.getMarkerLng();
+            System.out.println("marker longitude:" + markerLng);
+
+            // find distance between and print to console for now
+            double distance = Model.haversine(pictureLat, pictureLng, markerLat, markerLng);
+            System.out.println("You got: " + distance + " meters away!");
+        });
     }
 
     /** Attach Model */
