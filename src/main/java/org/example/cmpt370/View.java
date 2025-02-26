@@ -218,12 +218,12 @@ public class View extends StackPane implements Subscriber {
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
-        // TODO: replace this with connection to actual map API
+
 
         VBox buttonStack = new VBox(25, this.submit);
         // set below text
-        buttonStack.setTranslateX(350);
-        buttonStack.setTranslateY(700);
+        buttonStack.setTranslateX(500);
+        buttonStack.setTranslateY(725);
 
         Pane layout = new Pane();
         layout.setPrefSize(1200, 800);

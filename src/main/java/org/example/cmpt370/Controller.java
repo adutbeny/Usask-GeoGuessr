@@ -41,7 +41,6 @@ public class Controller {
             this.model.selectPictureSet("/HardPictures.csv");
         });
         view.submit.setOnAction(event -> {
-            System.out.println("you Suck");
             // get the current picture from model
             Picture currentPicture = model.getCurrentPicture();
             // make sure it exists
