@@ -25,7 +25,7 @@ public class Controller {
         });
         view.login.setOnAction(event -> {
             // TODO: attach accounts here
-            this.model.showDifficultyWindow();
+            this.model.showLoginWindow();
         });
         view.createAcc.setOnAction(event -> {
             // TODO: attach accounts here

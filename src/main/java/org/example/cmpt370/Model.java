@@ -15,6 +15,9 @@ enum DISPLAY {
     STARTUP,
     DIFF,
     GAMEPLAY,
+
+    LOGIN,
+
     LEADERBOARD
     //etc.
 }
@@ -140,6 +143,12 @@ public class Model {
     /** Prompts View to show main gameplay window */
     public void showGameplayWindow() {
         this.currentWindow = DISPLAY.GAMEPLAY;
+        notifySubscribers();
+    }
+
+    /** Prompts View to show Login window */
+    public void showLoginWindow() {
+        this.currentWindow = DISPLAY.LOGIN;
         notifySubscribers();
     }
 

@@ -3,14 +3,22 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
 
+import javafx.scene.paint.CycleMethod;
+import javafx.scene.paint.LinearGradient;
+import javafx.scene.paint.Stop;
+import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
@@ -46,34 +54,106 @@ public class View extends StackPane implements Subscriber {
     // gameplay loop
     public Button submit;
 
+    //BACK BUTTON
+
+
+
     /** Constructor -
      * Runs all start up to create initial display when program starts */
     public View() {
-        this.myCanvas = new Canvas(1200,800);
+        this.myCanvas = new Canvas(1200, 800);
         this.gc = this.myCanvas.getGraphicsContext2D();
 
-        // setup buttons
-        // for main window
+        ////// Setup Buttons \\\\\\
+
+        // Base button style
+        String buttonStyle = "-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " + // Base color and darker shade
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 16px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-background-radius: 10; " +
+                "-fx-padding: 10; " +
+                "-fx-border-color: #06321E; " + // Darker border color
+                "-fx-border-width: 2; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " + // Shadow
+                "-fx-cursor: hand;"; // Hand cursor on hover
+
+        // Hover style
+        String hoverStyle = "-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42); " + // Lighter gradient on hover
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 2);"; // Increased shadow on hover
+
+        // Pressed style
+        String pressedStyle = "-fx-background-color: linear-gradient(to bottom, #084A2E, #0A6A42); " + // Darker gradient on press
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);"; // Decreased shadow on press
+
+        // Main Window
         this.quickplay = new Button("Quickplay");
+        this.quickplay.setStyle(buttonStyle);
+        this.quickplay.setOnMouseEntered(e -> this.quickplay.setStyle(hoverStyle));
+        this.quickplay.setOnMouseExited(e -> this.quickplay.setStyle(buttonStyle));
+        this.quickplay.setOnMousePressed(e -> this.quickplay.setStyle(pressedStyle));
+        this.quickplay.setOnMouseReleased(e -> this.quickplay.setStyle(hoverStyle));
         this.quickplay.setPrefWidth(200);
+
         this.login = new Button("Log-In");
+        this.login.setStyle(buttonStyle);
+        this.login.setOnMouseEntered(e -> this.login.setStyle(hoverStyle));
+        this.login.setOnMouseExited(e -> this.login.setStyle(buttonStyle));
+        this.login.setOnMousePressed(e -> this.login.setStyle(pressedStyle));
+        this.login.setOnMouseReleased(e -> this.login.setStyle(hoverStyle));
         this.login.setPrefWidth(200);
+
         this.createAcc = new Button("Create Account");
+        this.createAcc.setStyle(buttonStyle);
+        this.createAcc.setOnMouseEntered(e -> this.createAcc.setStyle(hoverStyle));
+        this.createAcc.setOnMouseExited(e -> this.createAcc.setStyle(buttonStyle));
+        this.createAcc.setOnMousePressed(e -> this.createAcc.setStyle(pressedStyle));
+        this.createAcc.setOnMouseReleased(e -> this.createAcc.setStyle(hoverStyle));
         this.createAcc.setPrefWidth(200);
-        // buttons for later windows
+
+        // Level Selector
         this.easy = new Button("Novice Navigator");
+        this.easy.setStyle(buttonStyle);
+        this.easy.setOnMouseEntered(e -> this.easy.setStyle(hoverStyle));
+        this.easy.setOnMouseExited(e -> this.easy.setStyle(buttonStyle));
+        this.easy.setOnMousePressed(e -> this.easy.setStyle(pressedStyle));
+        this.easy.setOnMouseReleased(e -> this.easy.setStyle(hoverStyle));
         this.easy.setPrefWidth(200);
+
         this.medium = new Button("Seasonal Searcher");
+        this.medium.setStyle(buttonStyle);
+        this.medium.setOnMouseEntered(e -> this.medium.setStyle(hoverStyle));
+        this.medium.setOnMouseExited(e -> this.medium.setStyle(buttonStyle));
+        this.medium.setOnMousePressed(e -> this.medium.setStyle(pressedStyle));
+        this.medium.setOnMouseReleased(e -> this.medium.setStyle(hoverStyle));
         this.medium.setPrefWidth(200);
+
         this.hard = new Button("Expert Explorer");
+        this.hard.setStyle(buttonStyle);
+        this.hard.setOnMouseEntered(e -> this.hard.setStyle(hoverStyle));
+        this.hard.setOnMouseExited(e -> this.hard.setStyle(buttonStyle));
+        this.hard.setOnMousePressed(e -> this.hard.setStyle(pressedStyle));
+        this.hard.setOnMouseReleased(e -> this.hard.setStyle(hoverStyle));
         this.hard.setPrefWidth(200);
 
-        // button for submitting
+        // Button for submitting
         this.submit = new Button("Submit");
+        this.submit.setStyle(buttonStyle);
+        this.submit.setOnMouseEntered(e -> this.submit.setStyle(hoverStyle));
+        this.submit.setOnMouseExited(e -> this.submit.setStyle(buttonStyle));
+        this.submit.setOnMousePressed(e -> this.submit.setStyle(pressedStyle));
+        this.submit.setOnMouseReleased(e -> this.submit.setStyle(hoverStyle));
         this.submit.setPrefWidth(200);
-        // TODO: add future buttons here
 
-        //selectMainMenu();     moved this to setModel method
+        this.submit = new Button("Back");
+        this.submit.setStyle(buttonStyle);
+        this.submit.setOnMouseEntered(e -> this.submit.setStyle(hoverStyle));
+        this.submit.setOnMouseExited(e -> this.submit.setStyle(buttonStyle));
+        this.submit.setOnMousePressed(e -> this.submit.setStyle(pressedStyle));
+        this.submit.setOnMouseReleased(e -> this.submit.setStyle(hoverStyle));
+        this.submit.setPrefWidth(200);
+
+        // TODO: Add future buttons here
     }
 
     /** Method to show main start up screen
@@ -82,18 +162,19 @@ public class View extends StackPane implements Subscriber {
     public void selectMainMenu() {
         // background
         // completely idiotic but this is how you have to load an image
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/map2.jpeg")).toExternalForm());
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
         ImageView bg = new ImageView(background);
+
         // Set the image to fill the window
         bg.setFitWidth(1200);
         bg.setFitHeight(800);
         bg.setPreserveRatio(true);
 
-        // adds semi-transparent backing
+        // Adds semi-transparent backing
         this.gc.setFill(new Color(1, 1, 1, 0.5));
         this.gc.fillRect(200, 0, 400, 800);
 
-        // logo
+        // Usask Logo \\
         Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
         ImageView logo = new ImageView(l);
         logo.setFitHeight(150);
@@ -102,11 +183,37 @@ public class View extends StackPane implements Subscriber {
         logo.setTranslateX(-200);
         logo.setTranslateY(-250);
 
-        // title
-        gc.setFill(Color.BLACK);
-        gc.setFont(new Font("Courier Prime", 38));
+        //// Title \\\\\
+        gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
         gc.setTextAlign(TextAlignment.CENTER);
+
+        // Create a linear gradient for the text fill
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(1, Color.rgb(20, 150, 100))
+        );
+
+        // Add a drop shadow effect
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5);
+        dropShadow.setOffsetX(3);
+        dropShadow.setOffsetY(3);
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.5));
+        gc.setEffect(dropShadow);
+
+        // Draw the black outline
+        gc.setFill(Color.BLACK);
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                gc.fillText("Usask GeoGuessr", 400 + i, 270 + j);
+            }
+        }
+
+        //  Main Text
+        gc.setFill(gradient);
         gc.fillText("Usask GeoGuessr", 400, 270);
+
 
         VBox buttonStack = new VBox(25, this.quickplay);
         // if we have internet connection, display login buttons
@@ -126,27 +233,33 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(bg, this.myCanvas, logo, buttonStack);
     }
 
+
+
     /** Shows window with buttons to select difficulty
      * Same other components as startup */
     public void selectDifficultyWindow() {
-        // clear any objects in view
+
         this.getChildren().setAll();
-        // reset canvas
         gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
-        // background
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/map2.jpeg")).toExternalForm());
+        // Background
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
         ImageView bv = new ImageView(background);
-        // Set the image to fill the window
         bv.setFitWidth(1200);
         bv.setFitHeight(800);
         bv.setPreserveRatio(true);
 
-        // adds semi-transparent backing
-        gc.setFill(new Color(1, 1, 1, 0.5));
-        gc.fillRect(200, 0, 400, 800);
+        // Semi-transparent backing
+        gc.setFill(new Color(1, 1, 1, 0.6));
+        gc.fillRoundRect(200, 0, 400, 800, 20, 20);
 
-        // logo
+        // Create a DropShadow effect for the backing
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(10);
+        dropShadow.setColor(Color.BLACK);
+        gc.setEffect(dropShadow);
+
+        // Usask Logo
         Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
         ImageView logo = new ImageView(l);
         logo.setFitHeight(150);
@@ -155,33 +268,75 @@ public class View extends StackPane implements Subscriber {
         logo.setTranslateX(-200);
         logo.setTranslateY(-250);
 
-        // title
-        gc.setFill(Color.BLACK);
-        gc.setFont(new Font("Courier Prime", 38));
+        // Title
+        gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
         gc.setTextAlign(TextAlignment.CENTER);
+
+
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(1, Color.rgb(20, 150, 100))
+        );
+
+        // black outline
+        gc.setFill(Color.BLACK);
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                gc.fillText("Select Difficulty", 400 + i, 270 + j);
+            }
+        }
+
+        // Main text
+        gc.setFill(gradient);
         gc.fillText("Select Difficulty", 400, 270);
 
+        // Button Stack
         VBox buttonStack = new VBox(25, this.easy, this.medium, this.hard);
-        // set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
 
-        // add all to layout in order!!!
-        this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
+        // Back Button
+        Button backButton = new Button("Back");
+        backButton.setPrefWidth(200);
+        backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 16px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-background-radius: 10; " +
+                "-fx-padding: 10; " +
+                "-fx-border-color: #06321E; " +
+                "-fx-border-width: 2; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
+                "-fx-cursor: hand;");
+        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
+        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
+        backButton.setOnAction(e -> model.showStartupWindow());
+
+        backButton.setTranslateX(-200);
+        backButton.setTranslateY(250);
+
+        // Add all to layout
+        this.getChildren().addAll(bv, myCanvas, logo, buttonStack, backButton);
+
     }
+
+
 
     /** Displays window that will be used during main playing area runtime */
     public void selectGameplayWindow() {
         // clear any objects in view
         this.getChildren().setAll();
-        // reset canvas
+
+        // Reset canvas
         this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
-        // dark green background
-        this.gc.setFill(Color.DARKGREEN);
+        // Usask Green
+        this.gc.setFill(Color.rgb(10, 106, 66));
+
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
-        // outlines for username, score
+        // Outlines for username, score
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(100, 50, 200, 50, 20, 20);
         this.gc.fillRoundRect(350, 50, 200, 50, 20, 20);
@@ -190,9 +345,12 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
         this.gc.fillText("Username", 200, 80);
+
         //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
-        this.gc.fillText("POINTS/LEVEL", 450, 80);
+
+        this.gc.fillText("Points / ", 450, 80);
         //gc.fillText(String.valueOf(this.model.getScore()), 450, 80);
+
         this.gc.fillText("Round: " + this.model.getRound() + "/5", 1120, 75);
 
         // Draw Photo Area
@@ -273,12 +431,111 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     }
 
+
+
+
     // TODO: these
     /** Displays fields to enter user information
      * Needs to connect to database to verify credentials
      * and then once verified should create User instance in model */
     public void loginWindow() {
+        this.getChildren().clear();
 
+        this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
+                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
+        );
+        this.gc.setFill(gradient);
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        this.gc.setFill(new Color(1, 1, 1, 0.6));
+        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(10);
+        dropShadow.setColor(Color.BLACK);
+        this.gc.setEffect(dropShadow);
+
+        // Title
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 36));
+        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.gc.fillText("Login", 600, 250);
+
+        // Username Field
+        TextField usernameField = new TextField();
+        usernameField.setPromptText("Username");
+        usernameField.setPrefWidth(300);
+        usernameField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
+        usernameField.setLayoutX(450);
+        usernameField.setLayoutY(300);
+
+        // Password Field
+        PasswordField passwordField = new PasswordField();
+        passwordField.setPromptText("Password");
+        passwordField.setPrefWidth(300);
+        passwordField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
+        passwordField.setLayoutX(450);
+        passwordField.setLayoutY(350);
+
+        // Login Button
+        Button loginButton = new Button("Login");
+        loginButton.setPrefWidth(200);
+        loginButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 16px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-background-radius: 10; " +
+                "-fx-padding: 10; " +
+                "-fx-border-color: #06321E; " +
+                "-fx-border-width: 2; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
+                "-fx-cursor: hand;");
+        loginButton.setOnMouseEntered(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
+        loginButton.setOnMouseExited(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
+        loginButton.setLayoutX(500);
+        loginButton.setLayoutY(420);
+
+        // Back Button
+        Button backButton = new Button("Back");
+        backButton.setPrefWidth(200);
+        backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
+                "-fx-text-fill: white; " +
+                "-fx-font-size: 16px; " +
+                "-fx-font-weight: bold; " +
+                "-fx-background-radius: 10; " +
+                "-fx-padding: 10; " +
+                "-fx-border-color: #06321E; " +
+                "-fx-border-width: 2; " +
+                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
+                "-fx-cursor: hand;");
+        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
+        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
+        backButton.setLayoutX(500);
+        backButton.setLayoutY(500);
+        backButton.setOnAction(e -> model.showStartupWindow());
+
+        // Event Handlers
+        loginButton.setOnAction(e -> {
+            String username = usernameField.getText();
+            String password = passwordField.getText();
+
+            // TODO: Connect to database and verify credentials
+            // If verified, create User instance in model
+
+            System.out.println("Login attempted with username: " + username + ", password: " + password);
+        });
+
+        backButton.setOnAction(e -> selectMainMenu());
+
+        // add to layout
+        Pane layout = new Pane();
+        layout.getChildren().addAll(usernameField, passwordField, loginButton, backButton);
+        this.getChildren().addAll(this.myCanvas, layout);
     }
 
     /** Displays fields to enter user information
@@ -305,6 +562,7 @@ public class View extends StackPane implements Subscriber {
         myCanvas.setOnMouseReleased(controller::handleReleased);
         setOnKeyPressed(controller::handleKeyPressed);
         myCanvas.setOnMouseMoved(controller::handleMouseMoved);
+
     }
 
 
@@ -318,6 +576,7 @@ public class View extends StackPane implements Subscriber {
             case STARTUP -> selectMainMenu();
             case DIFF -> selectDifficultyWindow();
             case GAMEPLAY -> selectGameplayWindow();
+            case LOGIN ->loginWindow();
         }
     }
 }
