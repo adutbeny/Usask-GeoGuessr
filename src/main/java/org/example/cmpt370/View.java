@@ -3,7 +3,6 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -51,10 +50,19 @@ public class View extends StackPane implements Subscriber {
     public Button easy;
     public Button medium;
     public Button hard;
+
+    public Button back1;        // returns to startup window
+
+    // login
+    public TextField usernameField;
+    public TextField passwordField;
+    public Button submitLogin;
+
+    // another back button if we need to return to a different window
+    public Button back2;
     // gameplay loop
     public Button submit;
 
-    //BACK BUTTON
 
 
 
@@ -145,13 +153,36 @@ public class View extends StackPane implements Subscriber {
         this.submit.setOnMouseReleased(e -> this.submit.setStyle(hoverStyle));
         this.submit.setPrefWidth(200);
 
-        this.submit = new Button("Back");
-        this.submit.setStyle(buttonStyle);
-        this.submit.setOnMouseEntered(e -> this.submit.setStyle(hoverStyle));
-        this.submit.setOnMouseExited(e -> this.submit.setStyle(buttonStyle));
-        this.submit.setOnMousePressed(e -> this.submit.setStyle(pressedStyle));
-        this.submit.setOnMouseReleased(e -> this.submit.setStyle(hoverStyle));
-        this.submit.setPrefWidth(200);
+        // Back button - returns to startup
+        this.back1 = new Button("Back");
+        this.back1.setStyle(buttonStyle);
+        this.back1.setOnMouseEntered(e -> this.back1.setStyle(hoverStyle));
+        this.back1.setOnMouseExited(e -> this.back1.setStyle(buttonStyle));
+        this.back1.setOnMousePressed(e -> this.back1.setStyle(pressedStyle));
+        this.back1.setOnMouseReleased(e -> this.back1.setStyle(hoverStyle));
+        this.back1.setPrefWidth(200);
+
+        // submits credentials from login
+        this.submitLogin = new Button("Login");
+        this.submitLogin.setStyle(buttonStyle);
+        this.submitLogin.setOnMouseEntered(e -> this.submitLogin.setStyle(hoverStyle));
+        this.submitLogin.setOnMouseExited(e -> this.submitLogin.setStyle(buttonStyle));
+        this.submitLogin.setOnMousePressed(e -> this.submitLogin.setStyle(pressedStyle));
+        this.submitLogin.setOnMouseReleased(e -> this.submitLogin.setStyle(hoverStyle));
+        this.submitLogin.setPrefWidth(200);
+
+        // Text fields for login
+        this.usernameField = new TextField();
+        this.passwordField = new TextField();
+
+        // Another back button in case we need it
+        this.back2 = new Button("Back");
+        this.back2.setStyle(buttonStyle);
+        this.back2.setOnMouseEntered(e -> this.back2.setStyle(hoverStyle));
+        this.back2.setOnMouseExited(e -> this.back2.setStyle(buttonStyle));
+        this.back2.setOnMousePressed(e -> this.back2.setStyle(pressedStyle));
+        this.back2.setOnMouseReleased(e -> this.back2.setStyle(hoverStyle));
+        this.back2.setPrefWidth(200);
 
         // TODO: Add future buttons here
     }
@@ -160,6 +191,11 @@ public class View extends StackPane implements Subscriber {
      * Brought this out of the constructor so we can go back to it if needed
      */
     public void selectMainMenu() {
+        // clear View
+        this.getChildren().clear();
+        gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+
         // background
         // completely idiotic but this is how you have to load an image
         Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
@@ -234,13 +270,13 @@ public class View extends StackPane implements Subscriber {
     }
 
 
-
     /** Shows window with buttons to select difficulty
      * Same other components as startup */
     public void selectDifficultyWindow() {
-
-        this.getChildren().setAll();
+        // clear View
+        this.getChildren().clear();
         gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
 
         // Background
         Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
@@ -292,48 +328,45 @@ public class View extends StackPane implements Subscriber {
         gc.fillText("Select Difficulty", 400, 270);
 
         // Button Stack
-        VBox buttonStack = new VBox(25, this.easy, this.medium, this.hard);
+        VBox buttonStack = new VBox(25, this.easy, this.medium, this.hard, this.back1);
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
 
         // Back Button
-        Button backButton = new Button("Back");
-        backButton.setPrefWidth(200);
-        backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 16px; " +
-                "-fx-font-weight: bold; " +
-                "-fx-background-radius: 10; " +
-                "-fx-padding: 10; " +
-                "-fx-border-color: #06321E; " +
-                "-fx-border-width: 2; " +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
-                "-fx-cursor: hand;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
-        backButton.setOnAction(e -> model.showStartupWindow());
-
-        backButton.setTranslateX(-200);
-        backButton.setTranslateY(250);
+//        Button backButton = new Button("Back");
+//        backButton.setPrefWidth(200);
+//        backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
+//                "-fx-text-fill: white; " +
+//                "-fx-font-size: 16px; " +
+//                "-fx-font-weight: bold; " +
+//                "-fx-background-radius: 10; " +
+//                "-fx-padding: 10; " +
+//                "-fx-border-color: #06321E; " +
+//                "-fx-border-width: 2; " +
+//                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
+//                "-fx-cursor: hand;");
+//        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
+//        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
+//        backButton.setOnAction(e -> model.showStartupWindow());
+//
+//        backButton.setTranslateX(-200);
+//        backButton.setTranslateY(250);
 
         // Add all to layout
-        this.getChildren().addAll(bv, myCanvas, logo, buttonStack, backButton);
+        this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
 
     }
-
 
 
     /** Displays window that will be used during main playing area runtime */
     public void selectGameplayWindow() {
         // clear any objects in view
-        this.getChildren().setAll();
-
-        // Reset canvas
+        this.getChildren().clear();
         this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
 
         // Usask Green
         this.gc.setFill(Color.rgb(10, 106, 66));
-
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
         // Outlines for username, score
@@ -391,7 +424,6 @@ public class View extends StackPane implements Subscriber {
         mapView.setPrefSize(400, 400);
         mapView.relocate(775, 200);
 
-
         // loads map api with html file
         WebEngine engine = mapView.getEngine();
 
@@ -416,7 +448,6 @@ public class View extends StackPane implements Subscriber {
         //load the map from the html file
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
-
         // here we resize the map if the mouse hovers over it so we get a better view
         mapView.setOnMouseEntered(event -> {
             mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
@@ -432,15 +463,13 @@ public class View extends StackPane implements Subscriber {
     }
 
 
-
-
     // TODO: these
     /** Displays fields to enter user information
      * Needs to connect to database to verify credentials
      * and then once verified should create User instance in model */
     public void loginWindow() {
+        // clear View
         this.getChildren().clear();
-
         this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
         this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
 
@@ -467,74 +496,28 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillText("Login", 600, 250);
 
         // Username Field
-        TextField usernameField = new TextField();
-        usernameField.setPromptText("Username");
-        usernameField.setPrefWidth(300);
-        usernameField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
-        usernameField.setLayoutX(450);
-        usernameField.setLayoutY(300);
+        this.usernameField.setPromptText("Username");
+        this.usernameField.setPrefWidth(300);
+        this.usernameField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
+        this.usernameField.setLayoutX(450);
+        this.usernameField.setLayoutY(300);
 
         // Password Field
-        PasswordField passwordField = new PasswordField();
-        passwordField.setPromptText("Password");
-        passwordField.setPrefWidth(300);
-        passwordField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
-        passwordField.setLayoutX(450);
-        passwordField.setLayoutY(350);
+        this.passwordField.setPromptText("Password");
+        this.passwordField.setPrefWidth(300);
+        this.passwordField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
+        this.passwordField.setLayoutX(450);
+        this.passwordField.setLayoutY(350);
 
-        // Login Button
-        Button loginButton = new Button("Login");
-        loginButton.setPrefWidth(200);
-        loginButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 16px; " +
-                "-fx-font-weight: bold; " +
-                "-fx-background-radius: 10; " +
-                "-fx-padding: 10; " +
-                "-fx-border-color: #06321E; " +
-                "-fx-border-width: 2; " +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
-                "-fx-cursor: hand;");
-        loginButton.setOnMouseEntered(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
-        loginButton.setOnMouseExited(e -> loginButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
-        loginButton.setLayoutX(500);
-        loginButton.setLayoutY(420);
+        this.back1.setLayoutX(500);
+        this.back1.setLayoutY(500);
 
-        // Back Button
-        Button backButton = new Button("Back");
-        backButton.setPrefWidth(200);
-        backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 16px; " +
-                "-fx-font-weight: bold; " +
-                "-fx-background-radius: 10; " +
-                "-fx-padding: 10; " +
-                "-fx-border-color: #06321E; " +
-                "-fx-border-width: 2; " +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
-                "-fx-cursor: hand;");
-        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
-        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
-        backButton.setLayoutX(500);
-        backButton.setLayoutY(500);
-        backButton.setOnAction(e -> model.showStartupWindow());
-
-        // Event Handlers
-        loginButton.setOnAction(e -> {
-            String username = usernameField.getText();
-            String password = passwordField.getText();
-
-            // TODO: Connect to database and verify credentials
-            // If verified, create User instance in model
-
-            System.out.println("Login attempted with username: " + username + ", password: " + password);
-        });
-
-        backButton.setOnAction(e -> selectMainMenu());
+        this.submitLogin.setLayoutX(500);
+        this.submitLogin.setLayoutY(420);
 
         // add to layout
         Pane layout = new Pane();
-        layout.getChildren().addAll(usernameField, passwordField, loginButton, backButton);
+        layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.back1);
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
@@ -576,7 +559,7 @@ public class View extends StackPane implements Subscriber {
             case STARTUP -> selectMainMenu();
             case DIFF -> selectDifficultyWindow();
             case GAMEPLAY -> selectGameplayWindow();
-            case LOGIN ->loginWindow();
+            case LOGIN -> loginWindow();
         }
     }
 }

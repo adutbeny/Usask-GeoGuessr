@@ -40,7 +40,20 @@ public class Controller {
         view.hard.setOnAction(event -> {
             this.model.selectPictureSet("/HardPictures.csv");
         });
+        view.back1.setOnAction(event -> {
+            this.model.showStartupWindow();
+        });
+        view.submitLogin.setOnAction(event -> {
+            String username = view.usernameField.getText();
+            String password = view.passwordField.getText();
+
+            System.out.println("Login attempted with username: " + username + ", password: " + password);
+            //this.model.verifyLogin(username, password);
+            // TODO: Connect to database and verify credentials
+            // If verified, create User instance in model
+        });
         view.submit.setOnAction(event -> {
+            // TODO: would be nice if we could wrap some of this into a model method call
             // get the current picture from model
             Picture currentPicture = model.getCurrentPicture();
             // make sure it exists
@@ -74,6 +87,7 @@ public class Controller {
             double distance = Model.haversine(pictureLat, pictureLng, markerLat, markerLng);
             System.out.println("You got: " + distance + " meters away!");
         });
+
     }
 
     /** Attach Model */
