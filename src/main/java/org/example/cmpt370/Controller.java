@@ -24,12 +24,10 @@ public class Controller {
             // this becomes like an "offline" mode
         });
         view.login.setOnAction(event -> {
-            // TODO: attach accounts here
             this.model.showLoginWindow();
         });
         view.createAcc.setOnAction(event -> {
-            // TODO: attach accounts here
-            this.model.showDifficultyWindow();
+            this.model.showCreateAccWindow();
         });
         view.easy.setOnAction(event -> {
             this.model.selectPictureSet("/BeginnerPhotos.csv");
@@ -49,8 +47,16 @@ public class Controller {
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
             //this.model.verifyLogin(username, password);
-            // TODO: Connect to database and verify credentials
-            // If verified, create User instance in model
+            // TODO: implement this method in model
+            // TODO: need to add handling for incorrect password
+        });
+        view.submitCreate.setOnAction(event -> {
+            String username = view.usernameCreate.getText();
+            String password = view.passwordCreate.getText();
+
+            System.out.println("Login attempted with username: " + username + ", password: " + password);
+            //this.model.createAccount(username, password);
+            // TODO: implement this is model
         });
         view.submit.setOnAction(event -> {
             // TODO: would be nice if we could wrap some of this into a model method call

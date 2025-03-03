@@ -6,7 +6,6 @@ package org.example.cmpt370;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
@@ -15,9 +14,8 @@ enum DISPLAY {
     STARTUP,
     DIFF,
     GAMEPLAY,
-
     LOGIN,
-
+    CREATE,
     LEADERBOARD
     //etc.
 }
@@ -63,15 +61,14 @@ public class Model {
     }
 
     /** Take info from login and load into class instance */
-    public void loggedIn() {
+    public void verifyLogin(String username, String password) {
         // set up user stuff here
+        // need to handle incorrect password and display that feedback
     }
 
-    /* TODO:
-     * things we will probably need
-     * nextImage()
-     * etc
-     */
+    public void createAccount(String username, String password) {
+
+    }
 
     /** Populates pictures array with the passed csv to it
      * @param csv filepath to appropriate csv */
@@ -152,6 +149,12 @@ public class Model {
         notifySubscribers();
     }
 
+    /** Prompts View to show Create Acc window */
+    public void showCreateAccWindow() {
+        this.currentWindow = DISPLAY.CREATE;
+        notifySubscribers();
+    }
+
     /* MAP METHODS */
 
     /** this is to calculate the distances in meters between two cordinates **/
@@ -166,10 +169,12 @@ public class Model {
         double result = R * c;
         return Math.round(result);
     }
+
     /** setter for java connector **/
     public void setJavaConnector(JavaConnector connector) {
         this.connector = connector;
     }
+
     /** getter for java connector **/
     public JavaConnector getJavaConnector() {
         return connector;

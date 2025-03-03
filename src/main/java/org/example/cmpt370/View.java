@@ -57,6 +57,10 @@ public class View extends StackPane implements Subscriber {
     public TextField usernameField;
     public TextField passwordField;
     public Button submitLogin;
+    // create account
+    public TextField usernameCreate;
+    public TextField passwordCreate;
+    public Button submitCreate;
 
     // another back button if we need to return to a different window
     public Button back2;
@@ -174,6 +178,19 @@ public class View extends StackPane implements Subscriber {
         // Text fields for login
         this.usernameField = new TextField();
         this.passwordField = new TextField();
+
+        // submit button to create account
+        this.submitCreate = new Button("Submit");
+        this.submitCreate.setStyle(buttonStyle);
+        this.submitCreate.setOnMouseEntered(e -> this.submitCreate.setStyle(hoverStyle));
+        this.submitCreate.setOnMouseExited(e -> this.submitCreate.setStyle(buttonStyle));
+        this.submitCreate.setOnMousePressed(e -> this.submitCreate.setStyle(pressedStyle));
+        this.submitCreate.setOnMouseReleased(e -> this.submitCreate.setStyle(hoverStyle));
+        this.submitCreate.setPrefWidth(200);
+
+        // Text fields for creation
+        this.usernameCreate = new TextField();
+        this.passwordCreate = new TextField();
 
         // Another back button in case we need it
         this.back2 = new Button("Back");
@@ -526,13 +543,64 @@ public class View extends StackPane implements Subscriber {
      * and then once verified should create User instance in model
      * overall should be pretty similar to login but with different handling */
     public void createAccWindow() {
+        // clear View
+        this.getChildren().clear();
+        this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
 
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
+                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
+        );
+        this.gc.setFill(gradient);
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        this.gc.setFill(new Color(1, 1, 1, 0.6));
+        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(10);
+        dropShadow.setColor(Color.BLACK);
+        this.gc.setEffect(dropShadow);
+
+        // Title
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 32));
+        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.gc.fillText("Create Account", 600, 250);
+
+        // Username Field
+        this.usernameCreate.setPromptText("Username");
+        this.usernameCreate.setPrefWidth(300);
+        this.usernameCreate.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
+        this.usernameCreate.setLayoutX(450);
+        this.usernameCreate.setLayoutY(300);
+
+        // Password Field
+        this.passwordCreate.setPromptText("Password");
+        this.passwordCreate.setPrefWidth(300);
+        this.passwordCreate.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
+        this.passwordCreate.setLayoutX(450);
+        this.passwordCreate.setLayoutY(350);
+
+        this.back1.setLayoutX(500);
+        this.back1.setLayoutY(500);
+
+        this.submitCreate.setLayoutX(500);
+        this.submitCreate.setLayoutY(420);
+
+        // add to layout
+        Pane layout = new Pane();
+        layout.getChildren().addAll(this.usernameCreate, this.passwordCreate, this.submitCreate, this.back1);
+        this.getChildren().addAll(this.myCanvas, layout);
     }
+
+
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
         selectMainMenu();
-        // Change this to a different window if you want to test a specific feature
     }
 
     /** Attaches itself to controller so that we can receive
@@ -560,6 +628,7 @@ public class View extends StackPane implements Subscriber {
             case DIFF -> selectDifficultyWindow();
             case GAMEPLAY -> selectGameplayWindow();
             case LOGIN -> loginWindow();
+            case CREATE -> createAccWindow();
         }
     }
 }
