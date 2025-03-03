@@ -227,7 +227,7 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(new Color(1, 1, 1, 0.5));
         this.gc.fillRect(200, 0, 400, 800);
 
-        // Usask Logo \\
+        // Usask Logo
         Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
         ImageView logo = new ImageView(l);
         logo.setFitHeight(150);
@@ -236,9 +236,9 @@ public class View extends StackPane implements Subscriber {
         logo.setTranslateX(-200);
         logo.setTranslateY(-250);
 
-        //// Title \\\\\
-        gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
-        gc.setTextAlign(TextAlignment.CENTER);
+        // Title
+        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
+        this.gc.setTextAlign(TextAlignment.CENTER);
 
         // Create a linear gradient for the text fill
         LinearGradient gradient = new LinearGradient(
@@ -266,7 +266,6 @@ public class View extends StackPane implements Subscriber {
         //  Main Text
         gc.setFill(gradient);
         gc.fillText("Usask GeoGuessr", 400, 270);
-
 
         VBox buttonStack = new VBox(25, this.quickplay);
         // if we have internet connection, display login buttons
