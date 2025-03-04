@@ -67,8 +67,13 @@ public class View extends StackPane implements Subscriber {
     // gameplay loop
     public Button submit;
 
-
-
+    /** Resets the View back to a blank slate, or 'tabula rasa'
+     * Call at the start of every window creation method */
+    public void resetView() {
+        this.getChildren().clear();
+        this.myCanvas = new Canvas(1200, 800);
+        this.gc = this.myCanvas.getGraphicsContext2D();
+    }
 
     /** Constructor -
      * Runs all start up to create initial display when program starts */
@@ -76,7 +81,7 @@ public class View extends StackPane implements Subscriber {
         this.myCanvas = new Canvas(1200, 800);
         this.gc = this.myCanvas.getGraphicsContext2D();
 
-        ////// Setup Buttons \\\\\\
+        // Setup Buttons
 
         // Base button style
         String buttonStyle = "-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " + // Base color and darker shade
@@ -208,10 +213,7 @@ public class View extends StackPane implements Subscriber {
      * Brought this out of the constructor so we can go back to it if needed
      */
     public void selectMainMenu() {
-        // clear View
-        this.getChildren().clear();
-        gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+        this.resetView();
 
         // background
         // completely idiotic but this is how you have to load an image
@@ -253,10 +255,10 @@ public class View extends StackPane implements Subscriber {
         dropShadow.setOffsetX(3);
         dropShadow.setOffsetY(3);
         dropShadow.setColor(Color.rgb(0, 0, 0, 0.5));
-        gc.setEffect(dropShadow);
+        this.gc.setEffect(dropShadow);
 
         // Draw the black outline
-        gc.setFill(Color.BLACK);
+        this.gc.setFill(Color.BLACK);
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
                 gc.fillText("Usask GeoGuessr", 400 + i, 270 + j);
@@ -264,8 +266,8 @@ public class View extends StackPane implements Subscriber {
         }
 
         //  Main Text
-        gc.setFill(gradient);
-        gc.fillText("Usask GeoGuessr", 400, 270);
+        this.gc.setFill(gradient);
+        this.gc.fillText("Usask GeoGuessr", 400, 270);
 
         VBox buttonStack = new VBox(25, this.quickplay);
         // if we have internet connection, display login buttons
@@ -289,10 +291,7 @@ public class View extends StackPane implements Subscriber {
     /** Shows window with buttons to select difficulty
      * Same other components as startup */
     public void selectDifficultyWindow() {
-        // clear View
-        this.getChildren().clear();
-        gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+        this.resetView();
 
         // Background
         Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
@@ -302,14 +301,14 @@ public class View extends StackPane implements Subscriber {
         bv.setPreserveRatio(true);
 
         // Semi-transparent backing
-        gc.setFill(new Color(1, 1, 1, 0.6));
-        gc.fillRoundRect(200, 0, 400, 800, 20, 20);
+        this.gc.setFill(new Color(1, 1, 1, 0.5));
+        this.gc.fillRoundRect(200, 0, 400, 800, 20, 20);
 
         // Create a DropShadow effect for the backing
         DropShadow dropShadow = new DropShadow();
         dropShadow.setRadius(10);
         dropShadow.setColor(Color.BLACK);
-        gc.setEffect(dropShadow);
+        this.gc.setEffect(dropShadow);
 
         // Usask Logo
         Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
@@ -321,9 +320,8 @@ public class View extends StackPane implements Subscriber {
         logo.setTranslateY(-250);
 
         // Title
-        gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
-        gc.setTextAlign(TextAlignment.CENTER);
-
+        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
+        this.gc.setTextAlign(TextAlignment.CENTER);
 
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
@@ -332,54 +330,30 @@ public class View extends StackPane implements Subscriber {
         );
 
         // black outline
-        gc.setFill(Color.BLACK);
+        this.gc.setFill(Color.BLACK);
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
-                gc.fillText("Select Difficulty", 400 + i, 270 + j);
+                this.gc.fillText("Select Difficulty", 400 + i, 270 + j);
             }
         }
 
         // Main text
-        gc.setFill(gradient);
-        gc.fillText("Select Difficulty", 400, 270);
+        this.gc.setFill(gradient);
+        this.gc.fillText("Select Difficulty", 400, 270);
 
         // Button Stack
         VBox buttonStack = new VBox(25, this.easy, this.medium, this.hard, this.back1);
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
 
-        // Back Button
-//        Button backButton = new Button("Back");
-//        backButton.setPrefWidth(200);
-//        backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " +
-//                "-fx-text-fill: white; " +
-//                "-fx-font-size: 16px; " +
-//                "-fx-font-weight: bold; " +
-//                "-fx-background-radius: 10; " +
-//                "-fx-padding: 10; " +
-//                "-fx-border-color: #06321E; " +
-//                "-fx-border-width: 2; " +
-//                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " +
-//                "-fx-cursor: hand;");
-//        backButton.setOnMouseEntered(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);"));
-//        backButton.setOnMouseExited(e -> backButton.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);"));
-//        backButton.setOnAction(e -> model.showStartupWindow());
-//
-//        backButton.setTranslateX(-200);
-//        backButton.setTranslateY(250);
-
         // Add all to layout
-        this.getChildren().addAll(bv, myCanvas, logo, buttonStack);
-
+        this.getChildren().addAll(bv, this.myCanvas, logo, buttonStack);
     }
 
 
     /** Displays window that will be used during main playing area runtime */
     public void selectGameplayWindow() {
-        // clear any objects in view
-        this.getChildren().clear();
-        this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+        this.resetView();
 
         // Usask Green
         this.gc.setFill(Color.rgb(10, 106, 66));
@@ -426,7 +400,6 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
 
-
         VBox buttonStack = new VBox(25, this.submit);
         // set below text
         buttonStack.setTranslateX(500);
@@ -459,7 +432,7 @@ public class View extends StackPane implements Subscriber {
             }
         });
 
-        model.setJavaConnector(connector); //store in model
+        this.model.setJavaConnector(connector); //store in model
 
         //load the map from the html file
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
@@ -484,10 +457,7 @@ public class View extends StackPane implements Subscriber {
      * Needs to connect to database to verify credentials
      * and then once verified should create User instance in model */
     public void loginWindow() {
-        // clear View
-        this.getChildren().clear();
-        this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+        this.resetView();
 
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
@@ -542,10 +512,7 @@ public class View extends StackPane implements Subscriber {
      * and then once verified should create User instance in model
      * overall should be pretty similar to login but with different handling */
     public void createAccWindow() {
-        // clear View
-        this.getChildren().clear();
-        this.gc.clearRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-        this.gc.setEffect(null); // Reset any effects applied to the GraphicsContext
+        this.resetView();
 
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
