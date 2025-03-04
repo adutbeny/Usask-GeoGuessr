@@ -6,15 +6,17 @@ package org.example.cmpt370;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.sql.*;
 
 enum DISPLAY {
     STARTUP,
     DIFF,
     GAMEPLAY,
+    LOGIN,
+    CREATE,
     LEADERBOARD
     //etc.
 }
@@ -32,6 +34,7 @@ public class Model {
 
     private User user;
     private int round;
+    private int score;
     private boolean internet;
     private JavaConnector connector;
     private Picture currentPicture;
@@ -60,15 +63,34 @@ public class Model {
     }
 
     /** Take info from login and load into class instance */
-    public void loggedIn() {
+    public boolean verifyLogin(String username, String password) {
         // set up user stuff here
+        // need to handle incorrect password and display that feedback
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
+            Statement stmt = con.createStatement();
+            System.out.println("Connected to database");
+            return true;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
     }
 
-    /* TODO:
-     * things we will probably need
-     * nextImage()
-     * etc
-     */
+    public void createAccount(String username, String password) {
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
+            Statement stmt = con.createStatement();
+            System.out.println("Connected to database");
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+
+    }
 
     /** Populates pictures array with the passed csv to it
      * @param csv filepath to appropriate csv */
@@ -105,6 +127,9 @@ public class Model {
     public boolean getInternetStatus() {
         return this.internet;
     }
+    public Picture getCurrentPicture() {
+        return currentPicture;
+    }
 
     /** Gets the next picture from the shuffled array
      * Works such that we won't get duplicates in the same round
@@ -117,10 +142,6 @@ public class Model {
         this.picIndex++;
         this.currentPicture = current;
         return current;
-    }
-    /** getter for current picture **/
-    public Picture getCurrentPicture() {
-        return currentPicture;
     }
 
     /* METHODS TO CHANGE VIEW */
@@ -143,6 +164,18 @@ public class Model {
         notifySubscribers();
     }
 
+    /** Prompts View to show Login window */
+    public void showLoginWindow() {
+        this.currentWindow = DISPLAY.LOGIN;
+        notifySubscribers();
+    }
+
+    /** Prompts View to show Create Acc window */
+    public void showCreateAccWindow() {
+        this.currentWindow = DISPLAY.CREATE;
+        notifySubscribers();
+    }
+
     /* MAP METHODS */
 
     /** this is to calculate the distances in meters between two cordinates **/
@@ -157,10 +190,22 @@ public class Model {
         double result = R * c;
         return Math.round(result);
     }
+
+    /** Calculate score per guess based off distance */
+    public double calculateScore(double distance) {
+        double score = (1000 - distance * 5);
+        if (score < 0 || distance > 100.0) {
+            return 0;
+        } else {
+            return score;
+        }
+    }
+
     /** setter for java connector **/
     public void setJavaConnector(JavaConnector connector) {
         this.connector = connector;
     }
+
     /** getter for java connector **/
     public JavaConnector getJavaConnector() {
         return connector;
