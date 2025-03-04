@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import java.sql.*;
 
 enum DISPLAY {
     STARTUP,
@@ -61,12 +62,32 @@ public class Model {
     }
 
     /** Take info from login and load into class instance */
-    public void verifyLogin(String username, String password) {
+    public boolean verifyLogin(String username, String password) {
         // set up user stuff here
         // need to handle incorrect password and display that feedback
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
+            Statement stmt = con.createStatement();
+            System.out.println("Connected to database");
+            return true;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
     }
 
     public void createAccount(String username, String password) {
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
+            Statement stmt = con.createStatement();
+            System.out.println("Connected to database");
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
 
     }
 
