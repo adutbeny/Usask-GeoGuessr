@@ -34,6 +34,7 @@ public class Model {
 
     private User user;
     private int round;
+    private int score;
     private boolean internet;
     private JavaConnector connector;
     private Picture currentPicture;
@@ -126,6 +127,9 @@ public class Model {
     public boolean getInternetStatus() {
         return this.internet;
     }
+    public Picture getCurrentPicture() {
+        return currentPicture;
+    }
 
     /** Gets the next picture from the shuffled array
      * Works such that we won't get duplicates in the same round
@@ -138,10 +142,6 @@ public class Model {
         this.picIndex++;
         this.currentPicture = current;
         return current;
-    }
-    /** getter for current picture **/
-    public Picture getCurrentPicture() {
-        return currentPicture;
     }
 
     /* METHODS TO CHANGE VIEW */
@@ -189,6 +189,16 @@ public class Model {
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
         double result = R * c;
         return Math.round(result);
+    }
+
+    /** Calculate score per guess based off distance */
+    public double calculateScore(double distance) {
+        double score = (1000 - distance * 5);
+        if (score < 0 || distance > 100.0) {
+            return 0;
+        } else {
+            return score;
+        }
     }
 
     /** setter for java connector **/
