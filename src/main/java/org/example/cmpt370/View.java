@@ -55,11 +55,11 @@ public class View extends StackPane implements Subscriber {
 
     // login
     public TextField usernameField;
-    public TextField passwordField;
+    public PasswordField passwordField;
     public Button submitLogin;
     // create account
     public TextField usernameCreate;
-    public TextField passwordCreate;
+    public PasswordField passwordCreate;
     public Button submitCreate;
 
     // another back button if we need to return to a different window
@@ -182,7 +182,7 @@ public class View extends StackPane implements Subscriber {
 
         // Text fields for login
         this.usernameField = new TextField();
-        this.passwordField = new TextField();
+        this.passwordField = new PasswordField();
 
         // submit button to create account
         this.submitCreate = new Button("Submit");
@@ -195,7 +195,7 @@ public class View extends StackPane implements Subscriber {
 
         // Text fields for creation
         this.usernameCreate = new TextField();
-        this.passwordCreate = new TextField();
+        this.passwordCreate = new PasswordField();
 
         // Another back button in case we need it
         this.back2 = new Button("Back");
@@ -215,6 +215,8 @@ public class View extends StackPane implements Subscriber {
     public void selectMainMenu() {
         this.resetView();
 
+        // TODO: see if we can move some of this into a method to share with the
+        //  difficulty window so that we only have to make changes to one place?
         // background
         // completely idiotic but this is how you have to load an image
         Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
@@ -296,6 +298,7 @@ public class View extends StackPane implements Subscriber {
         // Background
         Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
         ImageView bv = new ImageView(background);
+
         bv.setFitWidth(1200);
         bv.setFitHeight(800);
         bv.setPreserveRatio(true);
