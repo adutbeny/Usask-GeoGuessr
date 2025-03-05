@@ -370,19 +370,21 @@ public class View extends StackPane implements Subscriber {
         // Draw Labels for Buttons
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
-        this.gc.fillText("Username", 200, 80);
 
-        //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
+        if (!this.model.getInternetStatus() || this.model.getUser() == null) {
+            this.gc.fillText("Quickplay", 200, 80);
+        } else {
+            this.gc.fillText("Username", 200, 80);
+            //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
+        }
+        this.gc.fillText("Points " + this.model.getTotalScore(), 450, 80);
 
-        this.gc.fillText("Points / ", 450, 80);
-        //gc.fillText(String.valueOf(this.model.getScore()), 450, 80);
-
-        this.gc.fillText("Round: " + this.model.getRound() + "/5", 1120, 75);
+        this.gc.fillText("Round: " + this.model.getRound() + "/5", 1050, 75);
 
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
-        Picture curr = this.model.getNextPic();
+        Picture curr = this.model.getCurrentPicture();
         ImageView c = null;
         if (curr == null) {
             this.gc.setFill(Color.WHITE);
