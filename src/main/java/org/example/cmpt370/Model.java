@@ -207,12 +207,16 @@ public class Model {
         double distance = this.haversine(pictureLat, pictureLng, markerLat, markerLng);
         System.out.println("You got: " + distance + " meters away!");
 
+        // update scores
         this.recentScore = calculateScore(distance);
         this.totalScore += this.recentScore;
         this.round++;
         if (this.round > 5) {
             // TODO: trigger end of game
         }
+        // cycle photo
+        this.getNextPic();
+        notifySubscribers(); // refresh view
     }
 
     /** this is to calculate the distances in meters between two cordinates **/
