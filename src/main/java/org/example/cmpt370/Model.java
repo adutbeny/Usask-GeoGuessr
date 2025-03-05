@@ -33,9 +33,10 @@ public class Model {
     private DISPLAY currentWindow; // This field's value will tell the view what to do
 
     private User user;
-    private int round;
-    private int score;
-    private boolean internet;
+    private int round;          // round number out of 5 (5/5 = last round)
+    private double totalScore;     // total sum score over rounds
+    private double recentScore;    // most recent score
+    private boolean internet;   // boolean if connected to internet
     private JavaConnector connector;
     private Picture currentPicture;
     // etc...
@@ -177,9 +178,45 @@ public class Model {
     }
 
     /* MAP METHODS */
+    /** Get distance from guessed point to true point */
+    public void getDistance() {
+        // make sure it exists
+        if (this.currentPicture == null) {
+            System.out.println("No picture loaded.");
+            return;
+        }
+        // get the marker coordinates from model
+        if (this.connector == null) {
+            System.out.println("Marker coordinates not set.");
+            return;
+        }
+
+        // get pictures longitude and latitude, print statements for debugging
+        double pictureLat = currentPicture.getLatitude();
+        System.out.println("picture latitude:" + pictureLat);
+        double pictureLng = currentPicture.getLongitude();
+        System.out.println("picture longitude:" + pictureLng);
+
+        // Gets marker coordinates from connector
+        double markerLat = connector.getMarkerLat();
+        System.out.println("marker latitude:" + markerLat);
+        double markerLng = connector.getMarkerLng();
+        System.out.println("marker longitude:" + markerLng);
+
+        // find distance between and print to console for now
+        double distance = this.haversine(pictureLat, pictureLng, markerLat, markerLng);
+        System.out.println("You got: " + distance + " meters away!");
+
+        this.recentScore = calculateScore(distance);
+        this.totalScore += this.recentScore;
+        this.round++;
+        if (this.round > 5) {
+            // TODO: trigger end of game
+        }
+    }
 
     /** this is to calculate the distances in meters between two cordinates **/
-    public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+    public double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000;
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
