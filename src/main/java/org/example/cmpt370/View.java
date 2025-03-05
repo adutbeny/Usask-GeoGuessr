@@ -213,36 +213,7 @@ public class View extends StackPane implements Subscriber {
      * Brought this out of the constructor so we can go back to it if needed
      */
     public void selectMainMenu() {
-        this.resetView();
-
-        // TODO: see if we can move some of this into a method to share with the
-        //  difficulty window so that we only have to make changes to one place?
-        // background
-        // completely idiotic but this is how you have to load an image
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
-        ImageView bg = new ImageView(background);
-
-        // Set the image to fill the window
-        bg.setFitWidth(1200);
-        bg.setFitHeight(800);
-        bg.setPreserveRatio(true);
-
-        // Adds semi-transparent backing
-        this.gc.setFill(new Color(1, 1, 1, 0.5));
-        this.gc.fillRect(200, 0, 400, 800);
-
-        // Usask Logo
-        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
-        ImageView logo = new ImageView(l);
-        logo.setFitHeight(150);
-        logo.setFitWidth(150);
-        logo.setPreserveRatio(true);
-        logo.setTranslateX(-200);
-        logo.setTranslateY(-250);
-
-        // Title
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
-        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.createDefaultBackground();
 
         // Create a linear gradient for the text fill
         LinearGradient gradient = new LinearGradient(
@@ -250,14 +221,6 @@ public class View extends StackPane implements Subscriber {
                 new Stop(0, Color.rgb(10, 106, 66)),
                 new Stop(1, Color.rgb(20, 150, 100))
         );
-
-        // Add a drop shadow effect
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(5);
-        dropShadow.setOffsetX(3);
-        dropShadow.setOffsetY(3);
-        dropShadow.setColor(Color.rgb(0, 0, 0, 0.5));
-        this.gc.setEffect(dropShadow);
 
         // Draw the black outline
         this.gc.setFill(Color.BLACK);
@@ -286,45 +249,14 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // add all to layout in order!!!
-        this.getChildren().addAll(bg, this.myCanvas, logo, buttonStack);
+        this.getChildren().add(buttonStack);
     }
 
 
     /** Shows window with buttons to select difficulty
      * Same other components as startup */
     public void selectDifficultyWindow() {
-        this.resetView();
-
-        // Background
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
-        ImageView bv = new ImageView(background);
-
-        bv.setFitWidth(1200);
-        bv.setFitHeight(800);
-        bv.setPreserveRatio(true);
-
-        // Semi-transparent backing
-        this.gc.setFill(new Color(1, 1, 1, 0.5));
-        this.gc.fillRoundRect(200, 0, 400, 800, 20, 20);
-
-        // Create a DropShadow effect for the backing
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setColor(Color.BLACK);
-        this.gc.setEffect(dropShadow);
-
-        // Usask Logo
-        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
-        ImageView logo = new ImageView(l);
-        logo.setFitHeight(150);
-        logo.setFitWidth(150);
-        logo.setPreserveRatio(true);
-        logo.setTranslateX(-200);
-        logo.setTranslateY(-250);
-
-        // Title
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
-        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.createDefaultBackground();
 
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
@@ -350,9 +282,51 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // Add all to layout
-        this.getChildren().addAll(bv, this.myCanvas, logo, buttonStack);
+        this.getChildren().addAll(buttonStack);
     }
 
+    /** Creates default background and adds it to the View
+     * used by main menu, select difficulty and others */
+    private void createDefaultBackground() {
+        this.resetView();
+
+        // background
+        // completely idiotic but this is how you have to load an image
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
+        ImageView bg = new ImageView(background);
+
+        // Set the image to fill the window
+        bg.setFitWidth(1200);
+        bg.setFitHeight(800);
+        bg.setPreserveRatio(true);
+
+        // Adds semi-transparent backing
+        this.gc.setFill(new Color(1, 1, 1, 0.5));
+        this.gc.fillRect(200, 0, 400, 800);
+
+        // Usask Logo
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
+        ImageView logo = new ImageView(l);
+        logo.setFitHeight(150);
+        logo.setFitWidth(150);
+        logo.setPreserveRatio(true);
+        logo.setTranslateX(-200);
+        logo.setTranslateY(-250);
+
+        // Title
+        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
+        this.gc.setTextAlign(TextAlignment.CENTER);
+
+        // Add a drop shadow effect
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5);
+        dropShadow.setOffsetX(3);
+        dropShadow.setOffsetY(3);
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.5));
+        this.gc.setEffect(dropShadow);
+
+        this.getChildren().addAll(bg, this.myCanvas, logo);
+    }
 
     /** Displays window that will be used during main playing area runtime */
     public void selectGameplayWindow() {
@@ -377,22 +351,22 @@ public class View extends StackPane implements Subscriber {
             this.gc.fillText("Username", 200, 80);
             //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
         }
-        this.gc.fillText("Points " + this.model.getTotalScore(), 450, 80);
+        this.gc.fillText("Points " + this.model.getTotalScore(), 425, 80);
 
         this.gc.fillText("Round: " + this.model.getRound() + "/5", 1050, 75);
 
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
-        Picture curr = this.model.getCurrentPicture();
         ImageView c = null;
-        if (curr == null) {
+        if (this.model.getCurrentPicture() == null) {
             this.gc.setFill(Color.WHITE);
-            this.gc.fillText("No pictures loaded", 450, 400);
+            this.gc.fillText("Error - No pictures loaded", 450, 400);
         } else {
-            Image current = new Image(Objects.requireNonNull(
-                            getClass().getResource(curr.getPath()))
-                    .toExternalForm()
+            System.out.println(this.model.getCurrentPicture().getPath());
+            Image current = new Image(Objects.requireNonNull(getClass()
+                            .getResource(this.model.getCurrentPicture().getPath()))
+                            .toExternalForm()
             );
             c = new ImageView(current);
             c.setPreserveRatio(true);
@@ -456,8 +430,6 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     }
 
-
-    // TODO: these
     /** Displays fields to enter user information
      * Needs to connect to database to verify credentials
      * and then once verified should create User instance in model */
