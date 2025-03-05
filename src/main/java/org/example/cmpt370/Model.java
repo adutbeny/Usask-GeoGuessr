@@ -49,6 +49,7 @@ public class Model {
         this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
         this.internet = isInternetConnected();
+        this.user = null;
     }
 
     /** Add any displays to the list of objects updated on
@@ -115,6 +116,7 @@ public class Model {
         }
 
         Collections.shuffle(this.pictures); // put in random order
+        this.getNextPic();
         this.showGameplayWindow();
     }
 
@@ -130,6 +132,15 @@ public class Model {
     }
     public Picture getCurrentPicture() {
         return currentPicture;
+    }
+    public double getTotalScore() {
+        return this.totalScore;
+    }
+    public double getRecentScore() {
+        return this.recentScore;
+    }
+    public User getUser() {
+        return this.user;
     }
 
     /** Gets the next picture from the shuffled array
@@ -215,7 +226,7 @@ public class Model {
             // TODO: trigger end of game
         }
         // cycle photo
-        this.getNextPic();
+        Picture next = this.getNextPic();
         notifySubscribers(); // refresh view
     }
 
