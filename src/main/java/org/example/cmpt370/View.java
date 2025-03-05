@@ -462,23 +462,7 @@ public class View extends StackPane implements Subscriber {
      * Needs to connect to database to verify credentials
      * and then once verified should create User instance in model */
     public void loginWindow() {
-        this.resetView();
-
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
-                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
-        );
-        this.gc.setFill(gradient);
-        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-
-        this.gc.setFill(new Color(1, 1, 1, 0.6));
-        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
-
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setColor(Color.BLACK);
-        this.gc.setEffect(dropShadow);
+        this.createSignInBackground();
 
         // Title
         this.gc.setFill(Color.WHITE);
@@ -517,23 +501,7 @@ public class View extends StackPane implements Subscriber {
      * and then once verified should create User instance in model
      * overall should be pretty similar to login but with different handling */
     public void createAccWindow() {
-        this.resetView();
-
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
-                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
-        );
-        this.gc.setFill(gradient);
-        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-
-        this.gc.setFill(new Color(1, 1, 1, 0.6));
-        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
-
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setColor(Color.BLACK);
-        this.gc.setEffect(dropShadow);
+        this.createSignInBackground();
 
         // Title
         this.gc.setFill(Color.WHITE);
@@ -567,6 +535,25 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
+    private void createSignInBackground() {
+        this.resetView();
+
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
+                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
+        );
+        this.gc.setFill(gradient);
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        this.gc.setFill(new Color(1, 1, 1, 0.6));
+        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(10);
+        dropShadow.setColor(Color.BLACK);
+        this.gc.setEffect(dropShadow);
+    }
 
     /** Connect Model */
     public void setModel(Model m) {
