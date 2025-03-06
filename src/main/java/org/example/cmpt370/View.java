@@ -17,6 +17,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.StrokeType;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -359,29 +360,53 @@ public class View extends StackPane implements Subscriber {
         this.resetView();
 
         // Usask Green
-        this.gc.setFill(Color.rgb(10, 106, 66));
+        this.gc.setFill(Color.WHITE);
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
+        // Usask Logo
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
+        ImageView logo = new ImageView(l);
+        logo.setFitHeight(125);
+        logo.setFitWidth(125);
+        logo.setPreserveRatio(true);
+        logo.setTranslateX(100);
+        logo.setTranslateY(30);
+
         // Outlines for username, score
-        this.gc.setFill(Color.BLACK);
-        this.gc.fillRoundRect(100, 50, 200, 50, 20, 20);
-        this.gc.fillRoundRect(350, 50, 200, 50, 20, 20);
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(0.5, Color.rgb(20, 150, 100))
+        );
 
         // Draw Labels for Buttons
+        double textbX = 650;
+        double textbY = 50;
+        double textWidth = 600;
+        double textHeight = 100;
+        this.gc.setFill(gradient);
+        this.gc.fillRect(textbX,textbY,textWidth, textHeight);
+
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
-        this.gc.fillText("Username", 200, 80);
 
-        //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
+        this.gc.fillText("Username:",textbX + 30,textbY+ 35);
+        //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 50);
 
-        this.gc.fillText("Points / ", 450, 80);
-        //gc.fillText(String.valueOf(this.model.getScore()), 450, 80);
+        this.gc.fillText("Score:  ", textbX +230, textbY + 35);
+        //gc.fillText(String.valueOf(this.model.getScore()), 450, 50);
 
-        this.gc.fillText("Round: " + this.model.getRound() + "/5", 1120, 75);
+        this.gc.fillText("Round: " + this.model.getRound() + "/5", textbX +410, textbY+ 35);
+
+        this.gc.setFill(Color.BLACK);
+        this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
+        this.gc.fillText("123213213213", textbX +200, 135);
+        this.gc.fillText("Laa12323123132",textbX + 30, 135);
 
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
+
         Picture curr = this.model.getNextPic();
         ImageView c = null;
         if (curr == null) {
@@ -397,11 +422,16 @@ public class View extends StackPane implements Subscriber {
             c.setFitHeight(400);
             c.setFitWidth(600);
             c.setTranslateX(-150);
+
         }
 
+
+        /*
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
+
+        */
 
         VBox buttonStack = new VBox(25, this.submit);
         // set below text
@@ -441,7 +471,7 @@ public class View extends StackPane implements Subscriber {
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
         // here we resize the map if the mouse hovers over it so we get a better view
-        mapView.setOnMouseEntered(event -> {
+        /*mapView.setOnMouseEntered(event -> {
             mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
             mapView.relocate(0, 100);
         });
@@ -449,6 +479,30 @@ public class View extends StackPane implements Subscriber {
             mapView.setPrefSize(400, 400);
             mapView.relocate(775, 200);
         });
+        */
+
+        //Mapinteractions
+        mapView.setOnMousePressed(event->{
+            mapView.setUserData(new double[]{event.getSceneX(),event.getY(),mapView.getLayoutX(),mapView.getLayoutY()});
+        });
+        mapView.setOnMouseDragged(event->{
+            double[]data=(double[])mapView.getUserData();
+            double deltaX=event.getSceneX()-data[0];
+            double deltaY=event.getSceneY()-data[1];
+            mapView.setLayoutX(data[2]+deltaX);
+            mapView.setLayoutY(data[3]+deltaY);
+        });
+        mapView.setOnMouseClicked((event-> {
+            if (event.getClickCount() == 2) {
+                if (mapView.getPrefWidth() == 400) {
+                    mapView.setPrefSize(myCanvas.getWidth(), myCanvas.getHeight() - 200);
+                    mapView.relocate(0, 100);
+                } else {
+                    mapView.setPrefSize(400, 400);
+                    mapView.relocate(775, 200);
+                }
+            }
+        }));
 
         layout.getChildren().add(mapView);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
