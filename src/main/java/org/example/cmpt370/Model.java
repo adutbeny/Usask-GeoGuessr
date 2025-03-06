@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 
 enum DISPLAY {
@@ -66,32 +67,61 @@ public class Model {
 
     /** Take info from login and load into class instance */
     public boolean verifyLogin(String username, String password) {
-        // set up user stuff here
-        // need to handle incorrect password and display that feedback
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
-            Statement stmt = con.createStatement();
+            Connection con = DriverManager.getConnection("url", "user", "password");
             System.out.println("Connected to database");
-            return true;
+
+            //Retrieve user and password fields and checksxs
+            String query = "SELECT password, high_score FROM sql3765767.users WHERE username = ?";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                String hashPassword = rs.getString("password");
+                int high_score = rs.getInt("high_score");
+                if (BCrypt.checkpw(password, hashPassword)){
+                    System.out.println("Login successful!");
+                    user = new User(username, high_score, 0);
+                    showStartupWindow();
+                    return true;
+                }
+            }
+            showLoginWindow();
+            System.out.println("Password not correct!");
+            return false;
         }catch (Exception e){
             System.out.println(e.toString());
             return false;
         }
+
     }
 
     public void createAccount(String username, String password) {
         try{
+            if (username.length() > 50 || password.length() > 50){
+                System.out.println("User and password must be less than 50 characters");
+                return;
+            }
+            String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
-            Statement stmt = con.createStatement();
+            Connection con = DriverManager.getConnection("url", "user", "password");
             System.out.println("Connected to database");
+            user = new User(username, 0, 0);
+            String query = "INSERT INTO sql3765767.users(username, password, high_score) VALUES (?, ?, ?)";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            stmt.setString(2, hashPassword);
+            stmt.setInt(3, 0);
+            stmt.executeUpdate();
+            System.out.println("Added to Database!");
+            showStartupWindow();
         }catch (Exception e){
             System.out.println(e.toString());
         }
-
     }
 
     /** Populates pictures array with the passed csv to it

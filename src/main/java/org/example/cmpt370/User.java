@@ -8,8 +8,11 @@ public class User {
     private int highscore;
 
     /** Constructor */
-    public User() {
+    public User(String user, int highscore, int currentscore) {
         // set up user stuff here, pulled from DB
+        this.username = user;
+        this.highscore = highscore;
+        this.score = currentscore;
     }
 
     /** Getters */

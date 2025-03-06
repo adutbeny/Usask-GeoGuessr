@@ -46,7 +46,7 @@ public class Controller {
             String password = view.passwordField.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            //this.model.verifyLogin(username, password);
+            this.model.verifyLogin(username, password);
             // TODO: implement this method in model
             // TODO: need to add handling for incorrect password
         });
@@ -55,7 +55,7 @@ public class Controller {
             String password = view.passwordCreate.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            //this.model.createAccount(username, password);
+            this.model.createAccount(username, password);
             // TODO: implement this is model
         });
         view.submit.setOnAction(event -> {
