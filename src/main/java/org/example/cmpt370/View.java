@@ -70,6 +70,8 @@ public class View extends StackPane implements Subscriber {
     // gameplay loop
     public Button submit;
 
+    public Button Multiplayer;
+
     /** Resets the View back to a blank slate, or 'tabula rasa'
      * Call at the start of every window creation method */
     public void resetView() {
@@ -354,7 +356,6 @@ public class View extends StackPane implements Subscriber {
         Pane layout = new Pane();
         layout.setPrefSize(1200, 800);
 
-
         // Usask Green
         this.gc.setFill(Color.WHITE);
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
@@ -382,7 +383,7 @@ public class View extends StackPane implements Subscriber {
         double textHeight = 75;
         double skew = 50;
         this.gc.setFill(gradient);
-        //parallellogram shape
+        // Parallellogram shape
         double [] xP = {textbX, textbX+textWidth, textbX+textWidth-skew, textbX-skew};
         double [] yP = {textbY, textbY, textbY+textHeight,textbY+textHeight};
         this.gc.fillPolygon(xP,yP,4);
@@ -398,14 +399,10 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
         //this.gc.fillText(String.valueOf(this.model.getUsername()), textbX + 30, 105);//Accounts for 10 char
-        //this.gc.fillText(String.valueOf(this.model.getScore()), textbX +230, 105);
-        this.gc.fillText(this.model.getRound() + "/5", textbX +415, 105);
 
-        /*
-        // Draw Photo Area
-        this.gc.setFill(Color.BLACK);
-        this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
-        */
+        this.gc.fillText(String.valueOf(this.model.getTotalScore()), textbX +230, 105);
+
+        this.gc.fillText(this.model.getRound() + "/5", textbX +415, 105);
 
         //Green border between the photo and the green username box
         double borderX = 0;
@@ -421,29 +418,22 @@ public class View extends StackPane implements Subscriber {
             this.gc.setFill(Color.WHITE);
             this.gc.fillText("No pictures loaded", 450, 400);
         } else {
-            Image current = new Image(Objects.requireNonNull(
-                            getClass().getResource(curr.getPath()))
+
+            //////////// Maybe Issue //////////
+            System.out.println(this.model.getCurrentPicture().getPath());
+            Image current = new Image(Objects.requireNonNull(getClass()
+                            .getResource(this.model.getCurrentPicture().getPath()))
                     .toExternalForm()
+
             );
             c = new ImageView(current);
             c.setPreserveRatio(false);
-            //c.setFitHeight(400);
-            //c.setFitWidth(600);
-            //c.setTranslateX(-150);
             c.setFitWidth(1200);
             c.setFitHeight(670);
             c.setTranslateX(0);
             c.setTranslateY(70);
 
         }
-
-
-        /*
-        // Draw Map Area
-        this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
-        this.gc.fillRect(800, 250, 300, 300);
-
-        */
 
         VBox buttonStack = new VBox(25, this.submit);
         // set below text
@@ -483,44 +473,17 @@ public class View extends StackPane implements Subscriber {
         //load the map from the html file
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
-        // here we resize the map if the mouse hovers over it so we get a better view
-        /*mapView.setOnMouseEntered(event -> {
-            mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
-            mapView.relocate(0, 100);
-        });
-        mapView.setOnMouseExited(event -> {
-            mapView.setPrefSize(400, 400);
-            mapView.relocate(775, 200);
-        });
-        */
-
-        //Mapinteractions
+        //Map interactions
         mapView.setOnMousePressed(event->{
             mapView.setUserData(new double[]{event.getSceneX(),event.getY(),mapView.getLayoutX(),mapView.getLayoutY()});
         });
-        mapView.setOnMouseDragged(event->{
-            double[]data=(double[])mapView.getUserData();
-            double deltaX=event.getSceneX()-data[0];
-            double deltaY=event.getSceneY()-data[1];
-            mapView.setLayoutX(data[2]+deltaX);
-            mapView.setLayoutY(data[3]+deltaY);
-        });
-        mapView.setOnMouseClicked((event-> {
-            if (event.getClickCount() == 2) {
-                if (mapView.getPrefWidth() == 400) {
-                    mapView.setPrefSize(myCanvas.getWidth(), myCanvas.getHeight() - 200);
-                    mapView.relocate(0, 100);
-                } else {
-                    mapView.setPrefSize(400, 400);
-                    mapView.relocate(775, 200);
-                }
-            }
-        }));
+
         layout.getChildren().add(0,c);
         layout.getChildren().add(mapView);
         layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     };
+
 
     /** Displays fields to enter user information
      * Needs to connect to database to verify credentials
@@ -598,6 +561,13 @@ public class View extends StackPane implements Subscriber {
         layout.getChildren().addAll(this.usernameCreate, this.passwordCreate, this.submitCreate, this.back1);
         this.getChildren().addAll(this.myCanvas, layout);
     }
+
+    public void createLoggedInWindow() {
+        createDefaultBackground();
+    }
+
+
+
 
     private void createSignInBackground() {
         this.resetView();
