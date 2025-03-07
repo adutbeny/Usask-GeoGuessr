@@ -19,8 +19,15 @@ enum DISPLAY {
     LOGIN,
     CREATE,
     LEADERBOARD,
-    END
+    END,
     //etc.
+    LOGGED_IN,      // window when you have succesfully logged in
+    CREATED_ACCOUNT // window for when you made account and must log in now
+
+
+
+
+
 }
 
 /** Class that manages all the data
@@ -258,9 +265,15 @@ public class Model {
             // TODO: trigger end of game
             this.showEndWindow();
         }
+
+
         // cycle photo
-        Picture next = this.getNextPic();
+        /** Breaks program. negative aura */
+        //Picture next = this.getNextPic();
+
+
         notifySubscribers(); // refresh view
+
     }
 
     /** this is to calculate the distances in meters between two cordinates **/
