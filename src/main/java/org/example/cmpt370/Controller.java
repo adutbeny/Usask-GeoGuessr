@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.application.Platform;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
@@ -60,6 +61,13 @@ public class Controller {
         });
         view.submit.setOnAction(event -> {
             this.model.getDistance();
+        });
+        view.playAgain.setOnAction(event -> {
+            this.model.showDifficultyWindow();
+        });
+        // kills program
+        view.exit.setOnAction(event -> {
+            Platform.exit();
         });
 
     }
