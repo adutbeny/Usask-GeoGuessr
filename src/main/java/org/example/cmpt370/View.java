@@ -351,60 +351,105 @@ public class View extends StackPane implements Subscriber {
     public void selectGameplayWindow() {
         this.resetView();
 
+        Pane layout = new Pane();
+        layout.setPrefSize(1200, 800);
+
+
         // Usask Green
-        this.gc.setFill(Color.rgb(10, 106, 66));
+        this.gc.setFill(Color.WHITE);
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
-        // Outlines for username, score
-        this.gc.setFill(Color.BLACK);
-        this.gc.fillRoundRect(100, 50, 200, 50, 20, 20);
-        this.gc.fillRoundRect(350, 50, 200, 50, 20, 20);
+        // Usask Logo with University Saskatchewan
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/USaskOffical/usask_usask_colour.png")).toExternalForm());
+        ImageView logo = new ImageView(l);
+        logo.setFitHeight(250);
+        logo.setFitWidth(250);
+        logo.setPreserveRatio(true);
+        logo.setTranslateX(20);
+        logo.setTranslateY(20);
+
+        // Gradient color for box
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(0.5, Color.rgb(20, 150, 100))
+        );
 
         // Draw Labels for Buttons
+        double textbX = 650;
+        double textbY = 40;
+        double textWidth = 600;
+        double textHeight = 75;
+        double skew = 50;
+        this.gc.setFill(gradient);
+        //parallellogram shape
+        double [] xP = {textbX, textbX+textWidth, textbX+textWidth-skew, textbX-skew};
+        double [] yP = {textbY, textbY, textbY+textHeight,textbY+textHeight};
+        this.gc.fillPolygon(xP,yP,4);
+
+        //Username, Score, Round Label
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
+        this.gc.fillText("Username",textbX + 30,textbY+ 25);
+        this.gc.fillText("Score", textbX +230, textbY + 25);
+        this.gc.fillText("Round", textbX +410, textbY+ 25);
 
-        if (!this.model.getInternetStatus() || this.model.getUser() == null) {
-            this.gc.fillText("Quickplay", 200, 80);
-        } else {
-            this.gc.fillText("Username", 200, 80);
-            //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
-        }
-        this.gc.fillText("Points " + this.model.getTotalScore(), 425, 80);
+        //Input for Username, Score and Round
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
+        //this.gc.fillText(String.valueOf(this.model.getUsername()), textbX + 30, 105);//Accounts for 10 char
+        //this.gc.fillText(String.valueOf(this.model.getScore()), textbX +230, 105);
+        this.gc.fillText(this.model.getRound() + "/5", textbX +415, 105);
 
-        this.gc.fillText("Round: " + this.model.getRound() + "/5", 1050, 75);
-
+        /*
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
+        */
+
+        //Green border between the photo and the green username box
+        double borderX = 0;
+        double borderY = 115;
+        double borderWidth = 1200;
+        double borderHeight = 30;
+        this.gc.setFill( Color.rgb(20, 150, 100));
+        this.gc.fillRect(borderX,borderY,borderWidth, borderHeight);
+
+        Picture curr = this.model.getNextPic();
         ImageView c = null;
-        if (this.model.getCurrentPicture() == null) {
+        if (curr == null) {
             this.gc.setFill(Color.WHITE);
-            this.gc.fillText("Error - No pictures loaded", 450, 400);
+            this.gc.fillText("No pictures loaded", 450, 400);
         } else {
-            System.out.println(this.model.getCurrentPicture().getPath());
-            Image current = new Image(Objects.requireNonNull(getClass()
-                            .getResource(this.model.getCurrentPicture().getPath()))
-                            .toExternalForm()
+            Image current = new Image(Objects.requireNonNull(
+                            getClass().getResource(curr.getPath()))
+                    .toExternalForm()
             );
             c = new ImageView(current);
-            c.setPreserveRatio(true);
-            c.setFitHeight(400);
-            c.setFitWidth(600);
-            c.setTranslateX(-150);
+            c.setPreserveRatio(false);
+            //c.setFitHeight(400);
+            //c.setFitWidth(600);
+            //c.setTranslateX(-150);
+            c.setFitWidth(1200);
+            c.setFitHeight(670);
+            c.setTranslateX(0);
+            c.setTranslateY(70);
+
         }
 
+
+        /*
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
+
+        */
 
         VBox buttonStack = new VBox(25, this.submit);
         // set below text
         buttonStack.setTranslateX(500);
         buttonStack.setTranslateY(725);
 
-        Pane layout = new Pane();
-        layout.setPrefSize(1200, 800);
 
         WebView mapView = new WebView();
 
@@ -416,7 +461,10 @@ public class View extends StackPane implements Subscriber {
 
         //this is checking for errors its not loading correctly
         engine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
-        engine.setOnAlert(event -> System.out.println("WebView Alert: " + event.getData()));
+        engine.setOnAlert(event ->{
+            String alertMessage = event.getData();
+            System.out.println("WebView Alert:" + alertMessage);
+        });
         engine.setJavaScriptEnabled(true);
 
         // this is for connecting the html to our java so we can get the coords
@@ -436,7 +484,7 @@ public class View extends StackPane implements Subscriber {
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
         // here we resize the map if the mouse hovers over it so we get a better view
-        mapView.setOnMouseEntered(event -> {
+        /*mapView.setOnMouseEntered(event -> {
             mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
             mapView.relocate(0, 100);
         });
@@ -444,10 +492,35 @@ public class View extends StackPane implements Subscriber {
             mapView.setPrefSize(400, 400);
             mapView.relocate(775, 200);
         });
+        */
 
+        //Mapinteractions
+        mapView.setOnMousePressed(event->{
+            mapView.setUserData(new double[]{event.getSceneX(),event.getY(),mapView.getLayoutX(),mapView.getLayoutY()});
+        });
+        mapView.setOnMouseDragged(event->{
+            double[]data=(double[])mapView.getUserData();
+            double deltaX=event.getSceneX()-data[0];
+            double deltaY=event.getSceneY()-data[1];
+            mapView.setLayoutX(data[2]+deltaX);
+            mapView.setLayoutY(data[3]+deltaY);
+        });
+        mapView.setOnMouseClicked((event-> {
+            if (event.getClickCount() == 2) {
+                if (mapView.getPrefWidth() == 400) {
+                    mapView.setPrefSize(myCanvas.getWidth(), myCanvas.getHeight() - 200);
+                    mapView.relocate(0, 100);
+                } else {
+                    mapView.setPrefSize(400, 400);
+                    mapView.relocate(775, 200);
+                }
+            }
+        }));
+        layout.getChildren().add(0,c);
         layout.getChildren().add(mapView);
+        layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
-    }
+    };
 
     /** Displays fields to enter user information
      * Needs to connect to database to verify credentials
