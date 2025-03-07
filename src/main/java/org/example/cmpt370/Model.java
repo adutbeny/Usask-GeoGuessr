@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.*;
+import org.mindrot.jbcrypt.BCrypt;
 import java.sql.*;
 
 enum DISPLAY {
@@ -17,7 +18,8 @@ enum DISPLAY {
     GAMEPLAY,
     LOGIN,
     CREATE,
-    LEADERBOARD
+    LEADERBOARD,
+    END
     //etc.
 }
 
@@ -33,9 +35,10 @@ public class Model {
     private DISPLAY currentWindow; // This field's value will tell the view what to do
 
     private User user;
-    private int round;
-    private int score;
-    private boolean internet;
+    private int round;          // round number out of 5 (5/5 = last round)
+    private double totalScore;     // total sum score over rounds
+    private double recentScore;    // most recent score
+    private boolean internet;   // boolean if connected to internet
     private JavaConnector connector;
     private Picture currentPicture;
     // etc...
@@ -48,6 +51,7 @@ public class Model {
         this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
         this.internet = isInternetConnected();
+        this.user = null;
     }
 
     /** Add any displays to the list of objects updated on
@@ -64,32 +68,61 @@ public class Model {
 
     /** Take info from login and load into class instance */
     public boolean verifyLogin(String username, String password) {
-        // set up user stuff here
-        // need to handle incorrect password and display that feedback
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
-            Statement stmt = con.createStatement();
+            Connection con = DriverManager.getConnection("url", "user", "password");
             System.out.println("Connected to database");
-            return true;
+
+            //Retrieve user and password fields and checksxs
+            String query = "SELECT password, high_score FROM sql3765767.users WHERE username = ?";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()){
+                String hashPassword = rs.getString("password");
+                int high_score = rs.getInt("high_score");
+                if (BCrypt.checkpw(password, hashPassword)){
+                    System.out.println("Login successful!");
+                    user = new User(username, high_score, 0);
+                    showStartupWindow();
+                    return true;
+                }
+            }
+            showLoginWindow();
+            System.out.println("Password not correct!");
+            return false;
         }catch (Exception e){
             System.out.println(e.toString());
             return false;
         }
+
     }
 
     public void createAccount(String username, String password) {
         try{
+            if (username.length() > 50 || password.length() > 50){
+                System.out.println("User and password must be less than 50 characters");
+                return;
+            }
+            String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "user", "password");
-            Statement stmt = con.createStatement();
+            Connection con = DriverManager.getConnection("url", "user", "password");
             System.out.println("Connected to database");
+            user = new User(username, 0, 0);
+            String query = "INSERT INTO sql3765767.users(username, password, high_score) VALUES (?, ?, ?)";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            stmt.setString(2, hashPassword);
+            stmt.setInt(3, 0);
+            stmt.executeUpdate();
+            System.out.println("Added to Database!");
+            showStartupWindow();
         }catch (Exception e){
             System.out.println(e.toString());
         }
-
     }
 
     /** Populates pictures array with the passed csv to it
@@ -114,6 +147,7 @@ public class Model {
         }
 
         Collections.shuffle(this.pictures); // put in random order
+        this.getNextPic();
         this.showGameplayWindow();
     }
 
@@ -129,6 +163,15 @@ public class Model {
     }
     public Picture getCurrentPicture() {
         return currentPicture;
+    }
+    public double getTotalScore() {
+        return this.totalScore;
+    }
+    public double getRecentScore() {
+        return this.recentScore;
+    }
+    public User getUser() {
+        return this.user;
     }
 
     /** Gets the next picture from the shuffled array
@@ -151,35 +194,77 @@ public class Model {
         this.currentWindow = DISPLAY.STARTUP;
         notifySubscribers();
     }
-
     /** Prompts View to show select difficulty display */
     public void showDifficultyWindow() {
         this.currentWindow = DISPLAY.DIFF;
         notifySubscribers();
     }
-
     /** Prompts View to show main gameplay window */
     public void showGameplayWindow() {
         this.currentWindow = DISPLAY.GAMEPLAY;
         notifySubscribers();
     }
-
     /** Prompts View to show Login window */
     public void showLoginWindow() {
         this.currentWindow = DISPLAY.LOGIN;
         notifySubscribers();
     }
-
     /** Prompts View to show Create Acc window */
     public void showCreateAccWindow() {
         this.currentWindow = DISPLAY.CREATE;
         notifySubscribers();
     }
+    /** Prompts endgame screen for offline mode */
+    public void showEndWindow() {
+        this.currentWindow = DISPLAY.END;
+        notifySubscribers();
+    }
 
     /* MAP METHODS */
+    /** Get distance from guessed point to true point */
+    public void getDistance() {
+        // make sure it exists
+        if (this.currentPicture == null) {
+            System.out.println("No picture loaded.");
+            return;
+        }
+        // get the marker coordinates from model
+        if (this.connector == null) {
+            System.out.println("Marker coordinates not set.");
+            return;
+        }
+
+        // get pictures longitude and latitude, print statements for debugging
+        double pictureLat = currentPicture.getLatitude();
+        System.out.println("picture latitude:" + pictureLat);
+        double pictureLng = currentPicture.getLongitude();
+        System.out.println("picture longitude:" + pictureLng);
+
+        // Gets marker coordinates from connector
+        double markerLat = connector.getMarkerLat();
+        System.out.println("marker latitude:" + markerLat);
+        double markerLng = connector.getMarkerLng();
+        System.out.println("marker longitude:" + markerLng);
+
+        // find distance between and print to console for now
+        double distance = this.haversine(pictureLat, pictureLng, markerLat, markerLng);
+        System.out.println("You got: " + distance + " meters away!");
+
+        // update scores
+        this.recentScore = calculateScore(distance);
+        this.totalScore += this.recentScore;
+        this.round++;
+        if (this.round > 5) {
+            // TODO: trigger end of game
+            this.showEndWindow();
+        }
+        // cycle photo
+        Picture next = this.getNextPic();
+        notifySubscribers(); // refresh view
+    }
 
     /** this is to calculate the distances in meters between two cordinates **/
-    public static double haversine(double lat1, double lon1, double lat2, double lon2) {
+    public double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000;
         double latDistance = Math.toRadians(lat2 - lat1);
         double lonDistance = Math.toRadians(lon2 - lon1);
@@ -194,7 +279,7 @@ public class Model {
     /** Calculate score per guess based off distance */
     public double calculateScore(double distance) {
         double score = (1000 - distance * 5);
-        if (score < 0 || distance > 100.0) {
+        if (score < 0 || distance > 200.0) {
             return 0;
         } else {
             return score;

@@ -5,7 +5,9 @@ package org.example.cmpt370;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.*;
+import javafx.scene.control.Button;
+import javafx.scene.control.PasswordField;
+import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,8 +17,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.StrokeType;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
 import javafx.scene.web.WebEngine;
@@ -61,6 +61,9 @@ public class View extends StackPane implements Subscriber {
     public TextField usernameCreate;
     public PasswordField passwordCreate;
     public Button submitCreate;
+    // end screen
+    public Button playAgain;
+    public Button exit;
 
     // another back button if we need to return to a different window
     public Button back2;
@@ -197,6 +200,22 @@ public class View extends StackPane implements Subscriber {
         this.usernameCreate = new TextField();
         this.passwordCreate = new PasswordField();
 
+        // returns to select difficulty after game ends
+        this.playAgain = new Button("Play Again");
+        this.playAgain.setStyle(buttonStyle);
+        this.playAgain.setOnMouseEntered(e -> this.playAgain.setStyle(hoverStyle));
+        this.playAgain.setOnMouseExited(e -> this.playAgain.setStyle(buttonStyle));
+        this.playAgain.setOnMousePressed(e -> this.playAgain.setStyle(pressedStyle));
+        this.playAgain.setOnMouseReleased(e -> this.playAgain.setStyle(hoverStyle));
+
+        // kill program
+        this.exit = new Button("Exit");
+        this.exit.setStyle(buttonStyle);
+        this.exit.setOnMouseEntered(e -> this.exit.setStyle(hoverStyle));
+        this.exit.setOnMouseExited(e -> this.exit.setStyle(buttonStyle));
+        this.exit.setOnMousePressed(e -> this.exit.setStyle(pressedStyle));
+        this.exit.setOnMouseReleased(e -> this.exit.setStyle(hoverStyle));
+
         // Another back button in case we need it
         this.back2 = new Button("Back");
         this.back2.setStyle(buttonStyle);
@@ -213,36 +232,7 @@ public class View extends StackPane implements Subscriber {
      * Brought this out of the constructor so we can go back to it if needed
      */
     public void selectMainMenu() {
-        this.resetView();
-
-        // TODO: see if we can move some of this into a method to share with the
-        //  difficulty window so that we only have to make changes to one place?
-        // background
-        // completely idiotic but this is how you have to load an image
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
-        ImageView bg = new ImageView(background);
-
-        // Set the image to fill the window
-        bg.setFitWidth(1200);
-        bg.setFitHeight(800);
-        bg.setPreserveRatio(true);
-
-        // Adds semi-transparent backing
-        this.gc.setFill(new Color(1, 1, 1, 0.5));
-        this.gc.fillRect(200, 0, 400, 800);
-
-        // Usask Logo
-        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
-        ImageView logo = new ImageView(l);
-        logo.setFitHeight(150);
-        logo.setFitWidth(150);
-        logo.setPreserveRatio(true);
-        logo.setTranslateX(-200);
-        logo.setTranslateY(-250);
-
-        // Title
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
-        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.createDefaultBackground();
 
         // Create a linear gradient for the text fill
         LinearGradient gradient = new LinearGradient(
@@ -250,14 +240,6 @@ public class View extends StackPane implements Subscriber {
                 new Stop(0, Color.rgb(10, 106, 66)),
                 new Stop(1, Color.rgb(20, 150, 100))
         );
-
-        // Add a drop shadow effect
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(5);
-        dropShadow.setOffsetX(3);
-        dropShadow.setOffsetY(3);
-        dropShadow.setColor(Color.rgb(0, 0, 0, 0.5));
-        this.gc.setEffect(dropShadow);
 
         // Draw the black outline
         this.gc.setFill(Color.BLACK);
@@ -286,45 +268,14 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // add all to layout in order!!!
-        this.getChildren().addAll(bg, this.myCanvas, logo, buttonStack);
+        this.getChildren().add(buttonStack);
     }
 
 
     /** Shows window with buttons to select difficulty
      * Same other components as startup */
     public void selectDifficultyWindow() {
-        this.resetView();
-
-        // Background
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
-        ImageView bv = new ImageView(background);
-
-        bv.setFitWidth(1200);
-        bv.setFitHeight(800);
-        bv.setPreserveRatio(true);
-
-        // Semi-transparent backing
-        this.gc.setFill(new Color(1, 1, 1, 0.5));
-        this.gc.fillRoundRect(200, 0, 400, 800, 20, 20);
-
-        // Create a DropShadow effect for the backing
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setColor(Color.BLACK);
-        this.gc.setEffect(dropShadow);
-
-        // Usask Logo
-        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
-        ImageView logo = new ImageView(l);
-        logo.setFitHeight(150);
-        logo.setFitWidth(150);
-        logo.setPreserveRatio(true);
-        logo.setTranslateX(-200);
-        logo.setTranslateY(-250);
-
-        // Title
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
-        this.gc.setTextAlign(TextAlignment.CENTER);
+        this.createDefaultBackground();
 
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
@@ -350,112 +301,110 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateY(350);
 
         // Add all to layout
-        this.getChildren().addAll(bv, this.myCanvas, logo, buttonStack);
+        this.getChildren().addAll(buttonStack);
+    }
+
+    /** Creates default background and adds it to the View
+     * used by main menu, select difficulty and others */
+    private void createDefaultBackground() {
+        this.resetView();
+
+        // background
+        // completely idiotic but this is how you have to load an image
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
+        ImageView bg = new ImageView(background);
+
+        // Set the image to fill the window
+        bg.setFitWidth(1200);
+        bg.setFitHeight(800);
+        bg.setPreserveRatio(true);
+
+        // Adds semi-transparent backing
+        this.gc.setFill(new Color(1, 1, 1, 0.5));
+        this.gc.fillRect(200, 0, 400, 800);
+
+        // Usask Logo
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
+        ImageView logo = new ImageView(l);
+        logo.setFitHeight(150);
+        logo.setFitWidth(150);
+        logo.setPreserveRatio(true);
+        logo.setTranslateX(-200);
+        logo.setTranslateY(-250);
+
+        // Title
+        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
+        this.gc.setTextAlign(TextAlignment.CENTER);
+
+        // Add a drop shadow effect
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(5);
+        dropShadow.setOffsetX(3);
+        dropShadow.setOffsetY(3);
+        dropShadow.setColor(Color.rgb(0, 0, 0, 0.5));
+        this.gc.setEffect(dropShadow);
+
+        this.getChildren().addAll(bg, this.myCanvas, logo);
     }
 
     /** Displays window that will be used during main playing area runtime */
     public void selectGameplayWindow() {
         this.resetView();
 
-        Pane layout = new Pane();
-        layout.setPrefSize(1200, 800);
-
-
         // Usask Green
-        this.gc.setFill(Color.WHITE);
+        this.gc.setFill(Color.rgb(10, 106, 66));
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
-        // Usask Logo with University Saskatchewan
-        Image l = new Image(Objects.requireNonNull(getClass().getResource("/USaskOffical/usask_usask_colour.png")).toExternalForm());
-        ImageView logo = new ImageView(l);
-        logo.setFitHeight(250);
-        logo.setFitWidth(250);
-        logo.setPreserveRatio(true);
-        logo.setTranslateX(20);
-        logo.setTranslateY(20);
-
-        // Gradient color for box
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(10, 106, 66)),
-                new Stop(0.5, Color.rgb(20, 150, 100))
-        );
+        // Outlines for username, score
+        this.gc.setFill(Color.BLACK);
+        this.gc.fillRoundRect(100, 50, 200, 50, 20, 20);
+        this.gc.fillRoundRect(350, 50, 200, 50, 20, 20);
 
         // Draw Labels for Buttons
-        double textbX = 650;
-        double textbY = 40;
-        double textWidth = 600;
-        double textHeight = 75;
-        double skew = 50;
-        this.gc.setFill(gradient);
-        //parallellogram shape
-        double [] xP = {textbX, textbX+textWidth, textbX+textWidth-skew, textbX-skew};
-        double [] yP = {textbY, textbY, textbY+textHeight,textbY+textHeight};
-        this.gc.fillPolygon(xP,yP,4);
-
-        //Username, Score, Round Label
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
-        this.gc.fillText("Username",textbX + 30,textbY+ 25);
-        this.gc.fillText("Score", textbX +230, textbY + 25);
-        this.gc.fillText("Round", textbX +410, textbY+ 25);
 
-        //Input for Username, Score and Round
-        this.gc.setFill(Color.WHITE);
-        this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
-        //this.gc.fillText(String.valueOf(this.model.getUsername()), textbX + 30, 105);//Accounts for 10 char
-        //this.gc.fillText(String.valueOf(this.model.getScore()), textbX +230, 105);
-        this.gc.fillText(this.model.getRound() + "/5", textbX +415, 105);
+        if (!this.model.getInternetStatus() || this.model.getUser() == null) {
+            this.gc.fillText("Quickplay", 200, 80);
+        } else {
+            this.gc.fillText("Username", 200, 80);
+            //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 80);
+        }
+        this.gc.fillText("Points " + this.model.getTotalScore(), 425, 80);
 
-        /*
+        this.gc.fillText("Round: " + this.model.getRound() + "/5", 1050, 75);
+
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
-        */
-
-        //Green border between the photo and the green username box
-        double borderX = 0;
-        double borderY = 115;
-        double borderWidth = 1200;
-        double borderHeight = 30;
-        this.gc.setFill( Color.rgb(20, 150, 100));
-        this.gc.fillRect(borderX,borderY,borderWidth, borderHeight);
-
-        Picture curr = this.model.getNextPic();
         ImageView c = null;
-        if (curr == null) {
+        if (this.model.getCurrentPicture() == null) {
             this.gc.setFill(Color.WHITE);
-            this.gc.fillText("No pictures loaded", 450, 400);
+            this.gc.fillText("Error - No pictures loaded", 450, 400);
         } else {
-            Image current = new Image(Objects.requireNonNull(
-                            getClass().getResource(curr.getPath()))
-                    .toExternalForm()
+            System.out.println(this.model.getCurrentPicture().getPath());
+            Image current = new Image(Objects.requireNonNull(getClass()
+                            .getResource(this.model.getCurrentPicture().getPath()))
+                            .toExternalForm()
             );
             c = new ImageView(current);
-            c.setPreserveRatio(false);
-            //c.setFitHeight(400);
-            //c.setFitWidth(600);
-            //c.setTranslateX(-150);
-            c.setFitWidth(1200);
-            c.setFitHeight(670);
-            c.setTranslateX(0);
-            c.setTranslateY(70);
-
+            c.setPreserveRatio(true);
+            c.setFitHeight(400);
+            c.setFitWidth(600);
+            c.setTranslateX(-150);
         }
 
-
-        /*
         // Draw Map Area
         this.gc.setFill(Color.web("#1a1a1a")); // Dark gray (not pure black)
         this.gc.fillRect(800, 250, 300, 300);
-
-        */
 
         VBox buttonStack = new VBox(25, this.submit);
         // set below text
         buttonStack.setTranslateX(500);
         buttonStack.setTranslateY(725);
 
+        Pane layout = new Pane();
+        layout.setPrefSize(1200, 800);
 
         WebView mapView = new WebView();
 
@@ -467,10 +416,7 @@ public class View extends StackPane implements Subscriber {
 
         //this is checking for errors its not loading correctly
         engine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
-        engine.setOnAlert(event ->{
-            String alertMessage = event.getData();
-            System.out.println("WebView Alert:" + alertMessage);
-        });
+        engine.setOnAlert(event -> System.out.println("WebView Alert: " + event.getData()));
         engine.setJavaScriptEnabled(true);
 
         // this is for connecting the html to our java so we can get the coords
@@ -490,7 +436,7 @@ public class View extends StackPane implements Subscriber {
         engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
         // here we resize the map if the mouse hovers over it so we get a better view
-        /*mapView.setOnMouseEntered(event -> {
+        mapView.setOnMouseEntered(event -> {
             mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
             mapView.relocate(0, 100);
         });
@@ -498,59 +444,16 @@ public class View extends StackPane implements Subscriber {
             mapView.setPrefSize(400, 400);
             mapView.relocate(775, 200);
         });
-        */
 
-        //Mapinteractions
-        mapView.setOnMousePressed(event->{
-            mapView.setUserData(new double[]{event.getSceneX(),event.getY(),mapView.getLayoutX(),mapView.getLayoutY()});
-        });
-        mapView.setOnMouseDragged(event->{
-            double[]data=(double[])mapView.getUserData();
-            double deltaX=event.getSceneX()-data[0];
-            double deltaY=event.getSceneY()-data[1];
-            mapView.setLayoutX(data[2]+deltaX);
-            mapView.setLayoutY(data[3]+deltaY);
-        });
-        mapView.setOnMouseClicked((event-> {
-            if (event.getClickCount() == 2) {
-                if (mapView.getPrefWidth() == 400) {
-                    mapView.setPrefSize(myCanvas.getWidth(), myCanvas.getHeight() - 200);
-                    mapView.relocate(0, 100);
-                } else {
-                    mapView.setPrefSize(400, 400);
-                    mapView.relocate(775, 200);
-                }
-            }
-        }));
-        layout.getChildren().add(0,c);
         layout.getChildren().add(mapView);
-        layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
-    };
+    }
 
-
-    // TODO: these
     /** Displays fields to enter user information
      * Needs to connect to database to verify credentials
      * and then once verified should create User instance in model */
     public void loginWindow() {
-        this.resetView();
-
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
-                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
-        );
-        this.gc.setFill(gradient);
-        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-
-        this.gc.setFill(new Color(1, 1, 1, 0.6));
-        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
-
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setColor(Color.BLACK);
-        this.gc.setEffect(dropShadow);
+        this.createSignInBackground();
 
         // Title
         this.gc.setFill(Color.WHITE);
@@ -589,23 +492,7 @@ public class View extends StackPane implements Subscriber {
      * and then once verified should create User instance in model
      * overall should be pretty similar to login but with different handling */
     public void createAccWindow() {
-        this.resetView();
-
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
-                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
-        );
-        this.gc.setFill(gradient);
-        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
-
-        this.gc.setFill(new Color(1, 1, 1, 0.6));
-        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
-
-        DropShadow dropShadow = new DropShadow();
-        dropShadow.setRadius(10);
-        dropShadow.setColor(Color.BLACK);
-        this.gc.setEffect(dropShadow);
+        this.createSignInBackground();
 
         // Title
         this.gc.setFill(Color.WHITE);
@@ -639,6 +526,54 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
+    private void createSignInBackground() {
+        this.resetView();
+
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
+                new Stop(1, Color.rgb(20, 150, 100))  // End color (lighter green)
+        );
+        this.gc.setFill(gradient);
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        this.gc.setFill(new Color(1, 1, 1, 0.6));
+        this.gc.fillRoundRect(400, 200, 400, 400, 20, 20);
+
+        DropShadow dropShadow = new DropShadow();
+        dropShadow.setRadius(10);
+        dropShadow.setColor(Color.BLACK);
+        this.gc.setEffect(dropShadow);
+    }
+
+    /** Creates end screen to display score and option to play again, exit
+     * Mostly probably actually used if playing offline and cant show leaderboard */
+    private void createEndScreen() {
+        this.resetView();
+
+        // TODO: make this not temporary
+        // green background
+        this.gc.setFill(Color.rgb(10, 106, 66));
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        Text current = new Text("Your Score: " + this.model.getTotalScore());
+        current.setFont(new Font(30));
+        Text high = null;
+        if (this.model.getUser() != null) {
+            high = new Text("High score: " + this.model.getUser().getHighscore());
+            high.setFont(new Font(30));
+        }
+        VBox display = new VBox(10, current);
+        if (high != null) {
+            display.getChildren().add(high);
+        }
+
+        display.getChildren().addAll(this.playAgain, this.exit);
+        display.setStyle("-fx-alignment: center;");
+        display.setTranslateY(-50);
+
+        this.getChildren().addAll(this.myCanvas, display);
+    }
 
     /** Connect Model */
     public void setModel(Model m) {
@@ -659,7 +594,6 @@ public class View extends StackPane implements Subscriber {
 
     }
 
-
     /** Gets called when the model signals a change,
      * then based on what state the model is in, show/update
      * the appropriate window */
@@ -672,6 +606,7 @@ public class View extends StackPane implements Subscriber {
             case GAMEPLAY -> selectGameplayWindow();
             case LOGIN -> loginWindow();
             case CREATE -> createAccWindow();
+            case END -> createEndScreen();
         }
     }
 }

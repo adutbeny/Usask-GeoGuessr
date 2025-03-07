@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.application.Platform;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 
@@ -46,7 +47,7 @@ public class Controller {
             String password = view.passwordField.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            //this.model.verifyLogin(username, password);
+            this.model.verifyLogin(username, password);
             // TODO: implement this method in model
             // TODO: need to add handling for incorrect password
         });
@@ -55,43 +56,18 @@ public class Controller {
             String password = view.passwordCreate.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            //this.model.createAccount(username, password);
+            this.model.createAccount(username, password);
             // TODO: implement this is model
         });
         view.submit.setOnAction(event -> {
-            // TODO: would be nice if we could wrap some of this into a model method call
-            // get the current picture from model
-            Picture currentPicture = model.getCurrentPicture();
-            // make sure it exists
-            if (currentPicture == null) {
-                System.out.println("No picture loaded.");
-                return;
-            }
-
-            // get the marker coordinates from model
-            JavaConnector connector = model.getJavaConnector();
-            if (connector == null) {
-                System.out.println("Marker coordinates not set.");
-                return;
-            }
-
-            // get pictures longitude and latitude, print statements for debugging
-            // TODO: the cords are not alligning at all we need to fix it somehow
-            double pictureLat = currentPicture.getLatitude();
-            System.out.println("picture latitude:" + pictureLat);
-            double pictureLng = currentPicture.getLongitude();
-            System.out.println("picture longitude:" + pictureLng);
-
-
-            // Gets marker coordinates from connector
-            double markerLat = connector.getMarkerLat();
-            System.out.println("marker latitude:" + markerLat);
-            double markerLng = connector.getMarkerLng();
-            System.out.println("marker longitude:" + markerLng);
-
-            // find distance between and print to console for now
-            double distance = Model.haversine(pictureLat, pictureLng, markerLat, markerLng);
-            System.out.println("You got: " + distance + " meters away!");
+            this.model.getDistance();
+        });
+        view.playAgain.setOnAction(event -> {
+            this.model.showDifficultyWindow();
+        });
+        // kills program
+        view.exit.setOnAction(event -> {
+            Platform.exit();
         });
 
     }
