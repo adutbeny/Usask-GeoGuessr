@@ -61,6 +61,9 @@ public class View extends StackPane implements Subscriber {
     public TextField usernameCreate;
     public PasswordField passwordCreate;
     public Button submitCreate;
+    // end screen
+    public Button playAgain;
+    public Button exit;
 
     // another back button if we need to return to a different window
     public Button back2;
@@ -196,6 +199,22 @@ public class View extends StackPane implements Subscriber {
         // Text fields for creation
         this.usernameCreate = new TextField();
         this.passwordCreate = new PasswordField();
+
+        // returns to select difficulty after game ends
+        this.playAgain = new Button("Play Again");
+        this.playAgain.setStyle(buttonStyle);
+        this.playAgain.setOnMouseEntered(e -> this.playAgain.setStyle(hoverStyle));
+        this.playAgain.setOnMouseExited(e -> this.playAgain.setStyle(buttonStyle));
+        this.playAgain.setOnMousePressed(e -> this.playAgain.setStyle(pressedStyle));
+        this.playAgain.setOnMouseReleased(e -> this.playAgain.setStyle(hoverStyle));
+
+        // kill program
+        this.exit = new Button("Exit");
+        this.exit.setStyle(buttonStyle);
+        this.exit.setOnMouseEntered(e -> this.exit.setStyle(hoverStyle));
+        this.exit.setOnMouseExited(e -> this.exit.setStyle(buttonStyle));
+        this.exit.setOnMousePressed(e -> this.exit.setStyle(pressedStyle));
+        this.exit.setOnMouseReleased(e -> this.exit.setStyle(hoverStyle));
 
         // Another back button in case we need it
         this.back2 = new Button("Back");
@@ -527,6 +546,35 @@ public class View extends StackPane implements Subscriber {
         this.gc.setEffect(dropShadow);
     }
 
+    /** Creates end screen to display score and option to play again, exit
+     * Mostly probably actually used if playing offline and cant show leaderboard */
+    private void createEndScreen() {
+        this.resetView();
+
+        // TODO: make this not temporary
+        // green background
+        this.gc.setFill(Color.rgb(10, 106, 66));
+        this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        Text current = new Text("Your Score: " + this.model.getTotalScore());
+        current.setFont(new Font(30));
+        Text high = null;
+        if (this.model.getUser() != null) {
+            high = new Text("High score: " + this.model.getUser().getHighscore());
+            high.setFont(new Font(30));
+        }
+        VBox display = new VBox(10, current);
+        if (high != null) {
+            display.getChildren().add(high);
+        }
+
+        display.getChildren().addAll(this.playAgain, this.exit);
+        display.setStyle("-fx-alignment: center;");
+        display.setTranslateY(-50);
+
+        this.getChildren().addAll(this.myCanvas, display);
+    }
+
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
@@ -546,7 +594,6 @@ public class View extends StackPane implements Subscriber {
 
     }
 
-
     /** Gets called when the model signals a change,
      * then based on what state the model is in, show/update
      * the appropriate window */
@@ -559,6 +606,7 @@ public class View extends StackPane implements Subscriber {
             case GAMEPLAY -> selectGameplayWindow();
             case LOGIN -> loginWindow();
             case CREATE -> createAccWindow();
+            case END -> createEndScreen();
         }
     }
 }
