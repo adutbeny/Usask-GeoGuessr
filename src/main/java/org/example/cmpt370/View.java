@@ -133,6 +133,15 @@ public class View extends StackPane implements Subscriber {
         this.createAcc.setOnMouseReleased(e -> this.createAcc.setStyle(hoverStyle));
         this.createAcc.setPrefWidth(200);
 
+        // Multilayer Button
+        this.createAcc = new Button("Multiplayer");
+        this.createAcc.setStyle(buttonStyle);
+        this.createAcc.setOnMouseEntered(e -> this.createAcc.setStyle(hoverStyle));
+        this.createAcc.setOnMouseExited(e -> this.createAcc.setStyle(buttonStyle));
+        this.createAcc.setOnMousePressed(e -> this.createAcc.setStyle(pressedStyle));
+        this.createAcc.setOnMouseReleased(e -> this.createAcc.setStyle(hoverStyle));
+        this.createAcc.setPrefWidth(200);
+
         // Level Selector
         this.easy = new Button("Novice Navigator");
         this.easy.setStyle(buttonStyle);
@@ -562,10 +571,66 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
+
     public void createLoggedInWindow() {
         createDefaultBackground();
-    }
 
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(1, Color.rgb(20, 150, 100))
+        );
+
+        // black outline
+        this.gc.setFill(Color.BLACK);
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                this.gc.fillText("Usask GeoGuesser", 400 + i, 270 + j);
+            }
+        }
+
+        // Main text
+        this.gc.setFill(gradient);
+        this.gc.fillText("Usask GeoGuesser", 400, 270);
+
+        // Button Stack
+        VBox buttonStack = new VBox(25, this.quickplay, this.Multiplayer);
+        buttonStack.setTranslateX(300);
+        buttonStack.setTranslateY(350);
+
+        // Add all to layout
+        this.getChildren().addAll(buttonStack);
+
+    }
+    public void createCreatedAccountWindow() {
+        createDefaultBackground();
+
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(1, Color.rgb(20, 150, 100))
+        );
+
+        // black outline
+        this.gc.setFill(Color.BLACK);
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                this.gc.fillText("Usask GeoGuesser", 400 + i, 270 + j);
+            }
+        }
+
+        // Main text
+        this.gc.setFill(gradient);
+        this.gc.fillText("Usask GeoGuesser", 400, 270);
+
+        // Button Stack
+        VBox buttonStack = new VBox(25, this.quickplay, this.login);
+        buttonStack.setTranslateX(300);
+        buttonStack.setTranslateY(350);
+
+        // Add all to layout
+        this.getChildren().addAll(buttonStack);
+    }
 
 
 
@@ -588,6 +653,8 @@ public class View extends StackPane implements Subscriber {
         dropShadow.setColor(Color.BLACK);
         this.gc.setEffect(dropShadow);
     }
+
+
 
     /** Creates end screen to display score and option to play again, exit
      * Mostly probably actually used if playing offline and cant show leaderboard */
@@ -650,6 +717,10 @@ public class View extends StackPane implements Subscriber {
             case LOGIN -> loginWindow();
             case CREATE -> createAccWindow();
             case END -> createEndScreen();
+
+            // NOT implemented properly yet ////////
+            case LOGGED_IN -> createLoggedInWindow();
+            case CREATED_ACCOUNT -> createCreatedAccountWindow();
         }
     }
 }
