@@ -18,7 +18,8 @@ enum DISPLAY {
     GAMEPLAY,
     LOGIN,
     CREATE,
-    LEADERBOARD
+    LEADERBOARD,
+    END
     //etc.
 }
 
@@ -193,28 +194,29 @@ public class Model {
         this.currentWindow = DISPLAY.STARTUP;
         notifySubscribers();
     }
-
     /** Prompts View to show select difficulty display */
     public void showDifficultyWindow() {
         this.currentWindow = DISPLAY.DIFF;
         notifySubscribers();
     }
-
     /** Prompts View to show main gameplay window */
     public void showGameplayWindow() {
         this.currentWindow = DISPLAY.GAMEPLAY;
         notifySubscribers();
     }
-
     /** Prompts View to show Login window */
     public void showLoginWindow() {
         this.currentWindow = DISPLAY.LOGIN;
         notifySubscribers();
     }
-
     /** Prompts View to show Create Acc window */
     public void showCreateAccWindow() {
         this.currentWindow = DISPLAY.CREATE;
+        notifySubscribers();
+    }
+    /** Prompts endgame screen for offline mode */
+    public void showEndWindow() {
+        this.currentWindow = DISPLAY.END;
         notifySubscribers();
     }
 
@@ -254,6 +256,7 @@ public class Model {
         this.round++;
         if (this.round > 5) {
             // TODO: trigger end of game
+            this.showEndWindow();
         }
         // cycle photo
         Picture next = this.getNextPic();
@@ -276,7 +279,7 @@ public class Model {
     /** Calculate score per guess based off distance */
     public double calculateScore(double distance) {
         double score = (1000 - distance * 5);
-        if (score < 0 || distance > 100.0) {
+        if (score < 0 || distance > 200.0) {
             return 0;
         } else {
             return score;
