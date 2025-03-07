@@ -13,7 +13,7 @@ public class Controller {
     Model model;
 
     /** Controller Constructor
-     * @param view takes view as a argument to set up handling
+     * @param view takes view as a argument to set up HANDLING
      *             for all the buttons, without a permanent
      *             connection which would break the MVC architectureg
      */

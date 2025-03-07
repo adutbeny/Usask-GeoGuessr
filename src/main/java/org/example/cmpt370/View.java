@@ -5,9 +5,7 @@ package org.example.cmpt370;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -17,6 +15,7 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.shape.StrokeType;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -354,25 +353,28 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(bv, this.myCanvas, logo, buttonStack);
     }
 
-
     /** Displays window that will be used during main playing area runtime */
     public void selectGameplayWindow() {
         this.resetView();
+
+        Pane layout = new Pane();
+        layout.setPrefSize(1200, 800);
+
 
         // Usask Green
         this.gc.setFill(Color.WHITE);
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
-        // Usask Logo
-        Image l = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/usaskcrest.png")).toExternalForm());
+        // Usask Logo with University Saskatchewan
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/USaskOffical/usask_usask_colour.png")).toExternalForm());
         ImageView logo = new ImageView(l);
-        logo.setFitHeight(125);
-        logo.setFitWidth(125);
+        logo.setFitHeight(250);
+        logo.setFitWidth(250);
         logo.setPreserveRatio(true);
-        logo.setTranslateX(100);
-        logo.setTranslateY(30);
+        logo.setTranslateX(20);
+        logo.setTranslateY(20);
 
-        // Outlines for username, score
+        // Gradient color for box
         LinearGradient gradient = new LinearGradient(
                 0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.rgb(10, 106, 66)),
@@ -381,31 +383,43 @@ public class View extends StackPane implements Subscriber {
 
         // Draw Labels for Buttons
         double textbX = 650;
-        double textbY = 50;
+        double textbY = 40;
         double textWidth = 600;
-        double textHeight = 100;
+        double textHeight = 75;
+        double skew = 50;
         this.gc.setFill(gradient);
-        this.gc.fillRect(textbX,textbY,textWidth, textHeight);
+        //parallellogram shape
+        double [] xP = {textbX, textbX+textWidth, textbX+textWidth-skew, textbX-skew};
+        double [] yP = {textbY, textbY, textbY+textHeight,textbY+textHeight};
+        this.gc.fillPolygon(xP,yP,4);
 
+        //Username, Score, Round Label
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
+        this.gc.fillText("Username",textbX + 30,textbY+ 25);
+        this.gc.fillText("Score", textbX +230, textbY + 25);
+        this.gc.fillText("Round", textbX +410, textbY+ 25);
 
-        this.gc.fillText("Username:",textbX + 30,textbY+ 35);
-        //this.gc.fillText(String.valueOf(this.model.getUsername()), 200, 50);
-
-        this.gc.fillText("Score:  ", textbX +230, textbY + 35);
-        //gc.fillText(String.valueOf(this.model.getScore()), 450, 50);
-
-        this.gc.fillText("Round: " + this.model.getRound() + "/5", textbX +410, textbY+ 35);
-
-        this.gc.setFill(Color.BLACK);
+        //Input for Username, Score and Round
+        this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
-        this.gc.fillText("123213213213", textbX +200, 135);
-        this.gc.fillText("Laa12323123132",textbX + 30, 135);
+        //this.gc.fillText(String.valueOf(this.model.getUsername()), textbX + 30, 105);//Accounts for 10 char
+        //this.gc.fillText(String.valueOf(this.model.getScore()), textbX +230, 105);
+        this.gc.fillText(this.model.getRound() + "/5", textbX +415, 105);
 
+        /*
         // Draw Photo Area
         this.gc.setFill(Color.BLACK);
         this.gc.fillRoundRect(150, 200, 600, 400, 20, 20);
+        */
+
+        //Green border between the photo and the green username box
+        double borderX = 0;
+        double borderY = 115;
+        double borderWidth = 1200;
+        double borderHeight = 30;
+        this.gc.setFill( Color.rgb(20, 150, 100));
+        this.gc.fillRect(borderX,borderY,borderWidth, borderHeight);
 
         Picture curr = this.model.getNextPic();
         ImageView c = null;
@@ -418,10 +432,14 @@ public class View extends StackPane implements Subscriber {
                     .toExternalForm()
             );
             c = new ImageView(current);
-            c.setPreserveRatio(true);
-            c.setFitHeight(400);
-            c.setFitWidth(600);
-            c.setTranslateX(-150);
+            c.setPreserveRatio(false);
+            //c.setFitHeight(400);
+            //c.setFitWidth(600);
+            //c.setTranslateX(-150);
+            c.setFitWidth(1200);
+            c.setFitHeight(670);
+            c.setTranslateX(0);
+            c.setTranslateY(70);
 
         }
 
@@ -438,8 +456,6 @@ public class View extends StackPane implements Subscriber {
         buttonStack.setTranslateX(500);
         buttonStack.setTranslateY(725);
 
-        Pane layout = new Pane();
-        layout.setPrefSize(1200, 800);
 
         WebView mapView = new WebView();
 
@@ -451,7 +467,10 @@ public class View extends StackPane implements Subscriber {
 
         //this is checking for errors its not loading correctly
         engine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
-        engine.setOnAlert(event -> System.out.println("WebView Alert: " + event.getData()));
+        engine.setOnAlert(event ->{
+            String alertMessage = event.getData();
+            System.out.println("WebView Alert:" + alertMessage);
+        });
         engine.setJavaScriptEnabled(true);
 
         // this is for connecting the html to our java so we can get the coords
@@ -503,10 +522,11 @@ public class View extends StackPane implements Subscriber {
                 }
             }
         }));
-
+        layout.getChildren().add(0,c);
         layout.getChildren().add(mapView);
+        layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
-    }
+    };
 
 
     // TODO: these
