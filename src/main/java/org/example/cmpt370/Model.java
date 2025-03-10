@@ -78,7 +78,7 @@ public class Model {
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("url", "user", "password");
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
 
             //Retrieve user and password fields and checksxs
@@ -116,7 +116,7 @@ public class Model {
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("url", "user", "password");
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
             user = new User(username, 0, 0);
             String query = "INSERT INTO sql3765767.users(username, password, high_score) VALUES (?, ?, ?)";
