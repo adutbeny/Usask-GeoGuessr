@@ -61,6 +61,14 @@ public class Controller {
         });
         view.submit.setOnAction(event -> {
             this.model.getDistance();
+            view.submit.setVisible(false);
+            view.next.setVisible(true);
+        });
+
+        view.next.setOnAction(e -> {
+            this.model.loadNextRound();
+            view.next.setVisible(false);
+            view.submit.setVisible(true);
         });
         view.playAgain.setOnAction(event -> {
             this.model.showDifficultyWindow();

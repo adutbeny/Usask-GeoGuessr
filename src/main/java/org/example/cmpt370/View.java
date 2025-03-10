@@ -69,6 +69,7 @@ public class View extends StackPane implements Subscriber {
     public Button back2;
     // gameplay loop
     public Button submit;
+    public Button next;
 
     public Button Multiplayer;
 
@@ -175,6 +176,15 @@ public class View extends StackPane implements Subscriber {
         this.submit.setOnMousePressed(e -> this.submit.setStyle(pressedStyle));
         this.submit.setOnMouseReleased(e -> this.submit.setStyle(hoverStyle));
         this.submit.setPrefWidth(200);
+
+        // Button for going to next round
+        this.next= new Button("Next");
+        this.next.setStyle(buttonStyle);
+        this.next.setOnMouseEntered(e -> this.next.setStyle(hoverStyle));
+        this.next.setOnMouseExited(e -> this.next.setStyle(buttonStyle));
+        this.next.setOnMousePressed(e -> this.next.setStyle(pressedStyle));
+        this.next.setOnMouseReleased(e -> this.next.setStyle(hoverStyle));
+        this.next.setPrefWidth(200);
 
         // Back button - returns to startup
         this.back1 = new Button("Back");
@@ -444,11 +454,15 @@ public class View extends StackPane implements Subscriber {
 
         }
 
-        VBox buttonStack = new VBox(25, this.submit);
-        // set below text
+        submit.setVisible(true);
+        next.setVisible(false);
+        VBox buttonStack = new VBox(0, submit, next);
+        // Use relocate() to position the buttonStack absolutely.
         buttonStack.setTranslateX(500);
         buttonStack.setTranslateY(725);
-
+        submit.heightProperty().addListener((obs, oldVal, newVal) -> {
+            next.setTranslateY(-newVal.doubleValue());
+        });
 
         WebView mapView = new WebView();
 

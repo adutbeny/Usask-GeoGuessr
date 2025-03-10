@@ -260,20 +260,19 @@ public class Model {
         // update scores
         this.recentScore = calculateScore(distance);
         this.totalScore += this.recentScore;
+
+    }
+
+    public void loadNextRound() {
         this.round++;
         if (this.round > 5) {
             // TODO: trigger end of game
             this.showEndWindow();
         }
-
-
         // cycle photo
         /** Breaks program. negative aura */
         //Picture next = this.getNextPic();
-
-
         notifySubscribers(); // refresh view
-
     }
 
     /** this is to calculate the distances in meters between two cordinates **/
