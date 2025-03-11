@@ -1,25 +1,26 @@
 /* Property of swagtown
  * Style layout for buttons
- * dont ask me about it
- */
+ * dont ask me about it */
 
 .button {
-    -fx-background-color: #006400;
+    -fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);
     -fx-text-fill: white;
     -fx-font-size: 16px;
     -fx-font-weight: bold;
-    -fx-padding: 10px 20px;
-    -fx-border-radius: 10px;
-    -fx-background-radius: 10px;
-    -fx-border-color: #003d00;
-    -fx-border-width: 2px;
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: #06321E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1);
     -fx-cursor: hand;
 }
 
 .button:hover {
-    -fx-background-color: #008000;
+    -fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 2);
 }
 
 .button:pressed {
-    -fx-background-color: #004d00;
+    -fx-background-color: linear-gradient(to bottom, #084A2E, #0A6A42);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
