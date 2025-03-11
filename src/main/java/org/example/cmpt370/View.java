@@ -493,6 +493,15 @@ public class View extends StackPane implements Subscriber {
                 System.out.println("JavaConnector set on JS window");
             }
         });
+        mapView.setOnMouseEntered(event -> {
+            mapView.setPrefSize(this.myCanvas.getWidth(), this.myCanvas.getHeight() - 200);
+            mapView.relocate(0, 135);
+        });
+        mapView.setOnMouseExited(event -> {
+            mapView.setPrefSize(400, 400);
+            mapView.relocate(775, 200);
+        });
+
 
         this.model.setJavaConnector(connector); //store in model
 
