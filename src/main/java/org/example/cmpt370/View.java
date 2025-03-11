@@ -601,7 +601,27 @@ public class View extends StackPane implements Subscriber {
         current.setFont(new Font(30));
         Text high = null;
         if (this.model.getUser() != null) {
-            high = new Text("High score: " + this.model.getUser().getHighscore());
+            if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE){
+                if (this.model.getTotalScore() > this.model.getUser().getNoviceHighscore()){
+                    this.model.getUser().setN_highscore((int)this.model.getTotalScore());
+                    this.model.adjustHighScore();
+                }
+                high = new Text("High score: " + this.model.getUser().getNoviceHighscore());
+            }
+            else if (this.model.getCurrentDifficulty() == DIFFICULTY.SEASONAL){
+                if (this.model.getTotalScore() > this.model.getUser().getSeasonalHighscore()){
+                    this.model.getUser().setS_highscore((int)this.model.getTotalScore());
+                    this.model.adjustHighScore();
+                }
+                high = new Text("High score: " + this.model.getUser().getSeasonalHighscore());
+            }
+            else {
+                if (this.model.getTotalScore() > this.model.getUser().getExpertHighscore()){
+                    this.model.getUser().setE_highscore((int)this.model.getTotalScore());
+                    this.model.adjustHighScore();
+                }
+                high = new Text("High score: " + this.model.getUser().getExpertHighscore());
+            }
             high.setFont(new Font(30));
         }
         VBox display = new VBox(10, current);

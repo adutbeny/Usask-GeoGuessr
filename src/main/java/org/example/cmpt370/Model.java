@@ -26,6 +26,12 @@ enum DISPLAY {
 
 }
 
+enum DIFFICULTY {
+    NOVICE,
+    SEASONAL,
+    EXPERT
+}
+
 /** Class that manages all the data
  * Controller calls Model methods to act on things like pictures
  * This is where we pass in the coordinates of mouse locations */
@@ -36,6 +42,7 @@ public class Model {
     private ArrayList<Picture> pictures;
     private int picIndex;
     private DISPLAY currentWindow; // This field's value will tell the view what to do
+    private DIFFICULTY currentDifficulty; //The current difficulty selected
 
     private User user;
     private int round;          // round number out of 5 (5/5 = last round)
@@ -53,6 +60,7 @@ public class Model {
         this.round = 1;
         this.picIndex = 0;
         this.currentWindow = DISPLAY.STARTUP;
+        this.currentDifficulty = null;
         this.internet = isInternetConnected();
         this.user = null;
     }
@@ -78,17 +86,19 @@ public class Model {
             System.out.println("Connected to database");
 
             //Retrieve user and password fields and checksxs
-            String query = "SELECT password, high_score FROM sql3765767.users WHERE username = ?";
+            String query = "SELECT password, N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
             if (rs.next()){
                 String hashPassword = rs.getString("password");
-                int high_score = rs.getInt("high_score");
+                int N_high_score = rs.getInt("N_high_score");
+                int S_high_score = rs.getInt("S_high_score");
+                int E_high_score = rs.getInt("E_high_score");
                 if (BCrypt.checkpw(password, hashPassword)){
                     System.out.println("Login successful!");
-                    user = new User(username, high_score, 0);
+                    user = new User(username, N_high_score, S_high_score, E_high_score, 0);
                     showLoggedInWindow();
                     return true;
                 }
@@ -103,6 +113,10 @@ public class Model {
 
     }
 
+    public void changeHighScore(String username){
+
+    }
+
     public void createAccount(String username, String password) {
         try {
             if (username.length() > 50 || password.length() > 50){
@@ -114,17 +128,31 @@ public class Model {
             //Replace with actual DB Username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
-            user = new User(username, 0, 0);
-            String query = "INSERT INTO sql3765767.users(username, password, high_score) VALUES (?, ?, ?)";
+            user = new User(username, 0, 0, 0, 0);
+            String query = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             stmt.setString(2, hashPassword);
             stmt.setInt(3, 0);
+            stmt.setInt(4, 0);
+            stmt.setInt(5, 0);
             stmt.executeUpdate();
             System.out.println("Added to Database!");
             showLoggedInWindow();
         } catch (Exception e) {
             System.out.println(e.toString());
+        }
+    }
+
+    public void setDifficulty(String csv){
+        if (csv.equals("/BeginnerPhotos.csv")){
+            this.currentDifficulty = DIFFICULTY.NOVICE;
+        }
+        else if (csv.equals("/MediumPictures.csv")){
+            this.currentDifficulty = DIFFICULTY.SEASONAL;
+        }
+        else if (csv.equals("/HardPictures.csv")) {
+            this.currentDifficulty = DIFFICULTY.EXPERT;
         }
     }
 
@@ -152,11 +180,55 @@ public class Model {
         Collections.shuffle(this.pictures); // put in random order
         this.getNextPic();
         this.showGameplayWindow();
+
+    }
+
+    public boolean adjustHighScore(){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            if (currentDifficulty == DIFFICULTY.NOVICE) {
+                String query = "UPDATE sql3765767.users SET N_high_score = ? WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setInt(1, user.getNoviceHighscore());
+                stmt.setString(2, user.getUsername());
+                stmt.executeUpdate();
+                System.out.println("Adjusted a rookie high score!");
+            }
+            else if (currentDifficulty == DIFFICULTY.SEASONAL){
+                String query = "UPDATE sql3765767.users SET S_high_score = ? WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                System.out.println("This is my username" + user.getUsername());
+                System.out.println("This is my high score" + user.getSeasonalHighscore());
+                stmt.setInt(1, user.getSeasonalHighscore());
+                stmt.setString(2, user.getUsername());
+                stmt.executeUpdate();
+                System.out.println("Adjusted a intermediate high score! of " + user.getSeasonalHighscore());
+            }
+            else{
+                String query = "UPDATE sql3765767.users SET E_high_score = ? WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setInt(1, user.getExpertHighscore());
+                stmt.setString(2, user.getUsername());
+                stmt.executeUpdate();
+                System.out.println("Adjusted a expert high score!");
+            }
+        } catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+        return true;
     }
 
     /** GETTERS */
     public DISPLAY getCurrentWindow() {
         return currentWindow;
+    }
+
+    public DIFFICULTY getCurrentDifficulty(){
+        return currentDifficulty;
     }
     public int getRound() {
         return round;
