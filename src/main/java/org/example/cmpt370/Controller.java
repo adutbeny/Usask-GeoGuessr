@@ -72,6 +72,9 @@ public class Controller {
             // TODO: Figure out how this looks
             //this.model.initiateMultiplayer();
         });
+        view.back2.setOnAction(event -> {
+            this.model.showLoggedInWindow();
+        });
         // gameplay
         view.submit.setOnAction(event -> {
             double dist = model.getDistance();
