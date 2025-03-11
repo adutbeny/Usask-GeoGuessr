@@ -419,7 +419,12 @@ public class View extends StackPane implements Subscriber {
         //Input for Username, Score and Round
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
-        this.gc.fillText(String.valueOf(this.model.getUser().getUsername()), textbX + 30, 105);//Accounts for 10 char
+        if (this.model.getUser() == null){
+            this.gc.fillText(String.valueOf("User"), textbX + 30, 105);
+        }
+        else {
+            this.gc.fillText(String.valueOf(this.model.getUser().getUsername()), textbX + 30, 105);//Accounts for 10 char
+        }
 
         this.gc.fillText(String.valueOf(this.model.getTotalScore()), textbX +230, 105);
 
