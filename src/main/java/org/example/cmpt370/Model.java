@@ -229,16 +229,16 @@ public class Model {
 
     /* MAP METHODS */
     /** Get distance from guessed point to true point */
-    public void getDistance() {
+    public double getDistance() {
         // make sure it exists
         if (this.currentPicture == null) {
             System.out.println("No picture loaded.");
-            return;
+            return -1;
         }
         // get the marker coordinates from model
         if (this.connector == null) {
             System.out.println("Marker coordinates not set.");
-            return;
+            return -1;
         }
 
         // get pictures longitude and latitude, print statements for debugging
@@ -260,7 +260,7 @@ public class Model {
         // update scores
         this.recentScore = calculateScore(distance);
         this.totalScore += this.recentScore;
-
+        return distance;
     }
 
     public void loadNextRound() {

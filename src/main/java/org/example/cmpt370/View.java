@@ -38,6 +38,8 @@ import java.util.Objects;
 public class View extends StackPane implements Subscriber {
 
     private Model model;
+    private WebView mapView;
+    private WebEngine mapEngine;
     private Canvas myCanvas;
     private GraphicsContext gc;
 
@@ -464,27 +466,28 @@ public class View extends StackPane implements Subscriber {
             next.setTranslateY(-newVal.doubleValue());
         });
 
-        WebView mapView = new WebView();
+        mapView = new WebView();
+
 
         mapView.setPrefSize(400, 400);
         mapView.relocate(775, 200);
 
         // loads map api with html file
-        WebEngine engine = mapView.getEngine();
+        mapEngine = mapView.getEngine();
 
         //this is checking for errors its not loading correctly
-        engine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
-        engine.setOnAlert(event ->{
+        mapEngine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
+        mapEngine.setOnAlert(event ->{
             String alertMessage = event.getData();
             System.out.println("WebView Alert:" + alertMessage);
         });
-        engine.setJavaScriptEnabled(true);
+        mapEngine.setJavaScriptEnabled(true);
 
         // this is for connecting the html to our java so we can get the coords
         JavaConnector connector = new JavaConnector();
-        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+        mapEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                JSObject window = (JSObject) engine.executeScript("window");
+                JSObject window = (JSObject) mapEngine.executeScript("window");
                 window.setMember("javaApp", connector);
                 // for debugging
                 System.out.println("JavaConnector set on JS window");
@@ -494,7 +497,7 @@ public class View extends StackPane implements Subscriber {
         this.model.setJavaConnector(connector); //store in model
 
         //load the map from the html file
-        engine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
+        mapEngine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
         //Map interactions
         mapView.setOnMousePressed(event->{
@@ -506,6 +509,17 @@ public class View extends StackPane implements Subscriber {
         layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     };
+
+    /* this sends needed info to our map html so it can create a line between two points */
+    public void updateMapOverlay(double guessedLat, double guessedLng,
+                                 double correctLat, double correctLng,
+                                 double distance) {
+        String script = String.format(
+                "showResult(%f, %f, %f, %f, %f);",
+                guessedLat, guessedLng, correctLat, correctLng, distance
+        );
+        mapEngine.executeScript(script);
+    }
 
 
     /** Displays fields to enter user information

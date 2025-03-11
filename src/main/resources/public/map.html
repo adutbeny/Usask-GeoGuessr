@@ -18,6 +18,10 @@
     </style>
     <script>
         let marker;
+        let map;
+        let resultLine;
+        let correctMarker;
+        let distanceInfoWindow;
         function initMap() {
             const campusBounds = {
                 north: 52.139,
@@ -27,7 +31,7 @@
             };
 
             // creates the map
-            const map = new google.maps.Map(document.getElementById("map"), {
+            map = new google.maps.Map(document.getElementById("map"), {
                 center: { lat: 52.13, lng: -106.63 },
                 zoom: 15,
                 mapTypeId: "satellite",
@@ -58,7 +62,7 @@
                 if (!marker) { // creates new marker if we havnt already made one
                     marker = new google.maps.Marker({
                         position: event.latLng,
-                        map: map
+                        map: map,
                     });
                 } else {    // if marker already exists then move the existing one to new clicked position
                     marker.setPosition(event.latLng)
@@ -70,6 +74,68 @@
                     alert("Calling updateMarkerCoordinates... FAILED"); //debugging
                 }
             });
+        }
+        function showResult(guessedLat, guessedLng, correctLat, correctLng, precomputedDistance) {
+            alert(`showResult called with: ${guessedLat} ${guessedLng} ${correctLat} ${correctLng} ${precomputedDistance}`)
+            const guessedLocation = new google.maps.LatLng(guessedLat, guessedLng);
+            const correctLocation = new google.maps.LatLng(correctLat, correctLng);
+
+            // creates the dash symbol
+            const dashSymbol = {
+                path: 'M 0,0 L15,0',
+                strokeOpacity: 1,
+                strokeColor: '#149563',
+                strokeWeight: 8,
+                scale: 1
+            };
+
+            // will remove existing line
+            if (resultLine) {
+                resultLine.setMap(null);
+            }
+
+            // draws out the actual line
+            resultLine = new google.maps.Polyline({
+                path: [guessedLocation, correctLocation],
+                strokeOpacity: 0,
+                icons: [{
+                    icon: dashSymbol,
+                    offset: '0',
+                    repeat: '25px'
+                }],
+                map: map
+            });
+
+            // removes any markers that may exist
+            if (correctMarker) {
+                correctMarker.setMap(null);
+            }
+
+            // draws correct marker
+            correctMarker = new google.maps.Marker({
+                position: correctLocation,
+                map: map,
+                title: "Correct Location",
+                icon: "http://maps.google.com/mapfiles/ms/icons/green-dot.png"
+            });
+            const midLat = (guessedLat + correctLat) / 2;
+            const midLng = (guessedLng + correctLng) / 2;
+            const contentString = `<div style="color: #0A6A42; font-weight: bold;">${precomputedDistance.toFixed(0)} m away</div>`;
+
+            // removes any existing InfoWindow
+            if (distanceInfoWindow) {
+                distanceInfoWindow.close();
+            }
+            distanceInfoWindow = new google.maps.InfoWindow({
+                content: contentString,
+                position: {lat: midLat, lng: midLng}
+            });
+            distanceInfoWindow.open(map);
+        }
+        function clearMapOverlays() {
+            if (resultLine) { resultLine.setMap(null); resultLine = null; }
+            if (correctMarker) { correctMarker.setMap(null); correctMarker = null; }
+            if (distanceInfoWindow) { distanceInfoWindow.close(); distanceInfoWindow = null; }
         }
     </script>
     <script

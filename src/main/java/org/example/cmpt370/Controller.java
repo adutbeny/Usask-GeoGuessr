@@ -60,7 +60,17 @@ public class Controller {
             // TODO: implement this is model
         });
         view.submit.setOnAction(event -> {
-            this.model.getDistance();
+            double dist = model.getDistance();
+            /* need to have this in controller so that we can call updateMapOverlay()
+             in view to send to our html, this is a slight workaround could probably find
+             a different solution*/
+            JavaConnector connector = model.getJavaConnector();
+            double markerLat = connector.getMarkerLat();
+            double markerLng = connector.getMarkerLng();
+            Picture curr = model.getCurrentPicture();
+            double pictureLat = curr.getLatitude();
+            double pictureLng = curr.getLongitude();
+            view.updateMapOverlay(markerLat, markerLng, pictureLat, pictureLng, dist);
             view.submit.setVisible(false);
             view.next.setVisible(true);
         });
