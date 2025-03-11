@@ -18,15 +18,11 @@ enum DISPLAY {
     GAMEPLAY,
     LOGIN,
     CREATE,
+    LOGGED_IN,      // window when you have succesfully logged in
+    HISTORY,
+    PINNED,
     LEADERBOARD,
     END,
-    //etc.
-    LOGGED_IN,      // window when you have succesfully logged in
-    CREATED_ACCOUNT // window for when you made account and must log in now
-
-
-
-
 
 }
 
@@ -93,7 +89,7 @@ public class Model {
                 if (BCrypt.checkpw(password, hashPassword)){
                     System.out.println("Login successful!");
                     user = new User(username, high_score, 0);
-                    showStartupWindow();
+                    showLoggedInWindow();
                     return true;
                 }
             }
@@ -108,7 +104,7 @@ public class Model {
     }
 
     public void createAccount(String username, String password) {
-        try{
+        try {
             if (username.length() > 50 || password.length() > 50){
                 System.out.println("User and password must be less than 50 characters");
                 return;
@@ -126,8 +122,8 @@ public class Model {
             stmt.setInt(3, 0);
             stmt.executeUpdate();
             System.out.println("Added to Database!");
-            showStartupWindow();
-        }catch (Exception e){
+            showLoggedInWindow();
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
     }
@@ -219,6 +215,26 @@ public class Model {
     /** Prompts View to show Create Acc window */
     public void showCreateAccWindow() {
         this.currentWindow = DISPLAY.CREATE;
+        notifySubscribers();
+    }
+    /** Prompts View to show logged in window */
+    public void showLoggedInWindow() {
+        this.currentWindow = DISPLAY.LOGGED_IN;
+        notifySubscribers();
+    }
+    /** ... History window */
+    public void showHistoryWindow() {
+        this.currentWindow = DISPLAY.HISTORY;
+        notifySubscribers();
+    }
+    /** ... Pinned locations */
+    public void showPinnedWindow() {
+        this.currentWindow = DISPLAY.PINNED;
+        notifySubscribers();
+    }
+    /** ... Leaderboard */
+    public void showLeaderboard() {
+        this.currentWindow = DISPLAY.LEADERBOARD;
         notifySubscribers();
     }
     /** Prompts endgame screen for offline mode */
