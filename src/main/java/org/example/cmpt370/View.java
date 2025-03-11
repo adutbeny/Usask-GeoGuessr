@@ -67,13 +67,17 @@ public class View extends StackPane implements Subscriber {
     public Button playAgain;
     public Button exit;
 
-    // another back button if we need to return to a different window
-    public Button back2;
     // gameplay loop
     public Button submit;
     public Button next;
 
-    public Button Multiplayer;
+    // logged in
+    public Button history;
+    public Button pinned;
+    public Button leaderboard;
+    public Button multiplayer;
+    public Button back2;        // returns to logged in window
+
 
     /** Resets the View back to a blank slate, or 'tabula rasa'
      * Call at the start of every window creation method */
@@ -92,6 +96,8 @@ public class View extends StackPane implements Subscriber {
         // Setup Buttons
 
         // Base button style
+        // copied this into the CSS File so should be unneeded
+        // TODO: refactor this:
         String buttonStyle = "-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " + // Base color and darker shade
                 "-fx-text-fill: white; " +
                 "-fx-font-size: 16px; " +
@@ -136,8 +142,8 @@ public class View extends StackPane implements Subscriber {
         this.createAcc.setOnMouseReleased(e -> this.createAcc.setStyle(hoverStyle));
         this.createAcc.setPrefWidth(200);
 
-        // Multilayer Button
-        this.createAcc = new Button("Multiplayer");
+        // CreateAcc Button
+        this.createAcc = new Button("Create Account");
         this.createAcc.setStyle(buttonStyle);
         this.createAcc.setOnMouseEntered(e -> this.createAcc.setStyle(hoverStyle));
         this.createAcc.setOnMouseExited(e -> this.createAcc.setStyle(buttonStyle));
@@ -238,6 +244,7 @@ public class View extends StackPane implements Subscriber {
         this.exit.setOnMouseExited(e -> this.exit.setStyle(buttonStyle));
         this.exit.setOnMousePressed(e -> this.exit.setStyle(pressedStyle));
         this.exit.setOnMouseReleased(e -> this.exit.setStyle(hoverStyle));
+        this.exit.setPrefWidth(200);
 
         // Another back button in case we need it
         this.back2 = new Button("Back");
@@ -247,6 +254,18 @@ public class View extends StackPane implements Subscriber {
         this.back2.setOnMousePressed(e -> this.back2.setStyle(pressedStyle));
         this.back2.setOnMouseReleased(e -> this.back2.setStyle(hoverStyle));
         this.back2.setPrefWidth(200);
+
+        this.history = new Button("History");
+        this.history.setPrefWidth(200);
+
+        this.pinned = new Button("Pinned");
+        this.pinned.setPrefWidth(200);
+
+        this.leaderboard = new Button("Leaderboard");
+        this.leaderboard.setPrefWidth(200);
+
+        this.multiplayer = new Button("Multiplayer");
+        this.multiplayer.setPrefWidth(200);
 
         // TODO: Add future buttons here
     }
@@ -286,6 +305,7 @@ public class View extends StackPane implements Subscriber {
             // TODO - need to check this and see if it looks good
             buttonStack.getChildren().add(noInternet);
         }
+        buttonStack.getChildren().add(this.exit);
         // set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
@@ -293,7 +313,6 @@ public class View extends StackPane implements Subscriber {
         // add all to layout in order!!!
         this.getChildren().add(buttonStack);
     }
-
 
     /** Shows window with buttons to select difficulty
      * Same other components as startup */
@@ -524,7 +543,7 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     };
 
-    /* this sends needed info to our map html so it can create a line between two points */
+    /** this sends needed info to our map html so it can create a line between two points */
     public void updateMapOverlay(double guessedLat, double guessedLng,
                                  double correctLat, double correctLng,
                                  double distance) {
@@ -613,7 +632,7 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
-
+    /** View for when the user has successfully logged in */
     public void createLoggedInWindow() {
         createDefaultBackground();
 
@@ -636,37 +655,7 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillText("Usask GeoGuesser", 400, 270);
 
         // Button Stack
-        VBox buttonStack = new VBox(25, this.quickplay, this.Multiplayer);
-        buttonStack.setTranslateX(300);
-        buttonStack.setTranslateY(350);
-
-        // Add all to layout
-        this.getChildren().addAll(buttonStack);
-
-    }
-    public void createCreatedAccountWindow() {
-        createDefaultBackground();
-
-        LinearGradient gradient = new LinearGradient(
-                0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
-                new Stop(0, Color.rgb(10, 106, 66)),
-                new Stop(1, Color.rgb(20, 150, 100))
-        );
-
-        // black outline
-        this.gc.setFill(Color.BLACK);
-        for (int i = -2; i <= 2; i++) {
-            for (int j = -2; j <= 2; j++) {
-                this.gc.fillText("Usask GeoGuesser", 400 + i, 270 + j);
-            }
-        }
-
-        // Main text
-        this.gc.setFill(gradient);
-        this.gc.fillText("Usask GeoGuesser", 400, 270);
-
-        // Button Stack
-        VBox buttonStack = new VBox(25, this.quickplay, this.login);
+        VBox buttonStack = new VBox(20, this.quickplay, this.history, this.pinned, this.leaderboard, this.multiplayer, this.exit);
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(350);
 
@@ -674,8 +663,7 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(buttonStack);
     }
 
-
-
+    /** Background for use with the log in and create account windows */
     private void createSignInBackground() {
         this.resetView();
 
@@ -695,8 +683,6 @@ public class View extends StackPane implements Subscriber {
         dropShadow.setColor(Color.BLACK);
         this.gc.setEffect(dropShadow);
     }
-
-
 
     /** Creates end screen to display score and option to play again, exit
      * Mostly probably actually used if playing offline and cant show leaderboard */
@@ -727,12 +713,27 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, display);
     }
 
+    /** Screen for viewing player history */
+    private void createHistoryWindow() {
+
+    }
+
+    /** Screen for viewing players pinned rounds */
+    private void createPinnedWindow() {
+
+    }
+
+    /** Creates screen to show leaderboard */
+    private void createLeaderboardWindow() {
+
+    }
+
+    // SETUP METHODS
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
         selectMainMenu();
     }
-
     /** Attaches itself to controller so that we can receive
      * interactions from the user and pass to the appropriate
      * @param controller method
@@ -759,10 +760,7 @@ public class View extends StackPane implements Subscriber {
             case LOGIN -> loginWindow();
             case CREATE -> createAccWindow();
             case END -> createEndScreen();
-
-            // NOT implemented properly yet ////////
             case LOGGED_IN -> createLoggedInWindow();
-            case CREATED_ACCOUNT -> createCreatedAccountWindow();
         }
     }
 }
