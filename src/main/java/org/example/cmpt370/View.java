@@ -94,122 +94,44 @@ public class View extends StackPane implements Subscriber {
         this.gc = this.myCanvas.getGraphicsContext2D();
 
         // Setup Buttons
-
-        // Base button style
-        // copied this into the CSS File so should be unneeded
-        // TODO: refactor this:
-        String buttonStyle = "-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E); " + // Base color and darker shade
-                "-fx-text-fill: white; " +
-                "-fx-font-size: 16px; " +
-                "-fx-font-weight: bold; " +
-                "-fx-background-radius: 10; " +
-                "-fx-padding: 10; " +
-                "-fx-border-color: #06321E; " + // Darker border color
-                "-fx-border-width: 2; " +
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1); " + // Shadow
-                "-fx-cursor: hand;"; // Hand cursor on hover
-
-        // Hover style
-        String hoverStyle = "-fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42); " + // Lighter gradient on hover
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 2);"; // Increased shadow on hover
-
-        // Pressed style
-        String pressedStyle = "-fx-background-color: linear-gradient(to bottom, #084A2E, #0A6A42); " + // Darker gradient on press
-                "-fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);"; // Decreased shadow on press
-
         // Main Window
         this.quickplay = new Button("Quickplay");
-        this.quickplay.setStyle(buttonStyle);
-        this.quickplay.setOnMouseEntered(e -> this.quickplay.setStyle(hoverStyle));
-        this.quickplay.setOnMouseExited(e -> this.quickplay.setStyle(buttonStyle));
-        this.quickplay.setOnMousePressed(e -> this.quickplay.setStyle(pressedStyle));
-        this.quickplay.setOnMouseReleased(e -> this.quickplay.setStyle(hoverStyle));
         this.quickplay.setPrefWidth(200);
 
         this.login = new Button("Log-In");
-        this.login.setStyle(buttonStyle);
-        this.login.setOnMouseEntered(e -> this.login.setStyle(hoverStyle));
-        this.login.setOnMouseExited(e -> this.login.setStyle(buttonStyle));
-        this.login.setOnMousePressed(e -> this.login.setStyle(pressedStyle));
-        this.login.setOnMouseReleased(e -> this.login.setStyle(hoverStyle));
         this.login.setPrefWidth(200);
 
         this.createAcc = new Button("Create Account");
-        this.createAcc.setStyle(buttonStyle);
-        this.createAcc.setOnMouseEntered(e -> this.createAcc.setStyle(hoverStyle));
-        this.createAcc.setOnMouseExited(e -> this.createAcc.setStyle(buttonStyle));
-        this.createAcc.setOnMousePressed(e -> this.createAcc.setStyle(pressedStyle));
-        this.createAcc.setOnMouseReleased(e -> this.createAcc.setStyle(hoverStyle));
         this.createAcc.setPrefWidth(200);
 
         // CreateAcc Button
         this.createAcc = new Button("Create Account");
-        this.createAcc.setStyle(buttonStyle);
-        this.createAcc.setOnMouseEntered(e -> this.createAcc.setStyle(hoverStyle));
-        this.createAcc.setOnMouseExited(e -> this.createAcc.setStyle(buttonStyle));
-        this.createAcc.setOnMousePressed(e -> this.createAcc.setStyle(pressedStyle));
-        this.createAcc.setOnMouseReleased(e -> this.createAcc.setStyle(hoverStyle));
         this.createAcc.setPrefWidth(200);
 
         // Level Selector
         this.easy = new Button("Novice Navigator");
-        this.easy.setStyle(buttonStyle);
-        this.easy.setOnMouseEntered(e -> this.easy.setStyle(hoverStyle));
-        this.easy.setOnMouseExited(e -> this.easy.setStyle(buttonStyle));
-        this.easy.setOnMousePressed(e -> this.easy.setStyle(pressedStyle));
-        this.easy.setOnMouseReleased(e -> this.easy.setStyle(hoverStyle));
         this.easy.setPrefWidth(200);
 
         this.medium = new Button("Seasonal Searcher");
-        this.medium.setStyle(buttonStyle);
-        this.medium.setOnMouseEntered(e -> this.medium.setStyle(hoverStyle));
-        this.medium.setOnMouseExited(e -> this.medium.setStyle(buttonStyle));
-        this.medium.setOnMousePressed(e -> this.medium.setStyle(pressedStyle));
-        this.medium.setOnMouseReleased(e -> this.medium.setStyle(hoverStyle));
         this.medium.setPrefWidth(200);
 
         this.hard = new Button("Expert Explorer");
-        this.hard.setStyle(buttonStyle);
-        this.hard.setOnMouseEntered(e -> this.hard.setStyle(hoverStyle));
-        this.hard.setOnMouseExited(e -> this.hard.setStyle(buttonStyle));
-        this.hard.setOnMousePressed(e -> this.hard.setStyle(pressedStyle));
-        this.hard.setOnMouseReleased(e -> this.hard.setStyle(hoverStyle));
         this.hard.setPrefWidth(200);
 
         // Button for submitting
         this.submit = new Button("Submit");
-        this.submit.setStyle(buttonStyle);
-        this.submit.setOnMouseEntered(e -> this.submit.setStyle(hoverStyle));
-        this.submit.setOnMouseExited(e -> this.submit.setStyle(buttonStyle));
-        this.submit.setOnMousePressed(e -> this.submit.setStyle(pressedStyle));
-        this.submit.setOnMouseReleased(e -> this.submit.setStyle(hoverStyle));
         this.submit.setPrefWidth(200);
 
         // Button for going to next round
         this.next= new Button("Next");
-        this.next.setStyle(buttonStyle);
-        this.next.setOnMouseEntered(e -> this.next.setStyle(hoverStyle));
-        this.next.setOnMouseExited(e -> this.next.setStyle(buttonStyle));
-        this.next.setOnMousePressed(e -> this.next.setStyle(pressedStyle));
-        this.next.setOnMouseReleased(e -> this.next.setStyle(hoverStyle));
         this.next.setPrefWidth(200);
 
         // Back button - returns to startup
         this.back1 = new Button("Back");
-        this.back1.setStyle(buttonStyle);
-        this.back1.setOnMouseEntered(e -> this.back1.setStyle(hoverStyle));
-        this.back1.setOnMouseExited(e -> this.back1.setStyle(buttonStyle));
-        this.back1.setOnMousePressed(e -> this.back1.setStyle(pressedStyle));
-        this.back1.setOnMouseReleased(e -> this.back1.setStyle(hoverStyle));
         this.back1.setPrefWidth(200);
 
         // submits credentials from login
         this.submitLogin = new Button("Login");
-        this.submitLogin.setStyle(buttonStyle);
-        this.submitLogin.setOnMouseEntered(e -> this.submitLogin.setStyle(hoverStyle));
-        this.submitLogin.setOnMouseExited(e -> this.submitLogin.setStyle(buttonStyle));
-        this.submitLogin.setOnMousePressed(e -> this.submitLogin.setStyle(pressedStyle));
-        this.submitLogin.setOnMouseReleased(e -> this.submitLogin.setStyle(hoverStyle));
         this.submitLogin.setPrefWidth(200);
 
         // Text fields for login
@@ -218,11 +140,6 @@ public class View extends StackPane implements Subscriber {
 
         // submit button to create account
         this.submitCreate = new Button("Submit");
-        this.submitCreate.setStyle(buttonStyle);
-        this.submitCreate.setOnMouseEntered(e -> this.submitCreate.setStyle(hoverStyle));
-        this.submitCreate.setOnMouseExited(e -> this.submitCreate.setStyle(buttonStyle));
-        this.submitCreate.setOnMousePressed(e -> this.submitCreate.setStyle(pressedStyle));
-        this.submitCreate.setOnMouseReleased(e -> this.submitCreate.setStyle(hoverStyle));
         this.submitCreate.setPrefWidth(200);
 
         // Text fields for creation
@@ -231,28 +148,14 @@ public class View extends StackPane implements Subscriber {
 
         // returns to select difficulty after game ends
         this.playAgain = new Button("Play Again");
-        this.playAgain.setStyle(buttonStyle);
-        this.playAgain.setOnMouseEntered(e -> this.playAgain.setStyle(hoverStyle));
-        this.playAgain.setOnMouseExited(e -> this.playAgain.setStyle(buttonStyle));
-        this.playAgain.setOnMousePressed(e -> this.playAgain.setStyle(pressedStyle));
-        this.playAgain.setOnMouseReleased(e -> this.playAgain.setStyle(hoverStyle));
+        this.playAgain.setPrefWidth(200);
 
         // kill program
         this.exit = new Button("Exit");
-        this.exit.setStyle(buttonStyle);
-        this.exit.setOnMouseEntered(e -> this.exit.setStyle(hoverStyle));
-        this.exit.setOnMouseExited(e -> this.exit.setStyle(buttonStyle));
-        this.exit.setOnMousePressed(e -> this.exit.setStyle(pressedStyle));
-        this.exit.setOnMouseReleased(e -> this.exit.setStyle(hoverStyle));
         this.exit.setPrefWidth(200);
 
         // Another back button in case we need it
         this.back2 = new Button("Back");
-        this.back2.setStyle(buttonStyle);
-        this.back2.setOnMouseEntered(e -> this.back2.setStyle(hoverStyle));
-        this.back2.setOnMouseExited(e -> this.back2.setStyle(buttonStyle));
-        this.back2.setOnMousePressed(e -> this.back2.setStyle(pressedStyle));
-        this.back2.setOnMouseReleased(e -> this.back2.setStyle(hoverStyle));
         this.back2.setPrefWidth(200);
 
         this.history = new Button("History");
@@ -713,19 +616,23 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, display);
     }
 
+    // TODO: x3
     /** Screen for viewing player history */
     private void createHistoryWindow() {
 
+        // make sure this window includes the 'this.back2' button
     }
 
     /** Screen for viewing players pinned rounds */
     private void createPinnedWindow() {
 
+        // make sure this window includes the 'this.back2' button
     }
 
     /** Creates screen to show leaderboard */
     private void createLeaderboardWindow() {
 
+        // make sure this window includes the 'this.back2' button
     }
 
     // SETUP METHODS
@@ -761,6 +668,9 @@ public class View extends StackPane implements Subscriber {
             case CREATE -> createAccWindow();
             case END -> createEndScreen();
             case LOGGED_IN -> createLoggedInWindow();
+            case HISTORY -> createHistoryWindow();
+            case LEADERBOARD -> createLeaderboardWindow();
+            case PINNED -> createPinnedWindow();
         }
     }
 }
