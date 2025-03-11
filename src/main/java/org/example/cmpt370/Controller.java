@@ -16,7 +16,7 @@ public class Controller {
     /** Controller Constructor
      * @param view takes view as a argument to set up HANDLING
      *             for all the buttons, without a permanent
-     *             connection which would break the MVC architectureg
+     *             connection which would break the MVC architecture
      */
     public Controller(View view) {
         view.quickplay.setOnAction(event -> {
@@ -42,13 +42,13 @@ public class Controller {
         view.back1.setOnAction(event -> {
             this.model.showStartupWindow();
         });
+        // log in
         view.submitLogin.setOnAction(event -> {
             String username = view.usernameField.getText();
             String password = view.passwordField.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
             this.model.verifyLogin(username, password);
-            // TODO: implement this method in model
             // TODO: need to add handling for incorrect password
         });
         view.submitCreate.setOnAction(event -> {
@@ -57,8 +57,22 @@ public class Controller {
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
             this.model.createAccount(username, password);
-            // TODO: implement this is model
         });
+        // logged in
+        view.history.setOnAction(event -> {
+            this.model.showHistoryWindow();
+        });
+        view.pinned.setOnAction(event -> {
+            this.model.showPinnedWindow();
+        });
+        view.leaderboard.setOnAction(event -> {
+            this.model.showLeaderboard();
+        });
+        view.multiplayer.setOnAction(event -> {
+            // TODO: Figure out how this looks
+            //this.model.initiateMultiplayer();
+        });
+        // gameplay
         view.submit.setOnAction(event -> {
             double dist = model.getDistance();
             /* need to have this in controller so that we can call updateMapOverlay()
@@ -74,7 +88,6 @@ public class Controller {
             view.submit.setVisible(false);
             view.next.setVisible(true);
         });
-
         view.next.setOnAction(e -> {
             this.model.loadNextRound();
             view.next.setVisible(false);
