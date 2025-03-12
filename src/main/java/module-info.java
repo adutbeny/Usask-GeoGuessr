@@ -5,6 +5,8 @@ module org.example.cmpt370 {
     requires jdk.jsobject;
     requires java.sql;
     requires jbcrypt;
+    requires java.desktop;
+    requires jdk.httpserver;
 
 
     opens org.example.cmpt370 to javafx.fxml;
