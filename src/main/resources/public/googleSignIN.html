@@ -1,13 +1,10 @@
-!DOCTYPE html>
-
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Google Sign-In</title>
-
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -21,7 +18,6 @@
             height: 100vh;
             margin: 0;
         }
-
         .container {
             background: rgba(255, 255, 255, 0.1);
             padding: 30px;
@@ -30,28 +26,24 @@
             width: 90%;
             max-width: 400px;
         }
-
         h2 {
             margin-bottom: 20px;
         }
-
         #g-signin {
             margin-top: 15px;
         }
-
         .info-text {
             margin-top: 20px;
             font-size: 14px;
             opacity: 0.8;
         }
     </style>
-
     <script>
         function handleCredentialResponse(response) {
             console.log("Encoded JWT ID token: " + response.credential);
 
             // Send token back to JavaFX app via local server
-            fetch('http://localhost:5000/auth', {
+            fetch('http://localhost:63343/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: response.credential })

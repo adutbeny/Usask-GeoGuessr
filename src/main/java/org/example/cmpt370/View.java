@@ -3,8 +3,9 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import javafx.concurrent.Worker;
-import javafx.scene.Scene;
+import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpServer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -13,40 +14,28 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.StackPane;
 import javafx.scene.layout.Pane;
-
+import javafx.scene.layout.StackPane;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
-
-import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
-import javafx.scene.text.Font;
-import javafx.scene.text.TextAlignment;
-
-import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
+import java.awt.*;
 import java.io.*;
-import java.net.URL;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Objects;
-
-import java.awt.Desktop;
-import java.net.URI;
-
-import com.sun.net.httpserver.HttpServer;
-import com.sun.net.httpserver.HttpHandler;
-import com.sun.net.httpserver.HttpExchange;
-
-import java.net.InetSocketAddress;
-import java.nio.charset.StandardCharsets;
 
 
 
@@ -587,11 +576,11 @@ public class View extends StackPane implements Subscriber {
     }
     public void startAuthServer() {
         try {
-            HttpServer server = HttpServer.create(new InetSocketAddress(5000), 0);
+            HttpServer server = HttpServer.create(new InetSocketAddress(63343), 0);
             server.createContext("/auth", new AuthHandler());
             server.setExecutor(null);
             server.start();
-            System.out.println("Auth server running at http://localhost:5000/auth");
+            System.out.println("Auth server running at http://localhost:63343");
         } catch (IOException e) {
             e.printStackTrace();
         }
