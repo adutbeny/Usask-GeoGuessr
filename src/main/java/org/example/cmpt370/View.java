@@ -3,6 +3,8 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.concurrent.Worker;
+import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -27,9 +29,24 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.TextAlignment;
 
+import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
+import java.io.File;
+import java.net.URL;
 import java.util.Objects;
+
+import java.awt.Desktop;
+import java.net.URI;
+
+import com.sun.net.httpserver.HttpServer;
+import com.sun.net.httpserver.HttpHandler;
+import com.sun.net.httpserver.HttpExchange;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.net.InetSocketAddress;
+import java.nio.charset.StandardCharsets;
+
 
 /** Class that handles all display output
  * Needs to be updated by the Model each time
@@ -78,17 +95,28 @@ public class View extends StackPane implements Subscriber {
     public Button multiplayer;
     public Button back2;        // returns to logged in window
 
+    public Button googleSignIn; // Button for Google Sign-In
 
-    /** Resets the View back to a blank slate, or 'tabula rasa'
-     * Call at the start of every window creation method */
+
+    // Need these to implement google sign in
+    private WebView googleWebView;
+    private WebEngine googleWebEngine;
+
+
+    /**
+     * Resets the View back to a blank slate, or 'tabula rasa'
+     * Call at the start of every window creation method
+     */
     public void resetView() {
         this.getChildren().clear();
         this.myCanvas = new Canvas(1200, 800);
         this.gc = this.myCanvas.getGraphicsContext2D();
     }
 
-    /** Constructor -
-     * Runs all start up to create initial display when program starts */
+    /**
+     * Constructor -
+     * Runs all start up to create initial display when program starts
+     */
     public View() {
         this.myCanvas = new Canvas(1200, 800);
         this.gc = this.myCanvas.getGraphicsContext2D();
@@ -123,7 +151,7 @@ public class View extends StackPane implements Subscriber {
         this.submit.setPrefWidth(200);
 
         // Button for going to next round
-        this.next= new Button("Next");
+        this.next = new Button("Next");
         this.next.setPrefWidth(200);
 
         // Back button - returns to startup
@@ -170,10 +198,15 @@ public class View extends StackPane implements Subscriber {
         this.multiplayer = new Button("Multiplayer");
         this.multiplayer.setPrefWidth(200);
 
+        // Google button stuff...
+        this.googleSignIn = new Button("Sign in with Google");
+        this.googleSignIn.setPrefWidth(200);
+
         // TODO: Add future buttons here
     }
 
-    /** Method to show main start up screen
+    /**
+     * Method to show main start up screen
      * Brought this out of the constructor so we can go back to it if needed
      */
     public void selectMainMenu() {
@@ -217,8 +250,10 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().add(buttonStack);
     }
 
-    /** Shows window with buttons to select difficulty
-     * Same other components as startup */
+    /**
+     * Shows window with buttons to select difficulty
+     * Same other components as startup
+     */
     public void selectDifficultyWindow() {
         this.createDefaultBackground();
 
@@ -249,8 +284,10 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(buttonStack);
     }
 
-    /** Creates default background and adds it to the View
-     * used by main menu, select difficulty and others */
+    /**
+     * Creates default background and adds it to the View
+     * used by main menu, select difficulty and others
+     */
     private void createDefaultBackground() {
         this.resetView();
 
@@ -292,7 +329,9 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(bg, this.myCanvas, logo);
     }
 
-    /** Displays window that will be used during main playing area runtime */
+    /**
+     * Displays window that will be used during main playing area runtime
+     */
     public void selectGameplayWindow() {
         this.resetView();
 
@@ -327,38 +366,37 @@ public class View extends StackPane implements Subscriber {
         double skew = 50;
         this.gc.setFill(gradient);
         // Parallellogram shape
-        double [] xP = {textbX, textbX+textWidth, textbX+textWidth-skew, textbX-skew};
-        double [] yP = {textbY, textbY, textbY+textHeight,textbY+textHeight};
-        this.gc.fillPolygon(xP,yP,4);
+        double[] xP = {textbX, textbX + textWidth, textbX + textWidth - skew, textbX - skew};
+        double[] yP = {textbY, textbY, textbY + textHeight, textbY + textHeight};
+        this.gc.fillPolygon(xP, yP, 4);
 
         //Username, Score, Round Label
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
-        this.gc.fillText("Username",textbX + 30,textbY+ 25);
-        this.gc.fillText("Score", textbX +230, textbY + 25);
-        this.gc.fillText("Round", textbX +410, textbY+ 25);
+        this.gc.fillText("Username", textbX + 30, textbY + 25);
+        this.gc.fillText("Score", textbX + 230, textbY + 25);
+        this.gc.fillText("Round", textbX + 410, textbY + 25);
 
         //Input for Username, Score and Round
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 25));
-        if (this.model.getUser() == null){
+        this.gc.setFont(Font.font("Courier Prime", FontWeight.BOLD, 25));
+        if (this.model.getUser() == null) {
             this.gc.fillText(String.valueOf("User"), textbX + 30, 105);
-        }
-        else {
+        } else {
             this.gc.fillText(String.valueOf(this.model.getUser().getUsername()), textbX + 30, 105);//Accounts for 10 char
         }
 
-        this.gc.fillText(String.valueOf(this.model.getTotalScore()), textbX +230, 105);
+        this.gc.fillText(String.valueOf(this.model.getTotalScore()), textbX + 230, 105);
 
-        this.gc.fillText(this.model.getRound() + "/5", textbX +415, 105);
+        this.gc.fillText(this.model.getRound() + "/5", textbX + 415, 105);
 
         //Green border between the photo and the green username box
         double borderX = 0;
         double borderY = 115;
         double borderWidth = 1200;
         double borderHeight = 30;
-        this.gc.setFill( Color.rgb(20, 150, 100));
-        this.gc.fillRect(borderX,borderY,borderWidth, borderHeight);
+        this.gc.setFill(Color.rgb(20, 150, 100));
+        this.gc.fillRect(borderX, borderY, borderWidth, borderHeight);
 
         Picture curr = this.model.getNextPic();
         ImageView c = null;
@@ -404,7 +442,7 @@ public class View extends StackPane implements Subscriber {
 
         //this is checking for errors its not loading correctly
         mapEngine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
-        mapEngine.setOnAlert(event ->{
+        mapEngine.setOnAlert(event -> {
             String alertMessage = event.getData();
             System.out.println("WebView Alert:" + alertMessage);
         });
@@ -436,17 +474,21 @@ public class View extends StackPane implements Subscriber {
         mapEngine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
         //Map interactions
-        mapView.setOnMousePressed(event->{
-            mapView.setUserData(new double[]{event.getSceneX(),event.getY(),mapView.getLayoutX(),mapView.getLayoutY()});
+        mapView.setOnMousePressed(event -> {
+            mapView.setUserData(new double[]{event.getSceneX(), event.getY(), mapView.getLayoutX(), mapView.getLayoutY()});
         });
 
-        layout.getChildren().add(0,c);
+        layout.getChildren().add(0, c);
         layout.getChildren().add(mapView);
         layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
-    };
+    }
 
-    /** this sends needed info to our map html so it can create a line between two points */
+    ;
+
+    /**
+     * this sends needed info to our map html so it can create a line between two points
+     */
     public void updateMapOverlay(double guessedLat, double guessedLng,
                                  double correctLat, double correctLng,
                                  double distance) {
@@ -458,9 +500,11 @@ public class View extends StackPane implements Subscriber {
     }
 
 
-    /** Displays fields to enter user information
+    /**
+     * Displays fields to enter user information
      * Needs to connect to database to verify credentials
-     * and then once verified should create User instance in model */
+     * and then once verified should create User instance in model
+     */
     public void loginWindow() {
         this.createSignInBackground();
 
@@ -475,31 +519,86 @@ public class View extends StackPane implements Subscriber {
         this.usernameField.setPrefWidth(300);
         this.usernameField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
         this.usernameField.setLayoutX(450);
-        this.usernameField.setLayoutY(300);
+        this.usernameField.setLayoutY(275);
 
         // Password Field
         this.passwordField.setPromptText("Password");
         this.passwordField.setPrefWidth(300);
         this.passwordField.setStyle("-fx-font-size: 16px; -fx-padding: 10px; -fx-background-radius: 10;");
         this.passwordField.setLayoutX(450);
-        this.passwordField.setLayoutY(350);
+        this.passwordField.setLayoutY(325);
 
-        this.back1.setLayoutX(500);
-        this.back1.setLayoutY(500);
 
         this.submitLogin.setLayoutX(500);
-        this.submitLogin.setLayoutY(420);
+        this.submitLogin.setLayoutY(385);
+
+        // Google sign in button...
+        this.googleSignIn.setLayoutX(500);
+        this.googleSignIn.setLayoutY(450);
+
+        this.back1.setLayoutX(500);
+        this.back1.setLayoutY(515);
+
+        this.googleSignIn.setOnAction(event -> openGoogleSignInPage());
 
         // add to layout
         Pane layout = new Pane();
-        layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.back1);
+        layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1);
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
-    /** Displays fields to enter user information
+
+    private void openGoogleSignInPage() {
+        try {
+            // Use getClass().getResource to get the resource file path
+            URL url = getClass().getResource("/public/googleSignIN.html");
+
+            if (url != null) {
+                // Convert URL to URI, then to a File
+                File htmlFile = new File(url.toURI());
+                // Open it in the default browser
+                Desktop.getDesktop().browse(htmlFile.toURI());
+            } else {
+                System.out.println("Error: googleSignIN.html not found!");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    public void startAuthServer() {
+        try {
+            HttpServer server = HttpServer.create(new InetSocketAddress(5000), 0);
+            server.createContext("/auth", new AuthHandler());
+            server.setExecutor(null);
+            server.start();
+            System.out.println("Auth server running at http://localhost:5000/auth");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    static class AuthHandler implements HttpHandler {
+        @Override
+        public void handle(HttpExchange exchange) throws IOException {
+            if ("POST".equals(exchange.getRequestMethod())) {
+                String token = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                System.out.println("Received Google Token: " + token);
+            }
+
+            String response = "Token received!";
+            exchange.sendResponseHeaders(200, response.length());
+            OutputStream os = exchange.getResponseBody();
+            os.write(response.getBytes());
+            os.close();
+        }
+    }
+
+    /**
+     * Displays fields to enter user information
      * Needs to connect to database to create new entry in the DB
      * and then once verified should create User instance in model
-     * overall should be pretty similar to login but with different handling */
+     * overall should be pretty similar to login but with different handling
+     */
     public void createAccWindow() {
         this.createSignInBackground();
 
@@ -535,7 +634,9 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
-    /** View for when the user has successfully logged in */
+    /**
+     * View for when the user has successfully logged in
+     */
     public void createLoggedInWindow() {
         createDefaultBackground();
 
@@ -566,7 +667,9 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(buttonStack);
     }
 
-    /** Background for use with the log in and create account windows */
+    /**
+     * Background for use with the log in and create account windows
+     */
     private void createSignInBackground() {
         this.resetView();
 
@@ -587,8 +690,10 @@ public class View extends StackPane implements Subscriber {
         this.gc.setEffect(dropShadow);
     }
 
-    /** Creates end screen to display score and option to play again, exit
-     * Mostly probably actually used if playing offline and cant show leaderboard */
+    /**
+     * Creates end screen to display score and option to play again, exit
+     * Mostly probably actually used if playing offline and cant show leaderboard
+     */
     private void createEndScreen() {
         this.resetView();
 
@@ -617,32 +722,45 @@ public class View extends StackPane implements Subscriber {
     }
 
     // TODO: x3
-    /** Screen for viewing player history */
+
+    /**
+     * Screen for viewing player history
+     */
     private void createHistoryWindow() {
 
         // make sure this window includes the 'this.back2' button
     }
 
-    /** Screen for viewing players pinned rounds */
+    /**
+     * Screen for viewing players pinned rounds
+     */
     private void createPinnedWindow() {
 
         // make sure this window includes the 'this.back2' button
     }
 
-    /** Creates screen to show leaderboard */
+    /**
+     * Creates screen to show leaderboard
+     */
     private void createLeaderboardWindow() {
 
         // make sure this window includes the 'this.back2' button
     }
 
     // SETUP METHODS
-    /** Connect Model */
+
+    /**
+     * Connect Model
+     */
     public void setModel(Model m) {
         this.model = m;
         selectMainMenu();
     }
-    /** Attaches itself to controller so that we can receive
+
+    /**
+     * Attaches itself to controller so that we can receive
      * interactions from the user and pass to the appropriate
+     *
      * @param controller method
      */
     public void setupEvents(Controller controller) {
@@ -654,9 +772,11 @@ public class View extends StackPane implements Subscriber {
 
     }
 
-    /** Gets called when the model signals a change,
+    /**
+     * Gets called when the model signals a change,
      * then based on what state the model is in, show/update
-     * the appropriate window */
+     * the appropriate window
+     */
     @Override
     public void modelUpdated() {
         // call needed methods based on what changed
@@ -673,4 +793,48 @@ public class View extends StackPane implements Subscriber {
             case PINNED -> createPinnedWindow();
         }
     }
+
+    // Method to handle Google Sign-In
+    private void handleGoogleSignIn() {
+        // Create a WebView to display the Google login page
+        googleWebView = new WebView();
+        googleWebEngine = googleWebView.getEngine();
+
+        // Google OAuth 2.0 URL
+        String clientId = "YOUR_CLIENT_ID";
+        String redirectUri = "urn:ietf:wg:oauth:2.0:oob"; // Use out-of-band redirect
+        String scope = "email profile";
+        String authUrl = "https://accounts.google.com/o/oauth2/auth?" +
+                "client_id=" + clientId +
+                "&redirect_uri=" + redirectUri +
+                "&response_type=code" +
+                "&scope=" + scope +
+                "&access_type=offline";
+
+        // Load the Google login page
+        googleWebEngine.load(authUrl);
+
+        // Listen for page changes to capture the authorization code
+        googleWebEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue == Worker.State.SUCCEEDED) {
+                String pageContent = (String) googleWebEngine.executeScript("document.body.innerText");
+                if (pageContent.contains("code=")) {
+                    String code = pageContent.split("code=")[1].split("\\s")[0]; // Extract the code
+                    //exchangeCodeForTokens(code); // Exchange code for tokens
+                }
+            }
+        });
+
+        // Add the WebView to the scene
+        Scene googleSignInScene = new Scene(googleWebView, 600, 400);
+        Stage googleSignInStage = new Stage();
+        googleSignInStage.setScene(googleSignInScene);
+        googleSignInStage.setTitle("Sign in with Google");
+        googleSignInStage.show();
+    }
+
+
+
+
+
 }
