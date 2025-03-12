@@ -494,9 +494,6 @@ public class View extends StackPane implements Subscriber {
     public void loginWindow() {
         this.createSignInBackground();
 
-        // call this to allow google sign ins
-        googleAuthHandler.startAuthServer();
-
         // Title
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 36));
