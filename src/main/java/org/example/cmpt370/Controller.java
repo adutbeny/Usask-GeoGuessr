@@ -32,12 +32,15 @@ public class Controller {
         });
         view.easy.setOnAction(event -> {
             this.model.selectPictureSet("/BeginnerPhotos.csv");
+            this.model.setDifficulty("/BeginnerPhotos.csv");
         });
         view.medium.setOnAction(event -> {
             this.model.selectPictureSet("/MediumPictures.csv");
+            this.model.setDifficulty("/MediumPictures.csv");
         });
         view.hard.setOnAction(event -> {
             this.model.selectPictureSet("/HardPictures.csv");
+            this.model.setDifficulty("/HardPictures.csv");
         });
         view.back1.setOnAction(event -> {
             this.model.showStartupWindow();
