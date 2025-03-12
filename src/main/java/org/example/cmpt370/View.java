@@ -49,6 +49,8 @@ import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
 
+
+
 /** Class that handles all display output
  * Needs to be updated by the Model each time
  * the user does something that requires the screen
@@ -566,8 +568,19 @@ public class View extends StackPane implements Subscriber {
             tempFile.deleteOnExit();
             Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
 
-            // open it in the default browser
-            Desktop.getDesktop().browse(tempFile.toURI());
+            // check if i can use someones default browser
+            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+                Desktop.getDesktop().browse(tempFile.toURI());
+            } else {
+                System.out.println("Desktop browsing is not supported on this platform.");
+
+                // we can try just rip chrome from their browser
+                String browserPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
+                ProcessBuilder pb = new ProcessBuilder(browserPath, tempFile.toURI().toString());
+                pb.start();
+            }
+
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -604,6 +617,10 @@ public class View extends StackPane implements Subscriber {
 
                 System.out.println("Received Google Token: " + token);
             }
+
+            exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+            exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
             String response = "Token received!";
             exchange.sendResponseHeaders(200, response.length());
