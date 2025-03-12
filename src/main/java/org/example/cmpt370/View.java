@@ -6,6 +6,7 @@ package org.example.cmpt370;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
+import javafx.animation.AnimationTimer;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -32,13 +33,10 @@ import netscape.javascript.JSObject;
 import java.awt.*;
 import java.io.*;
 import java.net.InetSocketAddress;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.StandardCopyOption;
 import java.util.Objects;
-
-
-
+import java.util.concurrent.Executors;
 
 /** Class that handles all display output
  * Needs to be updated by the Model each time
@@ -94,6 +92,9 @@ public class View extends StackPane implements Subscriber {
     private WebView googleWebView;
     private WebEngine googleWebEngine;
 
+    private Process pythonServerProcess;
+
+    private boolean isPythonServerStarted = false;
 
     /**
      * Resets the View back to a blank slate, or 'tabula rasa'
@@ -499,6 +500,7 @@ public class View extends StackPane implements Subscriber {
      */
     public void loginWindow() {
         this.createSignInBackground();
+
         // call this to allow google sign ins
         startAuthServer();
 
@@ -533,47 +535,96 @@ public class View extends StackPane implements Subscriber {
         this.back1.setLayoutX(500);
         this.back1.setLayoutY(515);
 
-        this.googleSignIn.setOnAction(event -> openGoogleSignInPage());
+        // Set action for Google Sign-In button
+        this.googleSignIn.setOnAction(event -> {
+            startPythonServer(); // Start the Python server
+            openGoogleSignInPage(); // Open the Google Sign-In page
+        });
 
         // add to layout
         Pane layout = new Pane();
         layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1);
         this.getChildren().addAll(this.myCanvas, layout);
+
+        startTokenChecker();
     }
 
+    private void startPythonServer() {
+        if (isPythonServerStarted) {
+            System.out.println("Python server is already running.");
+            return;
+        }
+
+        try {
+            // path to the Python server
+            String pythonScriptPath = "src/main/python/server.py";
+
+            // start the Python server
+            ProcessBuilder processBuilder = new ProcessBuilder("python", pythonScriptPath);
+            processBuilder.redirectErrorStream(true);
+            pythonServerProcess = processBuilder.start();
+
+            // Print Python server output to the console (for debugging)
+            Executors.newSingleThreadExecutor().submit(() -> {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(pythonServerProcess.getInputStream()))) {
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        System.out.println("[Python Server] " + line);
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+
+            System.out.println("Python server started.");
+            isPythonServerStarted = true; // Set the flag to true
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void stopPythonServer() {
+        if (pythonServerProcess != null && pythonServerProcess.isAlive()) {
+            pythonServerProcess.destroy();
+            System.out.println("Python server stopped.");
+            isPythonServerStarted = false;
+        }
+    }
 
     private void openGoogleSignInPage() {
         try {
-            // load the HTML file as an InputStream from resources
-            InputStream inputStream = getClass().getResourceAsStream("/public/googleSignIN.html");
-
-            if (inputStream == null) {
-                System.out.println("Error: googleSignIN.html not found!");
-                return;
-            }
-
-            // copy to a temp file
-            File tempFile = File.createTempFile("googleSignIN", ".html");
-            tempFile.deleteOnExit();
-            Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-            // check if i can use someones default browser
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                Desktop.getDesktop().browse(tempFile.toURI());
-            } else {
-                System.out.println("Desktop browsing is not supported on this platform.");
-
-                // we can try just rip chrome from their browser
-                String browserPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe";
-                ProcessBuilder pb = new ProcessBuilder(browserPath, tempFile.toURI().toString());
-                pb.start();
-            }
-
-
+            // open the Google Sign-In page
+            Desktop.getDesktop().browse(new URI("http://localhost:63347/googleSignIN.html"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
+
+    private void startTokenChecker() {
+        AnimationTimer timer = new AnimationTimer() {
+            @Override
+            public void handle(long now) {
+                String token = readTokenFromFile();
+                if (token != null) {
+                    // Token received, handle it
+                    System.out.println("Google Token: " + token);
+                    stopPythonServer();
+                    this.stop();
+                }
+            }
+        };
+        timer.start();
+    }
+
+    private String readTokenFromFile() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("token.txt"))) {
+            return reader.readLine();
+        } catch (IOException e) {
+            // File not found or other error
+            return null;
+        }
+    }
+
     public void startAuthServer() {
         try {
             HttpServer server = HttpServer.create(new InetSocketAddress(63343), 0);
@@ -590,7 +641,7 @@ public class View extends StackPane implements Subscriber {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             if ("POST".equals(exchange.getRequestMethod())) {
-                // read in and parse the JSON request body
+                // Read and parse the JSON request body
                 InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
                 BufferedReader bufferedReader = new BufferedReader(reader);
                 StringBuilder requestBody = new StringBuilder();
@@ -600,17 +651,26 @@ public class View extends StackPane implements Subscriber {
                 }
                 bufferedReader.close();
 
-                // token
+                // Extract the token
                 String json = requestBody.toString();
                 String token = json.replaceAll(".*\"token\":\"([^\"]+)\".*", "$1");
 
                 System.out.println("Received Google Token: " + token);
+
+                // Write the token to a file
+                try (BufferedWriter writer = new BufferedWriter(new FileWriter("token.txt"))) {
+                    writer.write(token);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
 
+            // Add CORS headers
             exchange.getResponseHeaders().add("Access-Control-Allow-Origin", "*");
             exchange.getResponseHeaders().add("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
             exchange.getResponseHeaders().add("Access-Control-Allow-Headers", "Content-Type");
 
+            // Send a response
             String response = "Token received!";
             exchange.sendResponseHeaders(200, response.length());
             OutputStream os = exchange.getResponseBody();
@@ -618,6 +678,8 @@ public class View extends StackPane implements Subscriber {
             os.close();
         }
     }
+
+
 
     /**
      * Displays fields to enter user information
