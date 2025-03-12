@@ -32,8 +32,10 @@ import javafx.scene.text.TextAlignment;
 import javafx.stage.Stage;
 import netscape.javascript.JSObject;
 
-import java.io.File;
+import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.Objects;
 
 import java.awt.Desktop;
@@ -42,8 +44,7 @@ import java.net.URI;
 import com.sun.net.httpserver.HttpServer;
 import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpExchange;
-import java.io.IOException;
-import java.io.OutputStream;
+
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 
@@ -507,6 +508,8 @@ public class View extends StackPane implements Subscriber {
      */
     public void loginWindow() {
         this.createSignInBackground();
+        // call this to allow google sign ins
+        startAuthServer();
 
         // Title
         this.gc.setFill(Color.WHITE);
@@ -550,17 +553,21 @@ public class View extends StackPane implements Subscriber {
 
     private void openGoogleSignInPage() {
         try {
-            // Use getClass().getResource to get the resource file path
-            URL url = getClass().getResource("/public/googleSignIN.html");
+            // load the HTML file as an InputStream from resources
+            InputStream inputStream = getClass().getResourceAsStream("/public/googleSignIN.html");
 
-            if (url != null) {
-                // Convert URL to URI, then to a File
-                File htmlFile = new File(url.toURI());
-                // Open it in the default browser
-                Desktop.getDesktop().browse(htmlFile.toURI());
-            } else {
+            if (inputStream == null) {
                 System.out.println("Error: googleSignIN.html not found!");
+                return;
             }
+
+            // copy to a temp file
+            File tempFile = File.createTempFile("googleSignIN", ".html");
+            tempFile.deleteOnExit();
+            Files.copy(inputStream, tempFile.toPath(), StandardCopyOption.REPLACE_EXISTING);
+
+            // open it in the default browser
+            Desktop.getDesktop().browse(tempFile.toURI());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -581,7 +588,20 @@ public class View extends StackPane implements Subscriber {
         @Override
         public void handle(HttpExchange exchange) throws IOException {
             if ("POST".equals(exchange.getRequestMethod())) {
-                String token = new String(exchange.getRequestBody().readAllBytes(), StandardCharsets.UTF_8);
+                // read in and parse the JSON request body
+                InputStreamReader reader = new InputStreamReader(exchange.getRequestBody(), StandardCharsets.UTF_8);
+                BufferedReader bufferedReader = new BufferedReader(reader);
+                StringBuilder requestBody = new StringBuilder();
+                String line;
+                while ((line = bufferedReader.readLine()) != null) {
+                    requestBody.append(line);
+                }
+                bufferedReader.close();
+
+                // token
+                String json = requestBody.toString();
+                String token = json.replaceAll(".*\"token\":\"([^\"]+)\".*", "$1");
+
                 System.out.println("Received Google Token: " + token);
             }
 
@@ -812,45 +832,6 @@ public class View extends StackPane implements Subscriber {
             case LEADERBOARD -> createLeaderboardWindow();
             case PINNED -> createPinnedWindow();
         }
-    }
-
-    // Method to handle Google Sign-In
-    private void handleGoogleSignIn() {
-        // Create a WebView to display the Google login page
-        googleWebView = new WebView();
-        googleWebEngine = googleWebView.getEngine();
-
-        // Google OAuth 2.0 URL
-        String clientId = "YOUR_CLIENT_ID";
-        String redirectUri = "urn:ietf:wg:oauth:2.0:oob"; // Use out-of-band redirect
-        String scope = "email profile";
-        String authUrl = "https://accounts.google.com/o/oauth2/auth?" +
-                "client_id=" + clientId +
-                "&redirect_uri=" + redirectUri +
-                "&response_type=code" +
-                "&scope=" + scope +
-                "&access_type=offline";
-
-        // Load the Google login page
-        googleWebEngine.load(authUrl);
-
-        // Listen for page changes to capture the authorization code
-        googleWebEngine.getLoadWorker().stateProperty().addListener((observable, oldValue, newValue) -> {
-            if (newValue == Worker.State.SUCCEEDED) {
-                String pageContent = (String) googleWebEngine.executeScript("document.body.innerText");
-                if (pageContent.contains("code=")) {
-                    String code = pageContent.split("code=")[1].split("\\s")[0]; // Extract the code
-                    //exchangeCodeForTokens(code); // Exchange code for tokens
-                }
-            }
-        });
-
-        // Add the WebView to the scene
-        Scene googleSignInScene = new Scene(googleWebView, 600, 400);
-        Stage googleSignInStage = new Stage();
-        googleSignInStage.setScene(googleSignInScene);
-        googleSignInStage.setTitle("Sign in with Google");
-        googleSignInStage.show();
     }
 
 
