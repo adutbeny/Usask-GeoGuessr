@@ -698,44 +698,31 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFont(new Font("Courier Prime", 36));
         this.gc.fillText("History", 680, 95);
 
-        // Column 1: Date
-        VBox dateColumn = new VBox(20);
-        dateColumn.setAlignment(Pos.TOP_CENTER);
+        //TODO - add conditional here to see if user has history to pull
+        // ie. if (history empty) show "No History"
+        // else { (do all this)
+        int hboxSpacer = 200;
         Text date = new Text("Date");
         date.setFont(new Font(32));
-        dateColumn.getChildren().add(date);
-        // add data from SQL here
-
-        // Column 2: Difficulty
-        VBox difficultyColumn = new VBox(20);
-        difficultyColumn.setAlignment(Pos.TOP_CENTER);
         Text diff = new Text("Difficulty");
         diff.setFont(new Font(32));
-        difficultyColumn.getChildren().add(diff);
-//        for (int i = 1; i <= 5; i++) {
-//            difficultyColumn.getChildren().add(new Text("Entry " + i));
-//        }
-        // add data from SQL here
-
-
-        // Column 3: Score
-        VBox scoreColumn = new VBox(20);
-        scoreColumn.setAlignment(Pos.TOP_CENTER);
         Text score = new Text("Score");
         score.setFont(new Font(32));
-        scoreColumn.getChildren().add(score);
-//        for (int i = 1; i <= 5; i++) {
-//            scoreColumn.getChildren().add(new Text("Entry " + i));
-//        }
-        // add data from SQL here
+        HBox header = new HBox(hboxSpacer, date, diff, score);
 
-        // HBox to arrange columns horizontally
-        HBox columnContainer = new HBox(250, dateColumn, difficultyColumn, scoreColumn);
-        columnContainer.setAlignment(Pos.TOP_CENTER);
-        columnContainer.setTranslateY(175); // Push down from top
-        columnContainer.setTranslateX(50);
+        //TODO add data from db to each row
+        // add date(timestamp), difficulty, then score to each entry HBox
+        HBox entry1 = new HBox(hboxSpacer);
+        HBox entry2 = new HBox(hboxSpacer);
+        HBox entry3 = new HBox(hboxSpacer);
+        HBox entry4 = new HBox(hboxSpacer);
+        HBox entry5 = new HBox(hboxSpacer);
 
-        this.getChildren().addAll(columnContainer);
+        VBox entryContainer = new VBox(25, header, entry1, entry2, entry3, entry4, entry5);
+        entryContainer.setTranslateX(250);
+        entryContainer.setTranslateY(175);
+
+        this.getChildren().addAll(entryContainer);
     }
 
     /**
@@ -820,22 +807,16 @@ public class View extends StackPane implements Subscriber {
     }
 
     // SETUP METHODS
-
-    /**
-     * Connect Model
-     */
+    /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
-        //selectMainMenu();
-        this.createHistoryWindow();
+        selectMainMenu();   // change this if you want to test a certain window
     }
 
-    /**
-     * Attaches itself to controller so that we can receive
+    /** Attaches itself to controller so that we can receive
      * interactions from the user and pass to the appropriate
      *
-     * @param controller method
-     */
+     * @param controller method */
     public void setupEvents(Controller controller) {
         myCanvas.setOnMousePressed(controller::handlePressed);
         myCanvas.setOnMouseDragged(controller::handleDragged);
@@ -866,9 +847,5 @@ public class View extends StackPane implements Subscriber {
             case PINNED -> createPinnedWindow();
         }
     }
-
-
-
-
 
 }
