@@ -78,6 +78,9 @@ public class Controller {
         view.back2.setOnAction(event -> {
             this.model.showLoggedInWindow();
         });
+        view.menu.setOnAction(e -> {
+            this.model.showLoggedInWindow();
+        });
         // gameplay
         view.submit.setOnAction(event -> {
             double dist = model.getDistance();

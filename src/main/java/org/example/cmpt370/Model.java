@@ -46,8 +46,8 @@ public class Model {
 
     private User user;
     private int round;          // round number out of 5 (5/5 = last round)
-    private double totalScore;     // total sum score over rounds
-    private double recentScore;    // most recent score
+    private int totalScore;     // total sum score over rounds
+    private int recentScore;    // most recent score
     private boolean internet;   // boolean if connected to internet
     private JavaConnector connector;
     private Picture currentPicture;
@@ -117,6 +117,7 @@ public class Model {
 
     }
 
+    /** Creates a new entry in the database with the provided login */
     public void createAccount(String username, String password) {
         try {
             if (username.length() > 50 || password.length() > 50){
@@ -140,7 +141,7 @@ public class Model {
             System.out.println("Added to Database!");
             showLoggedInWindow();
         } catch (Exception e) {
-            System.out.println(e.toString());
+            System.out.println(e);
         }
     }
 
@@ -183,6 +184,9 @@ public class Model {
 
     }
 
+    /** Modifies data entry in database according to which difficulty level
+     * the user set a new high score in
+     * @return true or false based on success */
     public boolean adjustHighScore(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -238,10 +242,10 @@ public class Model {
     public Picture getCurrentPicture() {
         return currentPicture;
     }
-    public double getTotalScore() {
+    public int getTotalScore() {
         return this.totalScore;
     }
-    public double getRecentScore() {
+    public int getRecentScore() {
         return this.recentScore;
     }
     public User getUser() {
@@ -391,8 +395,8 @@ public class Model {
     }
 
     /** Calculate score per guess based off distance */
-    public double calculateScore(double distance) {
-        double score = (1000 - distance * 5);
+    public int calculateScore(double distance) {
+        int score = (int) (1000 - distance * 5);
         if (score < 0 || distance > 200.0) {
             return 0;
         } else {

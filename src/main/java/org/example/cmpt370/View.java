@@ -67,6 +67,7 @@ public class View extends StackPane implements Subscriber {
     // end screen
     public Button playAgain;
     public Button exit;
+    public Button menu;
 
     // gameplay loop
     public Button submit;
@@ -180,6 +181,8 @@ public class View extends StackPane implements Subscriber {
         // Another back button in case we need it
         this.back2 = new Button("Back");
         this.back2.setPrefWidth(200);
+        this.menu = new Button("Menu"); // does the same thing
+        this.menu.setPrefWidth(200);
 
         this.history = new Button("History");
         this.history.setPrefWidth(200);
@@ -239,7 +242,7 @@ public class View extends StackPane implements Subscriber {
         buttonStack.getChildren().add(this.exit);
         // set below text
         buttonStack.setTranslateX(300);
-        buttonStack.setTranslateY(350);
+        buttonStack.setTranslateY(360);
 
         // add all to layout in order!!!
         this.getChildren().add(buttonStack);
@@ -344,7 +347,7 @@ public class View extends StackPane implements Subscriber {
         logo.setFitWidth(250);
         logo.setPreserveRatio(true);
         logo.setTranslateX(20);
-        logo.setTranslateY(50);
+        logo.setTranslateY(45);
 
         // Gradient color for box
         LinearGradient gradient = new LinearGradient(
@@ -369,7 +372,25 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 20));
         this.gc.fillText("Username", textbX + 30, textbY + 25);
-        this.gc.fillText("Score", textbX + 230, textbY + 25);
+        if (this.model.getUser() != null) {
+            if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE) {
+                if (this.model.getRecentScore() > this.model.getUser().getNoviceHighscore()) {
+                    this.gc.fillText("Score (New Best!)", textbX + 230, textbY + 25);
+                }
+            } else if (this.model.getCurrentDifficulty() == DIFFICULTY.SEASONAL) {
+                if (this.model.getRecentScore() > this.model.getUser().getSeasonalHighscore()) {
+                    this.gc.fillText("Score (New Best!)", textbX + 230, textbY + 25);
+                }
+            } else if (this.model.getCurrentDifficulty() == DIFFICULTY.EXPERT) {
+                if (this.model.getRecentScore() > this.model.getUser().getExpertHighscore()) {
+                    this.gc.fillText("Score (New Best!)", textbX + 230, textbY + 25);
+                }
+            } else {
+                this.gc.fillText("Score", textbX + 230, textbY + 25);
+            }
+        } else {
+            this.gc.fillText("Score", textbX + 230, textbY + 25);
+        }
         this.gc.fillText("Round", textbX + 410, textbY + 25);
 
         //Input for Username, Score and Round
@@ -598,28 +619,29 @@ public class View extends StackPane implements Subscriber {
     public void createLoggedInWindow() {
         createDefaultBackground();
 
+        // Create a linear gradient for the text fill
         LinearGradient gradient = new LinearGradient(
                 0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
                 new Stop(0, Color.rgb(10, 106, 66)),
                 new Stop(1, Color.rgb(20, 150, 100))
         );
 
-        // black outline
+        // Draw the black outline
         this.gc.setFill(Color.BLACK);
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
-                this.gc.fillText("Usask GeoGuesser", 400 + i, 270 + j);
+                gc.fillText("Usask GeoGuessr", 400 + i, 270 + j);
             }
         }
 
-        // Main text
+        //  Main Text
         this.gc.setFill(gradient);
-        this.gc.fillText("Usask GeoGuesser", 400, 270);
+        this.gc.fillText("Usask GeoGuessr", 400, 270);
 
         // Button Stack
         VBox buttonStack = new VBox(20, this.quickplay, this.history, this.pinned, this.leaderboard, this.multiplayer, this.exit);
         buttonStack.setTranslateX(300);
-        buttonStack.setTranslateY(350);
+        buttonStack.setTranslateY(325);
 
         // Add all to layout
         this.getChildren().addAll(buttonStack);
@@ -660,37 +682,52 @@ public class View extends StackPane implements Subscriber {
 
         Text current = new Text("Your Score: " + this.model.getTotalScore());
         current.setFont(new Font(30));
+        boolean newBest = false;
         Text high = null;
         if (this.model.getUser() != null) {
             if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE){
                 if (this.model.getTotalScore() > this.model.getUser().getNoviceHighscore()){
-                    this.model.getUser().setN_highscore((int)this.model.getTotalScore());
+                    this.model.getUser().setN_highscore(this.model.getTotalScore());
                     this.model.adjustHighScore();
+                    newBest = true;
                 }
                 high = new Text("High score: " + this.model.getUser().getNoviceHighscore());
             }
             else if (this.model.getCurrentDifficulty() == DIFFICULTY.SEASONAL){
                 if (this.model.getTotalScore() > this.model.getUser().getSeasonalHighscore()){
-                    this.model.getUser().setS_highscore((int)this.model.getTotalScore());
+                    this.model.getUser().setS_highscore(this.model.getTotalScore());
                     this.model.adjustHighScore();
+                    newBest = true;
                 }
                 high = new Text("High score: " + this.model.getUser().getSeasonalHighscore());
             }
             else {
                 if (this.model.getTotalScore() > this.model.getUser().getExpertHighscore()){
-                    this.model.getUser().setE_highscore((int)this.model.getTotalScore());
+                    this.model.getUser().setE_highscore(this.model.getTotalScore());
                     this.model.adjustHighScore();
+                    newBest = true;
                 }
                 high = new Text("High score: " + this.model.getUser().getExpertHighscore());
             }
             high.setFont(new Font(30));
         }
-        VBox display = new VBox(10, current);
+        VBox display = new VBox(10);
+        if (newBest) {
+            Text nB = new Text("New High Score!");
+            nB.setFont(new Font(30));
+            display.getChildren().add(nB);
+        }
+        display.getChildren().add(current);
         if (high != null) {
             display.getChildren().add(high);
         }
 
-        display.getChildren().addAll(this.playAgain, this.exit);
+        display.getChildren().add(this.playAgain);
+        if (this.model.getUser() != null) {
+            display.getChildren().add(this.menu);
+        }
+        display.getChildren().add(this.exit);
+
         display.setStyle("-fx-alignment: center;");
         display.setTranslateY(-50);
 
