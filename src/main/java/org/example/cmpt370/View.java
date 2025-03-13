@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -11,6 +12,7 @@ import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
@@ -56,6 +58,8 @@ public class View extends StackPane implements Subscriber {
     public TextField usernameField;
     public PasswordField passwordField;
     public Button submitLogin;
+    public Button googleSignIn; // Button for Google Sign-In
+
     // create account
     public TextField usernameCreate;
     public PasswordField passwordCreate;
@@ -75,17 +79,12 @@ public class View extends StackPane implements Subscriber {
     public Button multiplayer;
     public Button back2;        // returns to logged in window
 
-    public Button googleSignIn; // Button for Google Sign-In
-
-
     // Need these to implement google sign in
     private WebView googleWebView;
     private WebEngine googleWebEngine;
 
     private Process pythonServerProcess;
-
     private boolean isPythonServerStarted = false;
-
     private GoogleAuthHandler googleAuthHandler;
 
 
@@ -335,7 +334,7 @@ public class View extends StackPane implements Subscriber {
         logo.setFitWidth(250);
         logo.setPreserveRatio(true);
         logo.setTranslateX(20);
-        logo.setTranslateY(20);
+        //logo.setTranslateY(20);
 
         // Gradient color for box
         LinearGradient gradient = new LinearGradient(
@@ -465,12 +464,10 @@ public class View extends StackPane implements Subscriber {
         });
 
         layout.getChildren().add(0, c);
-        layout.getChildren().add(mapView);
+        layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
     }
-
-    ;
 
     /**
      * this sends needed info to our map html so it can create a line between two points
@@ -525,10 +522,11 @@ public class View extends StackPane implements Subscriber {
         this.back1.setLayoutX(500);
         this.back1.setLayoutY(515);
 
+        // TODO this should be in controller if we can figure that out
         // Set action for Google Sign-In button
         this.googleSignIn.setOnAction(event -> {
-            googleAuthHandler.startPythonServer(); // Start the Python server
-            googleAuthHandler.openGoogleSignInPage(); // Open the Google Sign-In page
+            this.googleAuthHandler.startPythonServer(); // Start the Python server
+            this.googleAuthHandler.openGoogleSignInPage(); // Open the Google Sign-In page
         });
 
         // add to layout
@@ -536,7 +534,7 @@ public class View extends StackPane implements Subscriber {
         layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1);
         this.getChildren().addAll(this.myCanvas, layout);
 
-        googleAuthHandler.startTokenChecker(() -> {
+        this.googleAuthHandler.startTokenChecker(() -> {
             // Handle token received
             System.out.println("Token received, updating UI...");
         });
@@ -584,9 +582,7 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
     }
 
-    /**
-     * View for when the user has successfully logged in
-     */
+    /** View for when the user has successfully logged in */
     public void createLoggedInWindow() {
         createDefaultBackground();
 
@@ -617,9 +613,7 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(buttonStack);
     }
 
-    /**
-     * Background for use with the log in and create account windows
-     */
+    /** Background for use with the log in and create account window */
     private void createSignInBackground() {
         this.resetView();
 
@@ -697,24 +691,132 @@ public class View extends StackPane implements Subscriber {
      * Screen for viewing player history
      */
     private void createHistoryWindow() {
+        this.createUserInfoBackground();
 
-        // make sure this window includes the 'this.back2' button
+        // title
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(new Font("Courier Prime", 36));
+        this.gc.fillText("History", 680, 95);
+
+        // Column 1: Date
+        VBox dateColumn = new VBox(20);
+        dateColumn.setAlignment(Pos.TOP_CENTER);
+        Text date = new Text("Date");
+        date.setFont(new Font(32));
+        dateColumn.getChildren().add(date);
+        // add data from SQL here
+
+        // Column 2: Difficulty
+        VBox difficultyColumn = new VBox(20);
+        difficultyColumn.setAlignment(Pos.TOP_CENTER);
+        Text diff = new Text("Difficulty");
+        diff.setFont(new Font(32));
+        difficultyColumn.getChildren().add(diff);
+//        for (int i = 1; i <= 5; i++) {
+//            difficultyColumn.getChildren().add(new Text("Entry " + i));
+//        }
+        // add data from SQL here
+
+
+        // Column 3: Score
+        VBox scoreColumn = new VBox(20);
+        scoreColumn.setAlignment(Pos.TOP_CENTER);
+        Text score = new Text("Score");
+        score.setFont(new Font(32));
+        scoreColumn.getChildren().add(score);
+//        for (int i = 1; i <= 5; i++) {
+//            scoreColumn.getChildren().add(new Text("Entry " + i));
+//        }
+        // add data from SQL here
+
+        // HBox to arrange columns horizontally
+        HBox columnContainer = new HBox(250, dateColumn, difficultyColumn, scoreColumn);
+        columnContainer.setAlignment(Pos.TOP_CENTER);
+        columnContainer.setTranslateY(175); // Push down from top
+        columnContainer.setTranslateX(50);
+
+        this.getChildren().addAll(columnContainer);
     }
 
     /**
      * Screen for viewing players pinned rounds
      */
     private void createPinnedWindow() {
+        this.createUserInfoBackground();
 
-        // make sure this window includes the 'this.back2' button
+        // title
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(new Font("Courier Prime", 36));
+        this.gc.fillText("Pinned Locations", 680, 95);
     }
 
     /**
      * Creates screen to show leaderboard
      */
     private void createLeaderboardWindow() {
+        this.createUserInfoBackground();
 
-        // make sure this window includes the 'this.back2' button
+        // title
+        this.gc.setFill(Color.WHITE);
+        this.gc.setFont(new Font("Courier Prime", 36));
+        this.gc.fillText("Leaderboard", 680, 95);
+    }
+
+    private void createUserInfoBackground() {
+        this.resetView();
+
+        // Usask Green
+        this.gc.setFill(Color.rgb(20, 150, 100));
+        //this.gc.setFill(Color.DIMGREY);
+        this.gc.fillRect(0, 145, this.myCanvas.getWidth(), this.myCanvas.getHeight());
+
+        this.gc.setFill(Color.BLACK);
+        this.gc.setLineWidth(5);
+        this.gc.strokeLine(0, 145, this.myCanvas.getWidth(), 145);
+
+        // Usask Logo with University Saskatchewan
+        Image l = new Image(Objects.requireNonNull(getClass().getResource("/USaskOffical/usask_usask_colour.png")).toExternalForm());
+        ImageView logo = new ImageView(l);
+        logo.setFitHeight(250);
+        logo.setFitWidth(250);
+        logo.setPreserveRatio(true);
+        logo.setTranslateX(-425);
+        logo.setTranslateY(-325);
+
+        // Gradient color for box
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(0.5, Color.rgb(20, 150, 100))
+        );
+
+        // Draw Labels for Buttons
+        double textbX = 650;
+        double textbY = 40;
+        double textWidth = 600;
+        double textHeight = 75;
+        double skew = 50;
+        this.gc.setFill(gradient);
+
+        // Parallelogram shape
+        double[] xP = {textbX, textbX + textWidth, textbX + textWidth - skew, textbX - skew};
+        double[] yP = {textbY, textbY, textbY + textHeight, textbY + textHeight};
+        this.gc.fillPolygon(xP, yP, 4);
+
+        //Green border between the photo and the green username box
+        double borderX = 0;
+        double borderY = 115;
+        double borderWidth = 1200;
+        double borderHeight = 30;
+        this.gc.setFill(Color.rgb(20, 150, 100));
+        this.gc.fillRect(borderX, borderY, borderWidth, borderHeight);
+
+        // Back button in bottom-left corner
+        VBox buttonContainer = new VBox(this.back2);
+        buttonContainer.setTranslateX(10);
+        buttonContainer.setTranslateY(720);
+
+        this.getChildren().addAll(this.myCanvas, logo, buttonContainer);
     }
 
     // SETUP METHODS
@@ -724,7 +826,8 @@ public class View extends StackPane implements Subscriber {
      */
     public void setModel(Model m) {
         this.model = m;
-        selectMainMenu();
+        //selectMainMenu();
+        this.createHistoryWindow();
     }
 
     /**
