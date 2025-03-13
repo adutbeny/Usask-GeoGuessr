@@ -3,10 +3,10 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.effect.DropShadow;
@@ -86,9 +86,12 @@ public class View extends StackPane implements Subscriber {
     private WebView googleWebView;
     private WebEngine googleWebEngine;
 
-    private Process pythonServerProcess;
-    private boolean isPythonServerStarted = false;
-    private GoogleAuthHandler googleAuthHandler;
+    public Process pythonServerProcess;
+    public boolean isPythonServerStarted = false;
+    public GoogleAuthHandler googleAuthHandler;
+
+    public CheckBox RememberMe;
+
 
 
     /**
@@ -199,6 +202,12 @@ public class View extends StackPane implements Subscriber {
         // Google button stuff...
         this.googleSignIn = new Button("Sign in with Google");
         this.googleSignIn.setPrefWidth(200);
+
+        // REMEMBER ME BUTTON
+        this.RememberMe = new CheckBox("Remember Me?");
+        this.RememberMe.setPrefWidth(400);
+
+
 
         // TODO: Add future buttons here
     }
@@ -556,7 +565,12 @@ public class View extends StackPane implements Subscriber {
         this.back1.setLayoutX(500);
         this.back1.setLayoutY(515);
 
-        // TODO this should be in controller if we can figure that out
+
+        this.RememberMe.setLayoutX(520);
+        this.RememberMe.setLayoutY(570);
+
+
+        // TODO this should be in controller if we can figure that out ( I AM VOLUTEENDING MATT BERRY TO DO THIS )
         // Set action for Google Sign-In button
         this.googleSignIn.setOnAction(event -> {
             this.googleAuthHandler.startPythonServer(); // Start the Python server
@@ -565,13 +579,16 @@ public class View extends StackPane implements Subscriber {
 
         // add to layout
         Pane layout = new Pane();
-        layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1);
+        layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1, this.RememberMe);
         this.getChildren().addAll(this.myCanvas, layout);
 
         this.googleAuthHandler.startTokenChecker(() -> {
             // Handle token received
             System.out.println("Token received, updating UI...");
         });
+
+
+
     }
 
     /**

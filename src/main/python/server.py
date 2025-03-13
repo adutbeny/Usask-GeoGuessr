@@ -4,13 +4,19 @@ import os
 
 class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     def do_GET(self):
-        # Serve the HTML file for GET requests
+
         if self.path == "/googleSignIN.html":
             try:
-                # Absolute path to the HTML file
-                html_file_path = "C:\\Users\\Ben\\Desktop\\cmpt_370\\src\\main\\resources\\public\\googleSignIN.html"
+                # get the dir
+                script_dir = os.path.dirname(os.path.abspath(__file__))
 
-                # Open and read the HTML file
+                #  relative path to the HTML file
+                relative_path = os.path.join(script_dir, "..", "resources", "public", "googleSignIN.html")
+
+                # mormalize the path
+                html_file_path = os.path.normpath(relative_path)
+
+                #  read the HTML file
                 with open(html_file_path, "rb") as file:
                     self.send_response(200)
                     self.send_header("Content-type", "text/html")

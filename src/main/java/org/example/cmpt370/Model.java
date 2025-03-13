@@ -3,14 +3,22 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import org.mindrot.jbcrypt.BCrypt;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.net.URLConnection;
-import java.util.*;
-import org.mindrot.jbcrypt.BCrypt;
-import java.sql.*;
+import java.security.SecureRandom;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Objects;
+import java.util.Random;
 
 enum DISPLAY {
     STARTUP,
@@ -144,6 +152,61 @@ public class Model {
             System.out.println(e);
         }
     }
+
+    private String generateRandomPassword(int length) {
+        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
+        Random random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        for (int i = 0; i < length; i++) {
+            password.append(chars.charAt(random.nextInt(chars.length())));
+        }
+
+        return password.toString();
+    }
+
+    public void createAccountFromEmail(String email) {
+        try {
+            // Extract the username (part before @)
+            String username = email.split("@")[0];
+
+            // Generate a random password
+            String password = generateRandomPassword(12); // 12-character password
+
+            // Hash the password
+            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+
+            // Insert into the database
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+
+            String query = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            stmt.setString(2, hashedPassword);
+            stmt.setInt(3, 0); // Default novice high score
+            stmt.setInt(4, 0); // Default seasonal high score
+            stmt.setInt(5, 0); // Default expert high score
+            stmt.executeUpdate();
+
+            System.out.println("Account created for email: " + email);
+            System.out.println("Username: " + username);
+            System.out.println("Random Password: " + password); // Log the password for debugging (remove in production)
+
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            System.out.println("Error creating account: " + e.getMessage());
+        }
+    }
+
+
+
+
+
+
+
 
     public void setDifficulty(String csv){
         if (csv.equals("/BeginnerPhotos.csv")){

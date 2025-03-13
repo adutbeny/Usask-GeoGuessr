@@ -7,6 +7,7 @@ module org.example.cmpt370 {
     requires jbcrypt;
     requires java.desktop;
     requires jdk.httpserver;
+    requires org.json;
 
 
     opens org.example.cmpt370 to javafx.fxml;

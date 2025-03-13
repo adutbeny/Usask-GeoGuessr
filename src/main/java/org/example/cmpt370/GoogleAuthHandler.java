@@ -1,6 +1,7 @@
 package org.example.cmpt370;
 
 import javafx.animation.AnimationTimer;
+import org.json.JSONObject;
 
 import java.awt.*;
 import java.io.BufferedReader;
@@ -8,8 +9,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URI;
+import java.util.Base64;
 import java.util.concurrent.Executors;
-
 public class GoogleAuthHandler {
 
     private Process pythonServerProcess;
@@ -61,7 +62,7 @@ public class GoogleAuthHandler {
 
     public void openGoogleSignInPage() {
         try {
-            // open the Google Sign-In page ( check to make sure port # matches everywhere )
+            // open the Google Sign-In page ( check to make sure port # matches everywhere !!!!!!!!!!!!!!!!)
             Desktop.getDesktop().browse(new URI("http://localhost:63347/googleSignIN.html"));
         } catch (Exception e) {
             e.printStackTrace();
@@ -74,9 +75,18 @@ public class GoogleAuthHandler {
             public void handle(long now) {
                 String token = readTokenFromFile();
                 if (token != null) {
-                    // token received, handle it
-                    System.out.println("Google Token: " + token);   //print to console for debugging purposes
-                    stopPythonServer();                             //make sure to stop server........
+                    // token received
+                    System.out.println("Google Token: " + token);
+
+                    // extract email from ID token
+                    String email = extractEmailFromIdToken(token);
+                    if (email != null) {
+                        System.out.println("User Email: " + email);
+                    } else {
+                        System.out.println("Failed to extract email from ID token.");
+                    }
+
+                    stopPythonServer(); // stop the server
                     this.stop();
                     onTokenReceived.run();
                 }
@@ -93,4 +103,27 @@ public class GoogleAuthHandler {
             return null;
         }
     }
+
+
+    public String extractEmailFromIdToken(String idToken) {
+        try {
+            // Split the JWT into its three parts
+            String[] parts = idToken.split("\\.");
+            if (parts.length != 3) {
+                throw new IllegalArgumentException("Invalid ID token format.");
+            }
+
+            String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
+            JSONObject jsonPayload = new JSONObject(payload);
+
+            // extract the email
+            return jsonPayload.getString("email");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+
 }
+
