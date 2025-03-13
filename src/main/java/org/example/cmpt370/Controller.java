@@ -51,7 +51,7 @@ public class Controller {
             String password = view.passwordField.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            this.model.verifyLogin(username, password);
+            this.model.verifyLogin(username, password, false);
             // TODO: need to add handling for incorrect password
         });
         view.submitCreate.setOnAction(event -> {

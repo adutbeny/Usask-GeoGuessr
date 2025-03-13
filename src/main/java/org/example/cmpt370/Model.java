@@ -5,9 +5,7 @@ package org.example.cmpt370;
 
 import org.mindrot.jbcrypt.BCrypt;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
@@ -86,26 +84,34 @@ public class Model {
     }
 
     /** Take info from login and load into class instance */
-    public boolean verifyLogin(String username, String password) {
-        try{
+    public boolean verifyLogin(String username, String password, boolean rememberMe) {
+        try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            //Replace with actual DB Username and password
+            // Replace with actual DB Username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
 
-            //Retrieve user and password fields and checksxs
+            // Retrieve user and password fields and checks
             String query = "SELECT password, N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
 
-            if (rs.next()){
+            if (rs.next()) {
                 String hashPassword = rs.getString("password");
                 int N_high_score = rs.getInt("N_high_score");
                 int S_high_score = rs.getInt("S_high_score");
                 int E_high_score = rs.getInt("E_high_score");
-                if (BCrypt.checkpw(password, hashPassword)){
+                if (BCrypt.checkpw(password, hashPassword)) {
                     System.out.println("Login successful!");
+
+                    // Save credentials if "Remember Me" is checked
+                    if (rememberMe) {
+                        saveCredentials(username, password);
+                    } else {
+                        clearCredentials(); // Clear saved credentials if "Remember Me" is unchecked
+                    }
+
                     user = new User(username, N_high_score, S_high_score, E_high_score, 0);
                     showLoggedInWindow();
                     return true;
@@ -114,11 +120,10 @@ public class Model {
             showLoginWindow();
             System.out.println("Password not correct!");
             return false;
-        }catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
             return false;
         }
-
     }
 
     public void changeHighScore(String username){
@@ -194,6 +199,9 @@ public class Model {
             System.out.println("Username: " + username);
             System.out.println("Random Password: " + password); // Log the password for debugging (remove in production)
 
+            // Automatically log in the user after account creation
+            verifyLogin(username, password, true); // Set "Remember Me" to true
+
             stmt.close();
             con.close();
         } catch (Exception e) {
@@ -202,9 +210,45 @@ public class Model {
     }
 
 
+    /**
+     * Saves the username and password to a file.
+     *
+     * @param username The username to save.
+     * @param password The password to save.
+     */
+    public void saveCredentials(String username, String password) {
+        try (FileWriter writer = new FileWriter("credentials.txt")) {
+            writer.write(username + "\n");
+            writer.write(password);
+        } catch (IOException e) {
+            System.out.println("Error saving credentials: " + e.getMessage());
+        }
+    }
 
+    /**
+     * Loads the saved username and password from a file.
+     *
+     * @return An array containing the username and password, or null if the file doesn't exist.
+     */
+    public String[] loadCredentials() {
+        try (BufferedReader reader = new BufferedReader(new FileReader("credentials.txt"))) {
+            String username = reader.readLine();
+            String password = reader.readLine();
+            return new String[]{username, password};
+        } catch (IOException e) {
+            return null; // File doesn't exist or couldn't be read
+        }
+    }
 
-
+    /**
+     * Clears the saved credentials by deleting the file.
+     */
+    public void clearCredentials() {
+        File file = new File("credentials.txt");
+        if (file.exists()) {
+            file.delete();
+        }
+    }
 
 
 

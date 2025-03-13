@@ -569,6 +569,27 @@ public class View extends StackPane implements Subscriber {
         this.RememberMe.setLayoutX(520);
         this.RememberMe.setLayoutY(570);
 
+        // TODO this has to be moved to i juist need focus on the logic rihgt now SORRY...
+        String[] savedCredentials = model.loadCredentials();
+        if (savedCredentials != null) {
+            this.usernameField.setText(savedCredentials[0]);
+            this.passwordField.setText(savedCredentials[1]);
+            this.RememberMe.setSelected(true);
+        }
+
+        // Set action for the Login button
+        this.submitLogin.setOnAction(event -> {
+            String username = this.usernameField.getText();
+            String password = this.passwordField.getText();
+            boolean rememberMe = this.RememberMe.isSelected();
+
+            // Call the verifyLogin method with the "Remember Me" state
+            if (model.verifyLogin(username, password, rememberMe)) {
+                System.out.println("Login successful!");
+            } else {
+                System.out.println("Invalid credentials.");
+            }
+        });
 
         // TODO this should be in controller if we can figure that out ( I AM VOLUTEENDING MATT BERRY TO DO THIS )
         // Set action for Google Sign-In button

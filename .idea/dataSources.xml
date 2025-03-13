@@ -1,14 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="DataSourceManagerImpl" format="xml" multifile-model="true">
-    <data-source source="LOCAL" name="@sql3.freesqldatabase.com" uuid="c48a0932-91c0-4553-a318-fe1a4ded2933">
-      <driver-ref>mysql.8</driver-ref>
-      <synchronize>true</synchronize>
-      <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://sql3.freesqldatabase.com:3306</jdbc-url>
-      <working-dir>$ProjectFileDir$</working-dir>
-    </data-source>
-    <data-source source="LOCAL" name="sql3765767" uuid="ce7ccb8e-ea3f-4ecc-9f29-ad087fed6fcd">
+    <data-source source="LOCAL" name="sql3765767" uuid="4601c27d-d95c-4978-a2ed-16bd93118d1f">
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
