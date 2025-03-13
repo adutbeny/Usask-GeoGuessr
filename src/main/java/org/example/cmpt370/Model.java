@@ -226,7 +226,6 @@ public class Model {
     public DISPLAY getCurrentWindow() {
         return currentWindow;
     }
-
     public DIFFICULTY getCurrentDifficulty(){
         return currentDifficulty;
     }
@@ -249,6 +248,7 @@ public class Model {
         return this.user;
     }
 
+    // PICTURE METHODS
     /** Gets the next picture from the shuffled array
      * Works such that we won't get duplicates in the same round
      * and doesn't skip the first one */
@@ -260,6 +260,20 @@ public class Model {
         this.picIndex++;
         this.currentPicture = current;
         return current;
+    }
+    /** Adds current photo to the users pinned */
+    public void pin() {
+        Picture current = this.getCurrentPicture();
+        // TODO add current to the database
+    }
+    /** Unpin photo from the users pinned list
+     * Won't be the current photo, need to get from the database,
+     * maybe based off index of where the picture is in the list
+     * of pinned pictures? */
+    public void unpin(/* might need an argument*/) {
+        //TODO figure this out
+        // update view to not show what we just removed
+        notifySubscribers();
     }
 
     /* METHODS TO CHANGE VIEW */

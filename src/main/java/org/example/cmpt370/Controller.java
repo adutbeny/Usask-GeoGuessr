@@ -99,6 +99,12 @@ public class Controller {
             view.next.setVisible(false);
             view.submit.setVisible(true);
         });
+        view.addPin.setOnAction(e -> {
+            this.model.pin();
+        });
+        view.unpin.setOnAction(e -> {
+            this.model.unpin();
+        });
         view.playAgain.setOnAction(event -> {
             this.model.showDifficultyWindow();
         });

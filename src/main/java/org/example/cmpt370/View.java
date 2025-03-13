@@ -71,6 +71,8 @@ public class View extends StackPane implements Subscriber {
     // gameplay loop
     public Button submit;
     public Button next;
+    public Button addPin;
+    public Button unpin;
 
     // logged in
     public Button history;
@@ -138,6 +140,14 @@ public class View extends StackPane implements Subscriber {
         // Button for going to next round
         this.next = new Button("Next");
         this.next.setPrefWidth(200);
+
+        // pin current image
+        this.addPin = new Button("Pin");
+        this.addPin.setPrefWidth(100);
+
+        // unpin from the Pinned window
+        this.unpin = new Button("Unpin");
+        this.unpin.setPrefWidth(100);
 
         // Back button - returns to startup
         this.back1 = new Button("Back");
@@ -334,7 +344,7 @@ public class View extends StackPane implements Subscriber {
         logo.setFitWidth(250);
         logo.setPreserveRatio(true);
         logo.setTranslateX(20);
-        //logo.setTranslateY(20);
+        logo.setTranslateY(50);
 
         // Gradient color for box
         LinearGradient gradient = new LinearGradient(
@@ -463,10 +473,14 @@ public class View extends StackPane implements Subscriber {
             mapView.setUserData(new double[]{event.getSceneX(), event.getY(), mapView.getLayoutX(), mapView.getLayoutY()});
         });
 
+        // TODO- maybe add swap to an unpin button?
+        this.addPin.setTranslateX(-540);
+        this.addPin.setTranslateY(345);
+
         layout.getChildren().add(0, c);
         layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
-        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack);
+        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack, this.addPin);
     }
 
     /**
@@ -481,7 +495,6 @@ public class View extends StackPane implements Subscriber {
         );
         mapEngine.executeScript(script);
     }
-
 
     /**
      * Displays fields to enter user information
@@ -539,7 +552,6 @@ public class View extends StackPane implements Subscriber {
             System.out.println("Token received, updating UI...");
         });
     }
-
 
     /**
      * Displays fields to enter user information
@@ -687,9 +699,7 @@ public class View extends StackPane implements Subscriber {
 
     // TODO: x3
 
-    /**
-     * Screen for viewing player history
-     */
+    /** Screen for viewing player history */
     private void createHistoryWindow() {
         this.createUserInfoBackground();
 
@@ -725,9 +735,7 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(entryContainer);
     }
 
-    /**
-     * Screen for viewing players pinned rounds
-     */
+    /** Screen for viewing players pinned rounds */
     private void createPinnedWindow() {
         this.createUserInfoBackground();
 
@@ -737,9 +745,7 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillText("Pinned Locations", 680, 95);
     }
 
-    /**
-     * Creates screen to show leaderboard
-     */
+    /** Creates screen to show leaderboard */
     private void createLeaderboardWindow() {
         this.createUserInfoBackground();
 
@@ -823,7 +829,6 @@ public class View extends StackPane implements Subscriber {
         myCanvas.setOnMouseReleased(controller::handleReleased);
         setOnKeyPressed(controller::handleKeyPressed);
         myCanvas.setOnMouseMoved(controller::handleMouseMoved);
-
     }
 
     /**
