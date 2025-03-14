@@ -581,18 +581,6 @@ public class View extends StackPane implements Subscriber {
         }
 
         // Set action for the Login button
-        this.submitLogin.setOnAction(event -> {
-            String username = this.usernameField.getText();
-            String password = this.passwordField.getText();
-            boolean rememberMe = this.RememberMe.isSelected();
-
-            // Call the verifyLogin method with the "Remember Me" state
-            if (model.verifyLogin(username, password, rememberMe)) {
-                System.out.println("Login successful!");
-            } else {
-                System.out.println("Invalid credentials.");
-            }
-        });
 
         // TODO this should be in controller if we can figure that out ( I AM VOLUTEENDING MATT BERRY TO DO THIS )
         // Set action for Google Sign-In button

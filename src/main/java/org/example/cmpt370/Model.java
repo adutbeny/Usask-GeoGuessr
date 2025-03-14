@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.scene.control.CheckBox;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.*;
@@ -528,6 +529,7 @@ public class Model {
         if (this.round > 5) {
             // TODO: trigger end of game
             this.showEndWindow();
+            return;
         }
         // cycle photo
         /** Breaks program. negative aura */

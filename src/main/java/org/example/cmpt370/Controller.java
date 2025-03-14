@@ -49,9 +49,28 @@ public class Controller {
         view.submitLogin.setOnAction(event -> {
             String username = view.usernameField.getText();
             String password = view.passwordField.getText();
+            boolean rememberMe = view.RememberMe.isSelected();
+
+            if (rememberMe){
+                if (this.model.verifyLogin(username, password, rememberMe)){
+                    System.out.println("Login successful!");
+                }
+                else{
+                    System.out.println("Login failed!");
+                }
+            }
+            else {
+                if (this.model.verifyLogin(username, password, false)){
+                    System.out.println("Login successful!");
+                }
+                else{
+                    System.out.println("Login failed!");
+                }
+            }
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            this.model.verifyLogin(username, password, false);
+
+            //this.model.verifyLogin(username, password, false);
             // TODO: need to add handling for incorrect password
         });
         view.submitCreate.setOnAction(event -> {
