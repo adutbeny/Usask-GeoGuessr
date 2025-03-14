@@ -292,6 +292,10 @@ public class Model {
         }
 
         Collections.shuffle(this.pictures); // put in random order
+        // reset model stats
+        this.recentScore = 0;
+        this.totalScore = 0;
+        this.round = 1;
         this.getNextPic();
         this.showGameplayWindow();
 
