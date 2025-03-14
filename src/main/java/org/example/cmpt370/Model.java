@@ -529,6 +529,7 @@ public class Model {
         if (this.round > 5) {
             // TODO: trigger end of game
             this.showEndWindow();
+            this.round = 1;
             return;
         }
         // cycle photo
