@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.application.Platform;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -28,6 +29,8 @@ import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import netscape.javascript.JSObject;
 
+import java.sql.*;
+import java.text.SimpleDateFormat;
 import java.util.Objects;
 
 /** Class that handles all display output
@@ -711,6 +714,7 @@ public class View extends StackPane implements Subscriber {
      * Mostly probably actually used if playing offline and cant show leaderboard
      */
     private void createEndScreen() {
+        System.out.println("CreateEndScreen call");
         this.resetView();
 
         // TODO: make this not temporary
@@ -723,6 +727,7 @@ public class View extends StackPane implements Subscriber {
         boolean newBest = false;
         Text high = null;
         if (this.model.getUser() != null) {
+            this.model.saveHistory(this.model.getTotalScore());
             if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE){
                 if (this.model.getTotalScore() > this.model.getUser().getNoviceHighscore()){
                     this.model.getUser().setN_highscore(this.model.getTotalScore());
@@ -797,13 +802,53 @@ public class View extends StackPane implements Subscriber {
 
         //TODO add data from db to each row
         // add date(timestamp), difficulty, then score to each entry HBox
-        HBox entry1 = new HBox(hboxSpacer);
-        HBox entry2 = new HBox(hboxSpacer);
-        HBox entry3 = new HBox(hboxSpacer);
-        HBox entry4 = new HBox(hboxSpacer);
-        HBox entry5 = new HBox(hboxSpacer);
 
-        VBox entryContainer = new VBox(25, header, entry1, entry2, entry3, entry4, entry5);
+        HBox[] entries = new HBox[5];
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            // Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            String query = "SELECT userdate, userdifficulty, gamescore FROM sql3765767.userhistory WHERE username = ? ORDER BY userdate DESC LIMIT 5";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, this.model.getUser().getUsername());
+            ResultSet rs = stmt.executeQuery();
+
+            int i = 0;
+            while (rs.next() && i < 5) {
+                Timestamp userdate = rs.getTimestamp("userdate");
+                Date nonMilitaryDate = new Date(userdate.getTime());
+                SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
+                String finalDate = formatter.format(nonMilitaryDate);
+
+                String userdifficulty = rs.getString("userdifficulty");
+                int userscore = rs.getInt("gamescore");
+                String scoreString = Integer.toString(userscore);
+
+                Text timeLabel = new Text(finalDate);
+                timeLabel.setStyle("-fx-font-size: 15px; -fx-fill: white; -fx-font-weight: bold;");
+                Text difficultyLabel = new Text(userdifficulty);
+                difficultyLabel.setStyle("-fx-font-size: 17px; -fx-fill: white; -fx-font-weight: bold;");
+                Text scoreLabel = new Text(scoreString);
+                scoreLabel.setStyle("-fx-font-size: 17px; -fx-fill: white; -fx-font-weight: bold;");
+
+
+                entries[i] = new HBox(200);
+                entries[i].getChildren().addAll(timeLabel, difficultyLabel, scoreLabel);
+                i++;
+            }
+        } catch (Exception e){
+                System.out.println(e.toString());
+        }
+
+
+        VBox entryContainer = new VBox(25, header);
+        for (HBox entry: entries) {
+            if (entry != null){
+                entryContainer.getChildren().add(entry);
+            }
+        }
         entryContainer.setTranslateX(250);
         entryContainer.setTranslateY(175);
 

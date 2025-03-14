@@ -126,10 +126,6 @@ public class Model {
         }
     }
 
-    public void changeHighScore(String username){
-
-    }
-
     /** Creates a new entry in the database with the provided login */
     public void createAccount(String username, String password) {
         try {
@@ -142,15 +138,24 @@ public class Model {
             //Replace with actual DB Username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
-            user = new User(username, 0, 0, 0, 0);
-            String query = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
+            String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
-            stmt.setString(2, hashPassword);
-            stmt.setInt(3, 0);
-            stmt.setInt(4, 0);
-            stmt.setInt(5, 0);
-            stmt.executeUpdate();
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next() && rs.getInt(1) > 0){
+                System.out.println("User already exists!");
+                return;
+            }
+            user = new User(username, 0, 0, 0, 0);
+            String querycreate = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
+            PreparedStatement createstmt = con.prepareStatement(querycreate);
+            createstmt.setString(1, username);
+            createstmt.setString(2, hashPassword);
+            createstmt.setInt(3, 0);
+            createstmt.setInt(4, 0);
+            createstmt.setInt(5, 0);
+            createstmt.executeUpdate();
             System.out.println("Added to Database!");
             showLoggedInWindow();
         } catch (Exception e) {
@@ -331,6 +336,48 @@ public class Model {
             return false;
         }
         return true;
+    }
+
+    public void saveHistory(int score){
+        String difficulty = "";
+        try {
+            if (currentDifficulty == DIFFICULTY.NOVICE){
+                difficulty = "Novice";
+            }
+            else if (currentDifficulty == DIFFICULTY.SEASONAL){
+                difficulty = "Seasonal";
+            }
+            else{
+                difficulty = "Expert";
+            }
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+
+            String deleteOldest = "DELETE FROM sql3765767.userhistory WHERE username = ? ORDER BY userdate ASC LIMIT 1";
+            String countquery = "SELECT COUNT(*) FROM sql3765767.userhistory WHERE username = ?";
+
+            PreparedStatement countstmt = con.prepareStatement(countquery);
+            countstmt.setString(1, user.getUsername());
+            ResultSet countset = countstmt.executeQuery();
+
+            if (countset.next() && countset.getInt(1) >= 5){
+                PreparedStatement deletestmt = con.prepareStatement(deleteOldest);
+                deletestmt.setString(1, user.getUsername());
+                deletestmt.executeUpdate();
+            }
+
+            String querycreate = "INSERT INTO sql3765767.userhistory(username, userdate, userdifficulty, gamescore) " + "VALUES (?, CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', 'America/Regina'), ?, ?)";
+            PreparedStatement createstmt = con.prepareStatement(querycreate);
+            createstmt.setString(1, user.getUsername());
+            createstmt.setString(2, difficulty);
+            createstmt.setInt(3, score);
+            createstmt.executeUpdate();
+            System.out.println("Added to History!");
+        } catch (Exception e){
+            System.out.println(e.toString());
+        }
     }
 
     /** GETTERS */
