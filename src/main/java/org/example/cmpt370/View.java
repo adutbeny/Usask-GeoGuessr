@@ -4,12 +4,11 @@ package org.example.cmpt370;
  * CMPT370 */
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.PasswordField;
-import javafx.scene.control.TextField;
+import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -21,6 +20,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
+import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.scene.text.Text;
@@ -31,6 +31,8 @@ import netscape.javascript.JSObject;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 /** Class that handles all display output
@@ -95,6 +97,17 @@ public class View extends StackPane implements Subscriber {
 
     public CheckBox RememberMe;
 
+    //LeaderBoard
+    public Button myHighScore;
+    public Button top16;
+    public Button Novice;
+    public Button Seasonal;
+    public Button Expert;
+    public Button back3;
+    private Pane contentPane;
+    private boolean showMyhighscore = false;
+    private boolean showTop16 = false;
+    private int selectedRound;
 
 
     /**
@@ -209,6 +222,21 @@ public class View extends StackPane implements Subscriber {
         // REMEMBER ME BUTTON
         this.RememberMe = new CheckBox("Remember Me?");
         this.RememberMe.setPrefWidth(400);
+
+        this.myHighScore = new Button("My Scores");
+        this.myHighScore.setPrefWidth(200);
+
+        this.top16 = new Button("Top 16");
+        this.top16.setPrefWidth(200);
+        this.Novice = new Button("Novice");
+        this.Novice.setPrefWidth(200);
+        this.Seasonal = new Button("Seasonal");
+        this.Seasonal.setPrefWidth(200);
+        this.Expert = new Button("Expert");
+        this.Expert.setPrefWidth(200);
+        this.back3 = new Button("Back");
+        this.back3.setPrefWidth(200);
+
 
 
 
@@ -856,12 +884,281 @@ public class View extends StackPane implements Subscriber {
     /** Creates screen to show leaderboard */
     private void createLeaderboardWindow() {
         this.createUserInfoBackground();
+        Pane layout = new Pane();
 
         // title
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(new Font("Courier Prime", 36));
-        this.gc.fillText("Leaderboard", 680, 95);
+        this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 55));
+        this.gc.fillText("LEADERBOARD", 720, 105);
+
+        double borderX = 50;
+        double borderY = 230;
+        double borderWidth = 1100;
+        double borderHeight = 470;
+        this.gc.setFill(Color.rgb(10, 106, 66, 0.5));
+        this.gc.fillRect(borderX, borderY, borderWidth, borderHeight);
+
+        //myscore button
+        myHighScore.setTranslateX(50);
+        myHighScore.setTranslateY(170);
+        myHighScore.setOnMouseClicked(event -> {
+            showDifficultyButtons(layout,true);
+            myHighScore.setOpacity(0.5);
+            top16.setOpacity(1.0);
+        });
+
+        //top16 button
+        top16.setTranslateX(270);
+        top16.setTranslateY(170);
+        top16.setOnMouseClicked(event -> {
+            showDifficultyButtons(layout,false);
+            top16.setOpacity(0.5);
+            myHighScore.setOpacity(1.0);
+        });
+
+        // Back button for the main menu window
+        //VBox buttonContainer = new VBox(this.back2);
+        back2.setTranslateX(500);
+        back2.setTranslateY(720);
+        back2.setOnAction(event -> createLoggedInWindow());
+
+        //back button the leaderboard reset
+        //VBox buttonContainer2 = new VBox(this.back3);
+        back3.setTranslateX(500);
+        back3.setTranslateY(720);
+        back3.setOnAction(event -> resetleaderboardView(layout));
+
+        contentPane = new Pane();
+        contentPane.getChildren().addAll(myHighScore, top16);
+
+        layout.getChildren().addAll( contentPane,back2);
+        this.getChildren().addAll(layout);
+
     }
+    private void showDifficultyButtons(Pane layout,boolean isMyhighScore){
+        layout.getChildren().removeAll(Novice, Seasonal, Expert);
+
+        showMyhighscore = isMyhighScore;
+        showTop16 = !isMyhighScore;
+
+        //Difficulty buttons
+        Novice.setTranslateX(500);
+        Novice.setTranslateY(370);
+        Novice.setOnAction(event -> {
+            model.setCurrentDifficulty(DIFFICULTY.NOVICE);
+            createGridDifficulty(layout, "Novice");
+            createroundCombobox(layout, model, new myHighScoreGrid());
+        });
+
+        Seasonal.setTranslateX(500);
+        Seasonal.setTranslateY(440);
+        Seasonal.setOnAction(event -> {
+            model.setCurrentDifficulty(DIFFICULTY.SEASONAL);
+            //model.setDifficulty("Seasonal");
+            createGridDifficulty(layout, "Seasonal");
+            createroundCombobox(layout, model, new myHighScoreGrid());
+        });
+
+        Expert.setTranslateX(500);
+        Expert.setTranslateY(510);
+        Expert.setOnAction(event -> {
+            model.setCurrentDifficulty(DIFFICULTY.EXPERT);
+            //model.setDifficulty("Expert");
+            createGridDifficulty(layout, "Expert");
+            createroundCombobox(layout, model, new myHighScoreGrid());
+        });
+
+
+        if (!layout.getChildren().contains(Novice)){
+            layout.getChildren().addAll( Novice, Seasonal, Expert);
+        }
+
+
+        if (!layout.getChildren().contains(back3)){
+            layout.getChildren().add(back3);
+        }
+        back2.setVisible(false);
+        back3.setVisible(true);
+
+    }
+
+    private void createroundCombobox(Pane layout, Model model, myHighScoreGrid highScoreGrid){
+
+        ObservableList<String> list = FXCollections.observableArrayList(
+                "Round 1", "Round 2", "Round 3", "Round 4", "Round 5" );
+        ComboBox<String> comboBox = new ComboBox<>(list);
+        comboBox.setPromptText("Select a Round");
+        comboBox.setTranslateX(950);
+        comboBox.setTranslateY(250);
+
+        comboBox.setOnAction(event -> {
+            String selectedRound = comboBox.getValue();
+            if (selectedRound != null) {
+                int numberRound = Integer.parseInt((selectedRound.replaceAll("[^0-9]", "")));
+                System.out.println("selected Round: " + numberRound);
+                highScoreGrid.render(layout, model, numberRound);
+            }
+        });
+
+        layout.getChildren().add(comboBox);
+
+    }
+
+    private void createGridDifficulty(Pane layout, String difficulty){
+
+
+        layout.getChildren().removeIf(node->(node instanceof Rectangle));
+
+        //Create the grid
+        RectangleGrid rectangleGrid = new RectangleGrid();
+
+        rectangleGrid.createGrid(layout, showMyhighscore);
+
+        if(!layout.getChildren().contains(myHighScore)){
+            layout.getChildren().addAll(myHighScore, top16, back3);
+        }
+
+    }
+    private void resetleaderboardView(Pane layout){
+
+
+        layout.getChildren().removeIf(node -> (node instanceof Rectangle));
+        layout.getChildren().removeAll(Novice, Seasonal, Expert);
+
+
+        if (!layout.getChildren().contains(myHighScore)){
+            layout.getChildren().addAll(myHighScore, top16);
+        }
+        back2.setVisible(true);
+        back3.setVisible(false);
+        if (!layout.getChildren().contains(back2)){
+            layout.getChildren().add(back2);
+        }
+    }
+
+
+    private class RectangleGrid {
+        private int selectedRound = 1;
+        public void createGrid(Pane layout, boolean isMyHighScore) {
+            layout.getChildren().clear();
+            if (isMyHighScore) {
+                new myHighScoreGrid().render(layout,model,selectedRound);
+            } else {
+                new top16Grid().render(layout, model);
+            }
+        }
+    }
+    private void setSelectedRound(int numberRound){
+        this.selectedRound = numberRound;
+    }
+
+    private class myHighScoreGrid {
+
+        public void render(Pane layout, Model model, int numberRound) {
+            layout.getChildren().clear();
+
+
+            LinearGradient gradient2 = new LinearGradient(
+                    0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                    new Stop(1, Color.rgb(128, 158, 128)),
+                    new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
+                    new Stop(3, Color.rgb(128, 158, 128))  // End color (lighter green)
+            );
+            LinearGradient gradient = new LinearGradient(
+                    0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                    new Stop(1, Color.rgb(41, 153, 41)),  // End color (lighter green)
+                    new Stop(0, Color.rgb(20, 150, 100)), // Start color (Usask green
+                    new Stop(1, Color.rgb(41, 153, 41))  // End color (lighter green)
+            );
+
+            if (model.getUser() == null) {
+                System.out.println("Error: User not logged in, Cannot retrieve");
+                return;
+            }
+
+            //Scores Exist?
+            List<Model.ScoreEntry> scores = model.getHighScoresRound(numberRound);
+            if (scores == null || scores.isEmpty()) {
+                Text noScores = new Text(400, 400, "No scores available");
+                noScores.setFill(Color.WHITE);
+                noScores.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+                layout.getChildren().add(noScores);
+                return;
+            }
+
+            int i =0;
+            for (Model.ScoreEntry entry : scores) {
+                if(!entry.username.equals((model.getUser().getUsername()))) continue;
+            //for (i = 0; i < maxRows ; i++){
+                //Model.ScoreEntry entry = scores.get(i);
+                LinearGradient color = (i % 2 == 0) ? gradient : gradient2;
+
+                Rectangle rectangle = new Rectangle(350, 350 + i * 40, 500, 35);
+                rectangle.setFill(color);
+                layout.getChildren().add(rectangle);
+                //ranking
+                Text rankText = new Text(370, 350 + i * 40 + 25, String.valueOf(i + 1));
+                rankText.setFill(Color.WHITE);
+                rankText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+                layout.getChildren().add(rankText);
+
+                //highscore
+                Text scoreText = new Text(420, 350 + i * 40 + 25, entry.username + " - " + entry.score);
+                scoreText.setFill(Color.WHITE);
+                scoreText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+                layout.getChildren().add(scoreText);
+
+            }
+        }
+    }
+
+    private class top16Grid {
+        public void render (Pane layout, Model model) {
+            layout.getChildren().clear();
+            LinearGradient gradient2 = new LinearGradient(
+                    0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.rgb(10, 106, 66)),
+                    new Stop(0.5, Color.rgb(20, 150, 100))
+            );
+            LinearGradient gradient = new LinearGradient(
+                    0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
+                    new Stop(0, Color.rgb(10, 106, 66)),
+                    new Stop(0.5, Color.rgb(80, 180, 140))
+            );
+            List<Model.ScoreEntry> scores = model.getTop16scores();
+            if (scores == null || scores.isEmpty()) {
+                Text noScores = new Text(400, 400, "No scores available");
+                noScores.setFill(Color.WHITE);
+                noScores.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+                layout.getChildren().add(noScores);
+                return;
+            }
+            for (int i = 0; i < scores.size(); i++) {
+                LinearGradient color = (i % 2 == 0) ? gradient : gradient2;
+
+                double x = (i <8) ? 70: 630;
+                double y = 350 + (i % 8) *40;
+
+                Rectangle rectangle = new Rectangle(x,y, 500, 35);
+                rectangle.setFill(color);
+                layout.getChildren().add(rectangle);
+
+                Text rankText = new Text(x + 10, y+ 25, String.valueOf(i + 1));
+                rankText.setFill(Color.WHITE);
+                rankText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+                layout.getChildren().add(rankText);
+
+                Model.ScoreEntry entry = scores.get(i);
+                Text userText = new Text(x +60, y + 25, entry.username + " - " + entry.score);
+                userText.setFill(Color.WHITE);
+                userText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+                layout.getChildren().add(userText);
+
+            }
+
+        }
+    }
+
 
     private void createUserInfoBackground() {
         this.resetView();
@@ -924,7 +1221,7 @@ public class View extends StackPane implements Subscriber {
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
-        selectMainMenu();   // change this if you want to test a certain window
+        createLeaderboardWindow();   // change this if you want to test a certain window
     }
 
     /** Attaches itself to controller so that we can receive

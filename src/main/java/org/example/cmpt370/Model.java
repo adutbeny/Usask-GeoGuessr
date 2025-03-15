@@ -10,14 +10,8 @@ import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.SecureRandom;
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Objects;
-import java.util.Random;
+import java.sql.*;
+import java.util.*;
 
 enum DISPLAY {
     STARTUP,
@@ -259,6 +253,11 @@ public class Model {
 
 
     public void setDifficulty(String csv){
+        if (csv == null){
+            System.out.println("Error: CSV is null.Defaulting to Novice");
+            this.currentDifficulty = DIFFICULTY.NOVICE;
+            return;
+        }
         if (csv.equals("/BeginnerPhotos.csv")){
             this.currentDifficulty = DIFFICULTY.NOVICE;
         }
@@ -267,6 +266,15 @@ public class Model {
         }
         else if (csv.equals("/HardPictures.csv")) {
             this.currentDifficulty = DIFFICULTY.EXPERT;
+        }
+    }
+
+    public void setCurrentDifficulty(DIFFICULTY difficulty){
+        if (difficulty == null){
+            this.currentDifficulty = DIFFICULTY.NOVICE;
+        } else {
+            this.currentDifficulty = difficulty;
+            System.out.println("Current Difficulty: " + this.currentDifficulty);
         }
     }
 
@@ -341,6 +349,90 @@ public class Model {
             return false;
         }
         return true;
+    }
+
+    public class ScoreEntry{
+        public String username;
+        public int score;
+
+        public ScoreEntry(String username, int score){
+            this.username = username;
+            this.score = score;
+        }
+    }
+
+    /** Retrieves current user scores for a specific round from userhistory and sorts them in descending order
+     * @return int scores*/
+
+    public List<Model.ScoreEntry> getHighScoresRound(int numberRound){
+        List<Model.ScoreEntry> scores = new ArrayList<>();
+        if(user ==null){
+            System.out.println("Error: User is null, Cannot Retireve high scores");
+            return scores;
+        }
+        if(currentDifficulty ==null){
+            System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
+            currentDifficulty = DIFFICULTY.NOVICE;
+        }
+
+        try {
+            //Class.forName("com.mysql.cj.jdbc.Driver");
+            // Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            String query = "SELECT username, gamescore FROM sql3765767.userhistory WHERE username = ? AND userdifficulty = ? ORDER BY gamescore DESC LIMIT 8";
+
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, currentDifficulty.name());
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                scores.add(new ScoreEntry(rs.getString("username"), rs.getInt("gamescore")));
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return scores;
+    }
+
+    public List<Model.ScoreEntry> getTop16scores(){
+        List<Model.ScoreEntry> scores = new ArrayList<>();
+        if(user ==null){
+            System.out.println("Error: User is null, Cannot Retireve high scores");
+            return scores;
+        }
+        if(currentDifficulty ==null){
+            System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
+            currentDifficulty = DIFFICULTY.NOVICE;
+        }
+
+        try {
+            //Class.forName("com.mysql.cj.jdbc.Driver");
+            // Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            String query = "SELECT username, gamescore FROM sql3765767.userhistory WHERE userdifficulty = ? ORDER BY gamescore DESC LIMIT 16";
+
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, currentDifficulty.name());
+
+
+            ResultSet rs = stmt.executeQuery();
+
+            while (rs.next()) {
+                scores.add(new ScoreEntry(rs.getString("username"), rs.getInt("gamescore")));
+            }
+            stmt.close();
+            con.close();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return scores;
     }
 
     public void saveHistory(int score){
