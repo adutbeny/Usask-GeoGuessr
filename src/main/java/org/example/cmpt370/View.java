@@ -490,8 +490,10 @@ public class View extends StackPane implements Subscriber {
         mapView = new WebView();
 
 
-        mapView.setPrefSize(400, 400);
-        mapView.relocate(775, 200);
+        mapView.setPrefSize(200, 150);
+        mapView.relocate(950, 590);
+
+
 
         // loads map api with html file
         mapEngine = mapView.getEngine();
@@ -519,8 +521,8 @@ public class View extends StackPane implements Subscriber {
             mapView.relocate(0, 135);
         });
         mapView.setOnMouseExited(event -> {
-            mapView.setPrefSize(400, 400);
-            mapView.relocate(775, 200);
+            mapView.setPrefSize(200, 150);
+            mapView.relocate(950, 590);
         });
 
 
@@ -889,7 +891,7 @@ public class View extends StackPane implements Subscriber {
         // title
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 55));
-        this.gc.fillText("LEADERBOARD", 720, 105);
+        this.gc.fillText("Leaderboard", 720, 105);
 
         double borderX = 50;
         double borderY = 230;
