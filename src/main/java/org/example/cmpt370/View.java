@@ -1221,7 +1221,7 @@ public class View extends StackPane implements Subscriber {
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
-        createLeaderboardWindow();   // change this if you want to test a certain window
+        selectMainMenu();   // change this if you want to test a certain window
     }
 
     /** Attaches itself to controller so that we can receive
