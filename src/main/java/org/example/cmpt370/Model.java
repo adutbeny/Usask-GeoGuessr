@@ -519,6 +519,25 @@ public class Model {
     /** Adds current photo to the users pinned */
     public void pin() {
         Picture current = this.getCurrentPicture();
+        String picturePath = current.getPath();
+        try{
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            //Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            String duplicateQuery = "SELEC";
+
+            String addQuery = "INSERT into sql3765767.userpinned(username, pinnedlocation) VALUES (?, ?)";
+            PreparedStatement stmt = con.prepareStatement(addQuery);
+            stmt.setString(1, user.getUsername());
+            stmt.setString(2, picturePath);
+            stmt.executeUpdate();
+            System.out.println("Path added to pinned database!");
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+
         // TODO add current to the database
     }
     /** Unpin photo from the users pinned list
@@ -528,6 +547,7 @@ public class Model {
     public void unpin(/* might need an argument*/) {
         //TODO figure this out
         // update view to not show what we just removed
+
         notifySubscribers();
     }
 
