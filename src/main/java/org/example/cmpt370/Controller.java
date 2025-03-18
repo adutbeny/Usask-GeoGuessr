@@ -135,6 +135,8 @@ public class Controller {
             Platform.exit();
         });
 
+
+
     }
 
     /** Attach Model */

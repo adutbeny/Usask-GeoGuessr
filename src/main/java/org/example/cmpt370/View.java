@@ -3,7 +3,6 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.scene.canvas.Canvas;
@@ -31,7 +30,6 @@ import netscape.javascript.JSObject;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -237,9 +235,6 @@ public class View extends StackPane implements Subscriber {
         this.back3 = new Button("Back");
         this.back3.setPrefWidth(200);
 
-
-
-
         // TODO: Add future buttons here
     }
 
@@ -265,26 +260,26 @@ public class View extends StackPane implements Subscriber {
             }
         }
 
-        //  Main Text
+        // Main Text
         this.gc.setFill(gradient);
         this.gc.fillText("Usask GeoGuessr", 400, 270);
 
         VBox buttonStack = new VBox(25, this.quickplay);
-        // if we have internet connection, display login buttons
+        // If we have internet connection, display login buttons
         if (this.model.getInternetStatus()) {
             buttonStack.getChildren().addAll(this.login, this.createAcc);
         } else {
-            // no internet, display text message indicating this
+            // No internet, display text message indicating this
             Text noInternet = new Text("Internet unavailable, playing offline...");
             // TODO - need to check this and see if it looks good
             buttonStack.getChildren().add(noInternet);
         }
         buttonStack.getChildren().add(this.exit);
-        // set below text
+        // Set below text
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(360);
 
-        // add all to layout in order!!!
+        // aAd all to layout in order!!!
         this.getChildren().add(buttonStack);
     }
 
@@ -301,7 +296,7 @@ public class View extends StackPane implements Subscriber {
                 new Stop(1, Color.rgb(20, 150, 100))
         );
 
-        // black outline
+        // Black outline
         this.gc.setFill(Color.BLACK);
         for (int i = -2; i <= 2; i++) {
             for (int j = -2; j <= 2; j++) {
@@ -403,6 +398,7 @@ public class View extends StackPane implements Subscriber {
         double textHeight = 75;
         double skew = 50;
         this.gc.setFill(gradient);
+
         // Parallellogram shape
         double[] xP = {textbX, textbX + textWidth, textbX + textWidth - skew, textbX - skew};
         double[] yP = {textbY, textbY, textbY + textHeight, textbY + textHeight};
@@ -489,16 +485,13 @@ public class View extends StackPane implements Subscriber {
 
         mapView = new WebView();
 
-
         mapView.setPrefSize(200, 150);
         mapView.relocate(950, 590);
 
-
-
-        // loads map api with html file
+        // Loads map api with html file
         mapEngine = mapView.getEngine();
 
-        //this is checking for errors its not loading correctly
+        // This is checking for errors it's not loading correctly
         mapEngine.setOnError(event -> System.out.println("WebView Error: " + event.getMessage()));
         mapEngine.setOnAlert(event -> {
             String alertMessage = event.getData();
@@ -506,7 +499,7 @@ public class View extends StackPane implements Subscriber {
         });
         mapEngine.setJavaScriptEnabled(true);
 
-        // this is for connecting the html to our java so we can get the coords
+        // This is for connecting the html to our java so we can get the coords
         JavaConnector connector = new JavaConnector();
         mapEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
@@ -528,10 +521,10 @@ public class View extends StackPane implements Subscriber {
 
         this.model.setJavaConnector(connector); //store in model
 
-        //load the map from the html file
+        // Load the map from the html file
         mapEngine.load(Objects.requireNonNull(getClass().getResource("/public/map.html")).toExternalForm());
 
-        //Map interactions
+        // Map interactions
         mapView.setOnMousePressed(event -> {
             mapView.setUserData(new double[]{event.getSceneX(), event.getY(), mapView.getLayoutX(), mapView.getLayoutY()});
         });
@@ -547,7 +540,7 @@ public class View extends StackPane implements Subscriber {
     }
 
     /**
-     * this sends needed info to our map html so it can create a line between two points
+     * This sends needed info to our map HTML so it can create a line between two points to help visualze the distance
      */
     public void updateMapOverlay(double guessedLat, double guessedLng,
                                  double correctLat, double correctLng,
@@ -598,7 +591,6 @@ public class View extends StackPane implements Subscriber {
         this.back1.setLayoutX(500);
         this.back1.setLayoutY(515);
 
-
         this.RememberMe.setLayoutX(520);
         this.RememberMe.setLayoutY(570);
 
@@ -628,8 +620,6 @@ public class View extends StackPane implements Subscriber {
             // Handle token received
             System.out.println("Token received, updating UI...");
         });
-
-
 
     }
 
@@ -668,7 +658,7 @@ public class View extends StackPane implements Subscriber {
         this.submitCreate.setLayoutX(500);
         this.submitCreate.setLayoutY(420);
 
-        // add to layout
+        // Add to layout
         Pane layout = new Pane();
         layout.getChildren().addAll(this.usernameCreate, this.passwordCreate, this.submitCreate, this.back1);
         this.getChildren().addAll(this.myCanvas, layout);
@@ -825,6 +815,7 @@ public class View extends StackPane implements Subscriber {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
+
             // Replace with actual DB Username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
@@ -860,7 +851,6 @@ public class View extends StackPane implements Subscriber {
                 System.out.println(e.toString());
         }
 
-
         VBox entryContainer = new VBox(25, header);
         for (HBox entry: entries) {
             if (entry != null){
@@ -873,11 +863,12 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(entryContainer);
     }
 
+
     /** Screen for viewing players pinned rounds */
     private void createPinnedWindow() {
         this.createUserInfoBackground();
 
-        // title
+        // Title
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 36));
         this.gc.fillText("Pinned Locations", 680, 95);
@@ -888,7 +879,7 @@ public class View extends StackPane implements Subscriber {
         this.createUserInfoBackground();
         Pane layout = new Pane();
 
-        // title
+        // Title
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Courier Prime",FontWeight.BOLD, 55));
         this.gc.fillText("Leaderboard", 720, 105);
@@ -900,7 +891,7 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.rgb(10, 106, 66, 0.5));
         this.gc.fillRect(borderX, borderY, borderWidth, borderHeight);
 
-        //myscore button
+        // My High Score button
         myHighScore.setTranslateX(50);
         myHighScore.setTranslateY(170);
         myHighScore.setOnMouseClicked(event -> {
@@ -909,7 +900,7 @@ public class View extends StackPane implements Subscriber {
             top16.setOpacity(1.0);
         });
 
-        //top16 button
+        // Top 16 button
         top16.setTranslateX(270);
         top16.setTranslateY(170);
         top16.setOnMouseClicked(event -> {
@@ -918,14 +909,10 @@ public class View extends StackPane implements Subscriber {
             myHighScore.setOpacity(1.0);
         });
 
-        // Back button for the main menu window
-        //VBox buttonContainer = new VBox(this.back2);
         back2.setTranslateX(500);
         back2.setTranslateY(720);
         back2.setOnAction(event -> createLoggedInWindow());
 
-        //back button the leaderboard reset
-        //VBox buttonContainer2 = new VBox(this.back3);
         back3.setTranslateX(500);
         back3.setTranslateY(720);
         back3.setOnAction(event -> resetleaderboardView(layout));
@@ -935,15 +922,19 @@ public class View extends StackPane implements Subscriber {
 
         layout.getChildren().addAll( contentPane,back2);
         this.getChildren().addAll(layout);
-
     }
+
+
+    /**
+     * Displays difficulty selection buttons (Novice, Seasonal, Expert) on the given layout.
+     */
     private void showDifficultyButtons(Pane layout,boolean isMyhighScore){
         layout.getChildren().removeAll(Novice, Seasonal, Expert);
 
         showMyhighscore = isMyhighScore;
         showTop16 = !isMyhighScore;
 
-        //Difficulty buttons
+        // 3 Difficulty buttons ( Novice, Seasonal, Expert )
         Novice.setTranslateX(500);
         Novice.setTranslateY(370);
         Novice.setOnAction(event -> {
@@ -956,7 +947,6 @@ public class View extends StackPane implements Subscriber {
         Seasonal.setTranslateY(440);
         Seasonal.setOnAction(event -> {
             model.setCurrentDifficulty(DIFFICULTY.SEASONAL);
-            //model.setDifficulty("Seasonal");
             createGridDifficulty(layout, "Seasonal");
             createroundCombobox(layout, model, new myHighScoreGrid());
         });
@@ -965,25 +955,29 @@ public class View extends StackPane implements Subscriber {
         Expert.setTranslateY(510);
         Expert.setOnAction(event -> {
             model.setCurrentDifficulty(DIFFICULTY.EXPERT);
-            //model.setDifficulty("Expert");
             createGridDifficulty(layout, "Expert");
             createroundCombobox(layout, model, new myHighScoreGrid());
         });
 
-
         if (!layout.getChildren().contains(Novice)){
             layout.getChildren().addAll( Novice, Seasonal, Expert);
         }
-
 
         if (!layout.getChildren().contains(back3)){
             layout.getChildren().add(back3);
         }
         back2.setVisible(false);
         back3.setVisible(true);
-
     }
 
+    /**
+     * Creates a ComboBox for selecting a round and adds it to the specified layout
+     * When a round is selected, it updates the high score grid
+     *
+     * @param layout       The Pane to which the ComboBox will be added
+     * @param model        The Model instance used for updating the high score grid
+     * @param highScoreGrid The highScoreGrid instance responsible for rendering the high score data
+     */
     private void createroundCombobox(Pane layout, Model model, myHighScoreGrid highScoreGrid){
 
         ObservableList<String> list = FXCollections.observableArrayList(
@@ -1001,17 +995,16 @@ public class View extends StackPane implements Subscriber {
                 highScoreGrid.render(layout, model, numberRound);
             }
         });
-
         layout.getChildren().add(comboBox);
-
     }
 
+    /**
+     * Creates the grid based on your selected difficulty ( Easy, Medium, Hard )
+     */
     private void createGridDifficulty(Pane layout, String difficulty){
-
-
         layout.getChildren().removeIf(node->(node instanceof Rectangle));
 
-        //Create the grid
+        // Create the grid
         RectangleGrid rectangleGrid = new RectangleGrid();
 
         rectangleGrid.createGrid(layout, showMyhighscore);
@@ -1019,14 +1012,16 @@ public class View extends StackPane implements Subscriber {
         if(!layout.getChildren().contains(myHighScore)){
             layout.getChildren().addAll(myHighScore, top16, back3);
         }
-
     }
+
+
+
+    /**
+     * Resets the leaderboards
+     */
     private void resetleaderboardView(Pane layout){
-
-
         layout.getChildren().removeIf(node -> (node instanceof Rectangle));
         layout.getChildren().removeAll(Novice, Seasonal, Expert);
-
 
         if (!layout.getChildren().contains(myHighScore)){
             layout.getChildren().addAll(myHighScore, top16);
@@ -1039,6 +1034,9 @@ public class View extends StackPane implements Subscriber {
     }
 
 
+    /**
+     * Helper function to create a grid which is used to create a leaderboard
+     */
     private class RectangleGrid {
         private int selectedRound = 1;
         public void createGrid(Pane layout, boolean isMyHighScore) {
@@ -1050,10 +1048,19 @@ public class View extends StackPane implements Subscriber {
             }
         }
     }
+
+
+    /**
+     * Helper function to set selected round
+     */
     private void setSelectedRound(int numberRound){
         this.selectedRound = numberRound;
     }
 
+
+    /**
+     * Displays high scores for the user which is currently signed in
+     */
     private class myHighScoreGrid {
 
         public void render(Pane layout, Model model, int numberRound) {
@@ -1063,14 +1070,14 @@ public class View extends StackPane implements Subscriber {
             LinearGradient gradient2 = new LinearGradient(
                     0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
                     new Stop(1, Color.rgb(128, 158, 128)),
-                    new Stop(0, Color.rgb(10, 106, 66)), // Start color (Usask green
-                    new Stop(3, Color.rgb(128, 158, 128))  // End color (lighter green)
+                    new Stop(0, Color.rgb(10, 106, 66)),      // Start color (Usask green
+                    new Stop(3, Color.rgb(128, 158, 128))     // End color (lighter green)
             );
             LinearGradient gradient = new LinearGradient(
                     0, 0, 0, 1, true, CycleMethod.NO_CYCLE,
-                    new Stop(1, Color.rgb(41, 153, 41)),  // End color (lighter green)
-                    new Stop(0, Color.rgb(20, 150, 100)), // Start color (Usask green
-                    new Stop(1, Color.rgb(41, 153, 41))  // End color (lighter green)
+                    new Stop(1, Color.rgb(41, 153, 41)),      // End color (lighter green)
+                    new Stop(0, Color.rgb(20, 150, 100)),     // Start color (Usask green
+                    new Stop(1, Color.rgb(41, 153, 41))       // End color (lighter green)
             );
 
             if (model.getUser() == null) {
@@ -1091,20 +1098,20 @@ public class View extends StackPane implements Subscriber {
             int i =0;
             for (Model.ScoreEntry entry : scores) {
                 if(!entry.username.equals((model.getUser().getUsername()))) continue;
-            //for (i = 0; i < maxRows ; i++){
-                //Model.ScoreEntry entry = scores.get(i);
+
                 LinearGradient color = (i % 2 == 0) ? gradient : gradient2;
 
                 Rectangle rectangle = new Rectangle(350, 350 + i * 40, 500, 35);
                 rectangle.setFill(color);
                 layout.getChildren().add(rectangle);
-                //ranking
+
+                // Ranking
                 Text rankText = new Text(370, 350 + i * 40 + 25, String.valueOf(i + 1));
                 rankText.setFill(Color.WHITE);
                 rankText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
                 layout.getChildren().add(rankText);
 
-                //highscore
+                // Highscore
                 Text scoreText = new Text(420, 350 + i * 40 + 25, entry.username + " - " + entry.score);
                 scoreText.setFill(Color.WHITE);
                 scoreText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
@@ -1114,6 +1121,10 @@ public class View extends StackPane implements Subscriber {
         }
     }
 
+
+    /**
+     * Displays a grid which contains the top 16 high scores
+     */
     private class top16Grid {
         public void render (Pane layout, Model model) {
             layout.getChildren().clear();
@@ -1162,6 +1173,9 @@ public class View extends StackPane implements Subscriber {
     }
 
 
+    /**
+     * Creates the background for displaying user information.
+     */
     private void createUserInfoBackground() {
         this.resetView();
 
@@ -1203,7 +1217,7 @@ public class View extends StackPane implements Subscriber {
         double[] yP = {textbY, textbY, textbY + textHeight, textbY + textHeight};
         this.gc.fillPolygon(xP, yP, 4);
 
-        //Green border between the photo and the green username box
+        // Green border between the photo and the green username box
         double borderX = 0;
         double borderY = 115;
         double borderWidth = 1200;
@@ -1219,7 +1233,9 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, logo, buttonContainer);
     }
 
-    // SETUP METHODS
+
+
+    //////// SETUP METHODS \\\\\\\\\
     /** Connect Model */
     public void setModel(Model m) {
         this.model = m;
