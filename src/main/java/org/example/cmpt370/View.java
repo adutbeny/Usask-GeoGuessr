@@ -808,9 +808,6 @@ public class View extends StackPane implements Subscriber {
         score.setFont(new Font(32));
         HBox header = new HBox(hboxSpacer, date, diff, score);
 
-        //TODO add data from db to each row
-        // add date(timestamp), difficulty, then score to each entry HBox
-
         HBox[] entries = new HBox[5];
 
         try {
@@ -872,6 +869,27 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(new Font("Courier Prime", 36));
         this.gc.fillText("Pinned Locations", 680, 95);
+
+        VBox entryBox = new VBox(50);
+
+        //TODO
+        // if pinned is not empty:
+        //  for (entry in history table) {
+        entryBox.getChildren().add(new HBox(50
+                /*, picture, new VBox(20, lat, long)*/));
+        // } else {
+            Text noPins = new Text("No Locations Pinned");
+            noPins.setFont(new Font(32));
+            entryBox.getChildren().add(noPins);
+            //}
+
+        ScrollPane entryContainer = new ScrollPane(entryBox);
+        entryContainer.setPrefWidth(800);
+        entryContainer.setPrefHeight(600);
+        entryContainer.setTranslateX(250);
+        entryContainer.setTranslateY(175);
+
+        this.getChildren().add(entryContainer);
     }
 
     /** Creates screen to show leaderboard */
