@@ -3,7 +3,6 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import javafx.scene.control.CheckBox;
 import org.mindrot.jbcrypt.BCrypt;
 
 import java.io.*;
@@ -13,13 +12,15 @@ import java.security.SecureRandom;
 import java.sql.*;
 import java.util.*;
 
+/** enum to signal different states within the model
+ * Each value corresponds to a response from the view */
 enum DISPLAY {
     STARTUP,
     DIFF,
     GAMEPLAY,
     LOGIN,
     CREATE,
-    LOGGED_IN,      // window when you have succesfully logged in
+    LOGGED_IN,
     HISTORY,
     PINNED,
     LEADERBOARD,
@@ -27,6 +28,7 @@ enum DISPLAY {
 
 }
 
+// Store the selected difficulty
 enum DIFFICULTY {
     NOVICE,
     SEASONAL,
@@ -35,23 +37,26 @@ enum DIFFICULTY {
 
 /** Class that manages all the data
  * Controller calls Model methods to act on things like pictures
- * This is where we pass in the coordinates of mouse locations */
+ * while the View pulls needed data from the Model for display */
 public class Model {
 
     // Model attributes
-    private ArrayList<Subscriber> subscribers;
-    private ArrayList<Picture> pictures;
-    private int picIndex;
+    private ArrayList<Subscriber> subscribers;      // connects to view
+    private ArrayList<Picture> pictures;            // array of photos by difficulty
+    private int picIndex;                           // current index of above array
+    private Picture currentPicture;
+
     private DISPLAY currentWindow; // This field's value will tell the view what to do
     private DIFFICULTY currentDifficulty; //The current difficulty selected
-
+    // User Data
     private User user;
     private int round;          // round number out of 5 (5/5 = last round)
     private int totalScore;     // total sum score over rounds
     private int recentScore;    // most recent score
+
     private boolean internet;   // boolean if connected to internet
+    // Connection class for map API
     private JavaConnector connector;
-    private Picture currentPicture;
     // etc...
 
     /** Constructor */
@@ -72,6 +77,8 @@ public class Model {
     public void addSubscriber(Subscriber sub) {
         this.subscribers.add(sub);
     }
+    /** Notifies View of changes, call at end of any function that
+     * should change what the view is displaying */
     public void notifySubscribers() {
         for (Subscriber sub : this.subscribers) {
             sub.modelUpdated();
@@ -212,7 +219,6 @@ public class Model {
 
     /**
      * Saves the username and password to a file.
-     *
      * @param username The username to save.
      * @param password The password to save.
      */
@@ -251,7 +257,6 @@ public class Model {
     }
 
 
-
     public void setDifficulty(String csv){
         if (csv == null){
             System.out.println("Error: CSV is null.Defaulting to Novice");
@@ -286,6 +291,7 @@ public class Model {
         // FileReader needs to catch IO Errors so we'll use try/catch
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
             String line;
+            // Read csv file line-by-line and populate picture array
             while ((line = br.readLine()) != null) {
                 String[] parts = line.split(","); // Split by comma
 
@@ -300,13 +306,12 @@ public class Model {
         }
 
         Collections.shuffle(this.pictures); // put in random order
-        // reset model stats
+        // This gets called on every consecutive play so we will reset model stats
         this.recentScore = 0;
         this.totalScore = 0;
         this.round = 1;
         this.getNextPic();
         this.showGameplayWindow();
-
     }
 
     /** Modifies data entry in database according to which difficulty level
@@ -552,7 +557,6 @@ public class Model {
     }
 
     /* METHODS TO CHANGE VIEW */
-
     /** Prompts View to show start-up display */
     public void showStartupWindow() {
         this.currentWindow = DISPLAY.STARTUP;

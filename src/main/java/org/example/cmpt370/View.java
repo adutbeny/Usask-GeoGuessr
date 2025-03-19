@@ -1242,18 +1242,6 @@ public class View extends StackPane implements Subscriber {
         selectMainMenu();   // change this if you want to test a certain window
     }
 
-    /** Attaches itself to controller so that we can receive
-     * interactions from the user and pass to the appropriate
-     *
-     * @param controller method */
-    public void setupEvents(Controller controller) {
-        myCanvas.setOnMousePressed(controller::handlePressed);
-        myCanvas.setOnMouseDragged(controller::handleDragged);
-        myCanvas.setOnMouseReleased(controller::handleReleased);
-        setOnKeyPressed(controller::handleKeyPressed);
-        myCanvas.setOnMouseMoved(controller::handleMouseMoved);
-    }
-
     /**
      * Gets called when the model signals a change,
      * then based on what state the model is in, show/update

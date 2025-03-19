@@ -4,11 +4,10 @@ package org.example.cmpt370;
  * CMPT370 */
 
 /** Class to represent a photo, including file path and coords
- * Built into an array while parsing over csv on startup/mode select */
+ * Built into an array while parsing over a given csv on startup/mode select
+ * These will be stored by the model to be displayed by the View*/
 public class Picture {
-    /* TODO:
-     * Likely going to need a class to store a photo and its location
-     * Here we can also add any methods we might need to act on it */
+
     private String path;
     private double latitude;
     private double longitude;

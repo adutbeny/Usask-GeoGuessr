@@ -7,7 +7,7 @@ import javafx.scene.layout.StackPane;
 public class Setup extends StackPane {
 
     public Setup() {
-        // Instantiate
+        // Instantiate each class
         Model m = new Model();
         View v = new View();
         Controller c = new Controller(v);
@@ -15,7 +15,6 @@ public class Setup extends StackPane {
         // Connect MVC layout
         m.addSubscriber(v);
         v.setModel(m);
-        v.setupEvents(c);
         c.setModel(m);
 
         // Ensures View receives inputs

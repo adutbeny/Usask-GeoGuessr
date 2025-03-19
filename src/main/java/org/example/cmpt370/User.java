@@ -1,17 +1,18 @@
 package org.example.cmpt370;
 
-/** Class to store user information on a successful login */
+/** Class to store user information on a successful login
+ * Held by the model as a instance variable, loaded from database */
 public class User {
 
     private String username;
-    private int score;
+    private int score;  // current round score
+    // high scores by difficulty
     private int N_highscore;
     private int S_highscore;
     private int E_highscore;
 
     /** Constructor */
     public User(String user, int novice_highscore, int seasonal_highscore, int expert_highscore, int currentscore) {
-        // set up user stuff here, pulled from DB
         this.username = user;
         this.N_highscore = novice_highscore;
         this.S_highscore = seasonal_highscore;
@@ -35,6 +36,7 @@ public class User {
     public int getExpertHighscore() {
         return E_highscore;
     }
+    /** Set highscores */
     public void setN_highscore(int score){
         this.N_highscore = score;
     }

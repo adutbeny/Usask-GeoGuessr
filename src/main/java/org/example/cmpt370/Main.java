@@ -10,11 +10,13 @@ public class Main extends Application {
     public void start(Stage stage) {
 
         Setup setup = new Setup();
-        Scene scene = new Scene(setup, 1200, 800);
-        scene.getStylesheets().addAll("buttonstyle.css");   // adds button styling
+        Scene scene = new Scene(setup, 1200, 800);      // dimensions
+        scene.getStylesheets().addAll("buttonstyle.css");   // apply button styling globally
         stage.setTitle("Usask GeoGuessr");
         stage.setResizable(false);
 
+        // Could also remove default application / OS level exit button
+        // in favour of just using the exit button
         stage.setScene(scene);
         stage.show();
     }
