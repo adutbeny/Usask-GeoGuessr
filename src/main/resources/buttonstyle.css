@@ -5,8 +5,9 @@
 .button {
     -fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);
     -fx-text-fill: white;
-    -fx-font-size: 16px;
-    -fx-font-weight: bold;
+    -fx-font-size: 18px;
+    -fx-font-family: "Segoe UI This";
+    /*-fx-font-weight: bold;*/
     -fx-background-radius: 10;
     -fx-padding: 10;
     -fx-border-color: #06321E;
@@ -23,4 +24,13 @@
 .button:pressed {
     -fx-background-color: linear-gradient(to bottom, #084A2E, #0A6A42);
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+@font-face {
+    font-family: "Segoe UI This";
+    src: url("/fonts/segoeuithis.ttf") format("truetype");
+}
+
+.root {
+    -fx-font-family: "Segoe UI This";
 }

@@ -11,7 +11,7 @@ public class Main extends Application {
 
         Setup setup = new Setup();
         Scene scene = new Scene(setup, 1200, 800);      // dimensions
-        scene.getStylesheets().addAll("buttonstyle.css");   // apply button styling globally
+        scene.getStylesheets().addAll("buttonstyle.css");   // apply styling globally
         stage.setTitle("Usask GeoGuessr");
         stage.setResizable(false);
 
