@@ -30,6 +30,7 @@ import netscape.javascript.JSObject;
 
 import java.sql.*;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -877,14 +878,44 @@ public class View extends StackPane implements Subscriber {
 
         //TODO
         // if pinned is not empty:
-        //  for (entry in history table) {
-        entryBox.getChildren().add(new HBox(50
-                /*, picture, new VBox(20, lat, long)*/));
-        // } else {
+        ArrayList<Picture> pinnedLocations = new ArrayList<Picture>();
+        int value = 0;
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // Replace with actual DB Username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            String query = "SELECT pinnedlocation, latitude, longitude FROM sql3765767.userpinned WHERE username = ? ORDER BY id DESC";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, this.model.getUser().getUsername());
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                value++;
+                String picturepath = rs.getString("pinnedlocation");
+                double latitude = rs.getDouble("latitude");
+                double longitude = rs.getDouble("longitude");
+                Image loadedImage = new Image(getClass().getResourceAsStream(picturepath));
+                ImageView imageView = new ImageView(loadedImage);
+                imageView.setFitHeight(400);
+                imageView.setFitWidth(400);
+
+                Label latLabel = new Label("Latitude: " + latitude);
+                latLabel.setFont(new Font(25));
+                Label longLabel = new Label("Longitude: " + longitude);
+                longLabel.setFont(new Font(25));
+                VBox locationBox = new VBox(10, latLabel, longLabel);
+                HBox entryRow = new HBox(50, imageView, locationBox);
+                entryBox.getChildren().add(entryRow);
+            }
+        } catch (Exception e){
+            System.out.println(e.toString());
+        }
+        if (value == 0) {
             Text noPins = new Text("No Locations Pinned");
             noPins.setFont(new Font(32));
             entryBox.getChildren().add(noPins);
-            //}
+        }
 
         ScrollPane entryContainer = new ScrollPane(entryBox);
         entryContainer.setPrefWidth(800);

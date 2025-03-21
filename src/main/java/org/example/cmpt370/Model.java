@@ -602,6 +602,7 @@ public class Model {
     public void pin() {
         Picture current = this.getCurrentPicture();
         String picturePath = current.getPath();
+
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
             //Replace with actual DB Username and password
@@ -609,10 +610,12 @@ public class Model {
             System.out.println("Connected to database");
             String duplicateQuery = "SELEC";
 
-            String addQuery = "INSERT into sql3765767.userpinned(username, pinnedlocation) VALUES (?, ?)";
+            String addQuery = "INSERT into sql3765767.userpinned(username, pinnedlocation, latitude, longitude) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(addQuery);
             stmt.setString(1, user.getUsername());
             stmt.setString(2, picturePath);
+            stmt.setDouble(3, current.getLatitude());
+            stmt.setDouble(4, current.getLongitude());
             stmt.executeUpdate();
             System.out.println("Path added to pinned database!");
 
