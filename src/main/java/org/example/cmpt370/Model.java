@@ -443,7 +443,12 @@ public class Model {
         }
     }
 
-    /** Retrieves current user scores for a specific round from userhistory and sorts them in descending order
+    private Connection getConnection() throws SQLException{
+        return DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+
+    }
+
+    /** Retrieves current user scores for a specific round from user and their scores in Novice, Seasoned ad Expert and sorts them in descending order
      * @return int scores*/
 
     public List<Model.ScoreEntry> getHighScoresRound(int numberRound){
@@ -457,30 +462,52 @@ public class Model {
             currentDifficulty = DIFFICULTY.NOVICE;
         }
 
+        String query;
+        if (currentDifficulty == DIFFICULTY.NOVICE){
+            query = "SELECT username, N_high_score FROM sql3765767.users WHERE username = ? ORDER BY N_high_score DESC LIMIT 8";
+        }
+
+        else if (currentDifficulty == DIFFICULTY.SEASONAL){
+            query = "SELECT users.username, users.S_high_score FROM sql3765767.users WHERE username =? ORDER BY S_high_score DESC LIMIT 8";
+        }
+        else{
+            query = "SELECT users.username, users.E_high_score FROM sql3765767.users WHERE username =? ORDER BY E_high_score DESC LIMIT 8";
+        }
+
         try {
-            //Class.forName("com.mysql.cj.jdbc.Driver");
             // Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Connected to database");
-            String query = "SELECT username, gamescore FROM sql3765767.userhistory WHERE username = ? AND userdifficulty = ? ORDER BY gamescore DESC LIMIT 8";
 
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, user.getUsername());
-            stmt.setString(2, currentDifficulty.name());
+            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, user.getUsername());
 
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
 
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                scores.add(new ScoreEntry(rs.getString("username"), rs.getInt("gamescore")));
+                        if (currentDifficulty == DIFFICULTY.NOVICE) {
+                            scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("N_high_score")));
+                        }
+                        else if (currentDifficulty == DIFFICULTY.SEASONAL) {
+                            scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("S_high_score")));
+                        }
+                        else{
+                            scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("E_high_score")));
+                        }
+                    }
+                }
             }
-            stmt.close();
-            con.close();
+            System.out.println("Successful: Retrieved my high scores for the difficulty");
+
         } catch (SQLException e) {
             e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
         }
         return scores;
     }
+    /** Retrieves all user scores from user dataset for Novice, Seasoned and Expert and sorts them in descending order
+     * @return int scores*/
 
     public List<Model.ScoreEntry> getTop16scores(){
         List<Model.ScoreEntry> scores = new ArrayList<>();
@@ -492,26 +519,37 @@ public class Model {
             System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
             currentDifficulty = DIFFICULTY.NOVICE;
         }
+        String column;
+        switch (currentDifficulty) {
+            case NOVICE:
+                column = "N_high_score";
+                break;
+            case SEASONAL:
+                column = "S_high_score";
+                break;
+            default:
+                column = "E_high_score";
+                break;
+        }
+
+
+        String query = "SELECT username, " + column + " FROM sql3765767.users ORDER BY " + column +" DESC LIMIT 16";
 
         try {
-            //Class.forName("com.mysql.cj.jdbc.Driver");
             // Replace with actual DB Username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Connected to database");
-            String query = "SELECT username, gamescore FROM sql3765767.userhistory WHERE userdifficulty = ? ORDER BY gamescore DESC LIMIT 16";
 
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, currentDifficulty.name());
-
-
-            ResultSet rs = stmt.executeQuery();
-
-            while (rs.next()) {
-                scores.add(new ScoreEntry(rs.getString("username"), rs.getInt("gamescore")));
+            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
+                try(ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt(column)));
+                    }
+                }
             }
-            stmt.close();
-            con.close();
-        } catch (SQLException e) {
+            System.out.println("Successful: Retrieved my high scores for the difficulty");
+
+        } catch (SQLException | ClassNotFoundException e) {
             e.printStackTrace();
         }
         return scores;
