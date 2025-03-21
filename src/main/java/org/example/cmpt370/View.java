@@ -100,7 +100,6 @@ public class View extends StackPane implements Subscriber {
     public Button Novice;
     public Button Seasonal;
     public Button Expert;
-    public Button back3;
     private Pane contentPane;
     private boolean showMyhighscore = false;
     private boolean showtop16button = false;
@@ -689,7 +688,7 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillText("Usask GeoGuessr", 400, 270);
 
         // Button Stack
-        VBox buttonStack = new VBox(20, this.quickplay, this.history, this.pinned, this.leaderboard, this.multiplayer, this.exit);
+        VBox buttonStack = new VBox(20, this.quickplay, this.history, this.pinned, this.leaderboard, this.multiplayer, this.back1);
         buttonStack.setTranslateX(300);
         buttonStack.setTranslateY(325);
 
