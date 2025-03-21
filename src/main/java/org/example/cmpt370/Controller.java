@@ -21,34 +21,34 @@ public class Controller {
      *             for all buttons and other elements, without a permanent connection */
     public Controller(View view) {
         // Sends to difficulty select, no account
-        view.quickplay.setOnAction(_ -> {
+        view.quickplay.setOnAction(event -> {
             this.model.showDifficultyWindow();
             //TODO: will need to disable leaderboards/high-score if
             // this becomes like an "offline" mode
         });
-        view.login.setOnAction(_ -> {
+        view.login.setOnAction(event -> {
             this.model.showLoginWindow();
         });
-        view.createAcc.setOnAction(_ -> {
+        view.createAcc.setOnAction(event -> {
             this.model.showCreateAccWindow();
         });
-        view.easy.setOnAction(_ -> {
+        view.easy.setOnAction(event -> {
             this.model.selectPictureSet("/BeginnerPhotos.csv");
             this.model.setDifficulty("/BeginnerPhotos.csv");
         });
-        view.medium.setOnAction(_ -> {
+        view.medium.setOnAction(event -> {
             this.model.selectPictureSet("/MediumPictures.csv");
             this.model.setDifficulty("/MediumPictures.csv");
         });
-        view.hard.setOnAction(_ -> {
+        view.hard.setOnAction(event -> {
             this.model.selectPictureSet("/HardPictures.csv");
             this.model.setDifficulty("/HardPictures.csv");
         });
-        view.back1.setOnAction(_ -> {
+        view.back1.setOnAction(event -> {
             this.model.showStartupWindow();
         });
         // log in
-        view.submitLogin.setOnAction(_ -> {
+        view.submitLogin.setOnAction(event -> {
             // load fields
             String username = view.usernameField.getText();
             String password = view.passwordField.getText();
@@ -76,7 +76,7 @@ public class Controller {
             // TODO: need to add handling for incorrect password
         });
         // create a new account in database
-        view.submitCreate.setOnAction(_ -> {
+        view.submitCreate.setOnAction(event -> {
             String username = view.usernameCreate.getText();
             String password = view.passwordCreate.getText();
 
@@ -84,28 +84,26 @@ public class Controller {
             this.model.createAccount(username, password);
         });
         // Available after successful log-in
-        view.history.setOnAction(_ -> {
+        view.history.setOnAction(event -> {
             this.model.showHistoryWindow();
         });
-        view.pinned.setOnAction(_ -> {
+        view.pinned.setOnAction(event -> {
             this.model.showPinnedWindow();
         });
-        view.leaderboard.setOnAction(_ -> {
+        view.leaderboard.setOnAction(event -> {
             this.model.showLeaderboard();
         });
-        view.multiplayer.setOnAction(_ -> {
+        view.multiplayer.setOnAction(event -> {
             // TODO: Figure out how this looks
             //this.model.initiateMultiplayer();
         });
         // return to logged in menu
-        view.back2.setOnAction(_ -> {
-            this.model.showLoggedInWindow();
-        });
-        view.menu.setOnAction(_ -> {
+        view.back2.setOnAction(event -> this.model.showLoggedInWindow());
+        view.menu.setOnAction(event -> {
             this.model.showLoggedInWindow();
         });
         // gameplay loop interactions
-        view.submit.setOnAction(_ -> {
+        view.submit.setOnAction(event -> {
             double dist = model.getDistance();
             /* need to have this in controller so that we can call updateMapOverlay()
              in view to send to our html, this is a slight workaround could probably find
@@ -120,22 +118,22 @@ public class Controller {
             view.submit.setVisible(false);
             view.next.setVisible(true);
         });
-        view.next.setOnAction(_ -> {
+        view.next.setOnAction(event -> {
             this.model.loadNextRound();
             view.next.setVisible(false);
             view.submit.setVisible(true);
         });
-        view.addPin.setOnAction(_ -> {
+        view.addPin.setOnAction(event -> {
             this.model.pin();
         });
-        view.unpin.setOnAction(_ -> {
+        view.unpin.setOnAction(event -> {
             this.model.unpin();
         });
-        view.playAgain.setOnAction(_ -> {
+        view.playAgain.setOnAction(event -> {
             this.model.showDifficultyWindow();
         });
         // kills program
-        view.exit.setOnAction(_ -> {
+        view.exit.setOnAction(event -> {
             Platform.exit();
         });
 

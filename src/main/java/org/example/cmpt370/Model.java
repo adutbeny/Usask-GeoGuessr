@@ -59,6 +59,8 @@ public class Model {
     private JavaConnector connector;
     // etc...
 
+    private boolean isGoogleSignIn = false;
+
     /** Constructor */
     public Model() {
         this.subscribers = new ArrayList<>();
@@ -83,6 +85,15 @@ public class Model {
         for (Subscriber sub : this.subscribers) {
             sub.modelUpdated();
         }
+    }
+
+    /**
+     * Sets whether the user is signing in with Google.
+     *
+     * @param isGoogleSignIn True if the user is signing in with Google, false otherwise.
+     */
+    public void setGoogleSignIn(boolean isGoogleSignIn) {
+        this.isGoogleSignIn = isGoogleSignIn;
     }
 
     /** Take info from login and load into class instance */
@@ -177,16 +188,55 @@ public class Model {
         return password.toString();
     }
 
+    /**
+     * Checks if a user already exists in the database.
+     *
+     * @param username The username to check.
+     * @return True if the user exists, false otherwise.
+     */
+    private boolean userExists(String username) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+
+            String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next() && rs.getInt(1) > 0) {
+                return true; // user exists !!!!!!!!!!!!
+            }
+
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            System.out.println("Error checking if user exists: " + e.getMessage());
+        }
+        return false; // user does not exist 1!!!!!!!!!
+    }
+
     public void createAccountFromEmail(String email) {
         try {
             // Extract the username (part before @)
             String username = email.split("@")[0];
 
+            // Check if the user already exists in the database
+            if (userExists(username)) {
+                System.out.println("User already exists. Logging in...");
+                // Automatically log in the user
+                String hashedPassword = loadPasswordFromDatabase(username); // Retrieve the hashed password from the database
+                verifyLogin(username, hashedPassword, true); // Pass the hashed password
+                return;
+            }
+
             // Generate a random password
-            String password = generateRandomPassword(12); // 12-character password
+            String plaintextPassword = generateRandomPassword(12); // 12-character password (plaintext)
+            System.out.println("Generated plaintext password: " + plaintextPassword); // Debugging
 
             // Hash the password
-            String hashedPassword = BCrypt.hashpw(password, BCrypt.gensalt());
+            String hashedPassword = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
 
             // Insert into the database
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -204,16 +254,39 @@ public class Model {
 
             System.out.println("Account created for email: " + email);
             System.out.println("Username: " + username);
-            System.out.println("Random Password: " + password); // Log the password for debugging (remove in production)
+            System.out.println("Hashed Password: " + hashedPassword); // Debugging
 
             // Automatically log in the user after account creation
-            verifyLogin(username, password, true); // Set "Remember Me" to true
+            verifyLogin(username, plaintextPassword, true); // Pass the plaintext password
 
             stmt.close();
             con.close();
         } catch (Exception e) {
             System.out.println("Error creating account: " + e.getMessage());
         }
+    }
+
+    private String loadPasswordFromDatabase(String username) {
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+
+            String query = "SELECT password FROM sql3765767.users WHERE username = ?";
+            PreparedStatement stmt = con.prepareStatement(query);
+            stmt.setString(1, username);
+            ResultSet rs = stmt.executeQuery();
+
+            if (rs.next()) {
+                return rs.getString("password"); // return  password
+            }
+
+            stmt.close();
+            con.close();
+        } catch (Exception e) {
+            System.out.println("Error retrieving password: " + e.getMessage());
+        }
+        return null;
     }
 
 
@@ -237,12 +310,16 @@ public class Model {
      * @return An array containing the username and password, or null if the file doesn't exist.
      */
     public String[] loadCredentials() {
+        if (isGoogleSignIn) {
+            return null; // skip loading if the user is using google
+        }
+
         try (BufferedReader reader = new BufferedReader(new FileReader("credentials.txt"))) {
             String username = reader.readLine();
             String password = reader.readLine();
             return new String[]{username, password};
         } catch (IOException e) {
-            return null; // File doesn't exist or couldn't be read
+            return null;
         }
     }
 

@@ -43,7 +43,7 @@
             console.log("Encoded JWT ID token: " + response.credential);
 
             // Send token back to JavaFX app via local server
-            fetch('http://localhost:63343/auth', {
+            fetch('http://localhost:63347/auth', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ token: response.credential })

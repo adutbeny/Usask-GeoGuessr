@@ -126,6 +126,7 @@ public class View extends StackPane implements Subscriber {
         this.myCanvas = new Canvas(1200, 800);
         this.gc = this.myCanvas.getGraphicsContext2D();
         this.googleAuthHandler = new GoogleAuthHandler();
+
         // Setup Buttons
         // Main Window
         this.quickplay = new Button("Quickplay");
@@ -607,6 +608,8 @@ public class View extends StackPane implements Subscriber {
         // TODO this should be in controller if we can figure that out ( I AM VOLUTEENDING MATT BERRY TO DO THIS )
         // Set action for Google Sign-In button
         this.googleSignIn.setOnAction(event -> {
+            clearLoginFields();
+            model.setGoogleSignIn(true);
             this.googleAuthHandler.startPythonServer(); // Start the Python server
             this.googleAuthHandler.openGoogleSignInPage(); // Open the Google Sign-In page
         });
@@ -1252,6 +1255,11 @@ public class View extends StackPane implements Subscriber {
     }
 
 
+    public void clearLoginFields() {
+        usernameField.clear();
+        passwordField.clear();
+        System.out.println("Cleared username and password fields.");
+    }
 
     //////// SETUP METHODS \\\\\\\\\
     /** Connect Model */

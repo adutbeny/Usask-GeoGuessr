@@ -4,10 +4,7 @@ import javafx.animation.AnimationTimer;
 import org.json.JSONObject;
 
 import java.awt.*;
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.*;
 import java.net.URI;
 import java.util.Base64;
 import java.util.concurrent.Executors;
@@ -25,6 +22,11 @@ public class GoogleAuthHandler {
     // Flag to check if python server is already running
     private boolean isPythonServerStarted = false;
 
+    private Model model;
+
+    public GoogleAuthHandler() {
+        this.model = new Model();
+    }
 
     /**
      * Starts the Python server that handles authentication requests
@@ -102,20 +104,30 @@ public class GoogleAuthHandler {
             public void handle(long now) {
                 String token = readTokenFromFile();
                 if (token != null) {
-                    // token received
                     System.out.println("Google Token: " + token);
 
-                    // extract email from ID token
+                    // get emial from toeken
                     String email = extractEmailFromIdToken(token);
                     if (email != null) {
                         System.out.println("User Email: " + email);
+
+                        model.createAccountFromEmail(email);
+
+                        // delete the token file
+                        File tokenFile = new File("token.txt");
+                        if (tokenFile.exists()) {
+                            tokenFile.delete();
+                            System.out.println("Deleted token.txt after processing.");
+                        }
+
+                        stopPythonServer(); // stop the Python server
+                        this.stop();
+                        onTokenReceived.run();
                     } else {
                         System.out.println("Failed to extract email from ID token.");
                     }
-
-                    stopPythonServer(); // Stop the server
-                    this.stop();
-                    onTokenReceived.run();
+                } else {
+                    System.out.println("No token found in token.txt");
                 }
             }
         };
