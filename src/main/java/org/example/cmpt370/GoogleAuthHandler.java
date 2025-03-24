@@ -36,12 +36,11 @@ public class GoogleAuthHandler {
             System.out.println("Python server is already running!");
             return;
         }
-
         try {
-            // Path to the Python server
+            // path to the Python server
             String pythonScriptPath = "src/main/python/server.py";
 
-            // Starting the Python server
+            // starting the Python server
             ProcessBuilder processBuilder = new ProcessBuilder("python", pythonScriptPath);
             processBuilder.redirectErrorStream(true);
             pythonServerProcess = processBuilder.start();
@@ -59,12 +58,11 @@ public class GoogleAuthHandler {
             });
 
             System.out.println("Python server started.");
-            isPythonServerStarted = true; // Set the flag to true
+            isPythonServerStarted = true; // set the flag to true
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Stops the Python server if it is running
@@ -77,20 +75,18 @@ public class GoogleAuthHandler {
         }
     }
 
-
     /**
      * Opens the Google Sign-In page in the default web browser.
      * Ensure the port number matches the Python server configuration!!
      */
     public void openGoogleSignInPage() {
         try {
-            // )pen the Google Sign-In page ( check to make sure port # matches everywhere !!!!!!!!!!!!!!!!)
+            // open the Google Sign-In page ( check to make sure port # matches everywhere !!!!!!!!!!!!!!!!)
             Desktop.getDesktop().browse(new URI("http://localhost:63347/googleSignIN.html"));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     /**
      * Starts a background process to monitor the authentication token file.
@@ -106,7 +102,7 @@ public class GoogleAuthHandler {
                 if (token != null) {
                     System.out.println("Google Token: " + token);
 
-                    // get emial from toeken
+                    // get emial from teken
                     String email = extractEmailFromIdToken(token);
                     if (email != null) {
                         System.out.println("User Email: " + email);
@@ -126,14 +122,11 @@ public class GoogleAuthHandler {
                     } else {
                         System.out.println("Failed to extract email from ID token.");
                     }
-                } else {
-                    System.out.println("No token found in token.txt");
                 }
             }
         };
         timer.start();
     }
-
 
     /**
      * Reads the authentication token from the token file.
@@ -149,7 +142,6 @@ public class GoogleAuthHandler {
         }
     }
 
-
     /**
      * Extracts the email address from a Google ID token.
      *
@@ -159,7 +151,7 @@ public class GoogleAuthHandler {
 
     public String extractEmailFromIdToken(String idToken) {
         try {
-            // Split the JWT into its three parts
+            // split the JWT into its three parts
             String[] parts = idToken.split("\\.");
             if (parts.length != 3) {
                 throw new IllegalArgumentException("Invalid ID token format.");
@@ -168,13 +160,15 @@ public class GoogleAuthHandler {
             String payload = new String(Base64.getUrlDecoder().decode(parts[1]));
             JSONObject jsonPayload = new JSONObject(payload);
 
-            // Extract the email
+            // extract the email
             return jsonPayload.getString("email");
         } catch (Exception e) {
             e.printStackTrace();
             return null;
         }
     }
+
+
 
 
 }

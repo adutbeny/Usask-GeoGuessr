@@ -17,7 +17,6 @@ import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
 import javafx.scene.paint.Stop;
-import javafx.scene.shape.Circle;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -608,8 +607,8 @@ public class View extends StackPane implements Subscriber {
         this.googleSignIn.setOnAction(event -> {
             clearLoginFields();
             model.setGoogleSignIn(true);
-            this.googleAuthHandler.startPythonServer(); // Start the Python server
-            this.googleAuthHandler.openGoogleSignInPage(); // Open the Google Sign-In page
+            this.googleAuthHandler.startPythonServer();
+            this.googleAuthHandler.openGoogleSignInPage();
         });
 
         // add to layout
@@ -618,8 +617,9 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, layout);
 
         this.googleAuthHandler.startTokenChecker(() -> {
-            // Handle token received
             System.out.println("Token received, updating UI...");
+            createLoggedInWindow();
+
         });
 
     }
@@ -814,7 +814,6 @@ public class View extends StackPane implements Subscriber {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Replace with actual DB Username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
             String query = "SELECT userdate, userdifficulty, gamescore FROM sql3765767.userhistory WHERE username = ? ORDER BY userdate DESC LIMIT 5";
@@ -880,7 +879,6 @@ public class View extends StackPane implements Subscriber {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            // Replace with actual DB Username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
             String query = "SELECT pinnedlocation, latitude, longitude FROM sql3765767.userpinned WHERE username = ? ORDER BY id DESC";

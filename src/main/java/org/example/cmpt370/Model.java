@@ -8,9 +8,11 @@ import org.mindrot.jbcrypt.BCrypt;
 import java.io.*;
 import java.net.URL;
 import java.net.URLConnection;
-import java.security.SecureRandom;
 import java.sql.*;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
 /** enum to signal different states within the model
  * Each value corresponds to a response from the view */
@@ -100,11 +102,11 @@ public class Model {
     public boolean verifyLogin(String username, String password, boolean rememberMe) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            // Replace with actual DB Username and password
+
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
 
-            // Retrieve user and password fields and checks
+            // retrieve user and password
             String query = "SELECT password, N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
@@ -118,14 +120,15 @@ public class Model {
                 if (BCrypt.checkpw(password, hashPassword)) {
                     System.out.println("Login successful!");
 
-                    // Save credentials if "Remember Me" is checked
+                    // save credentials if "Remember Me" is checked
                     if (rememberMe) {
                         saveCredentials(username, password);
                     } else {
-                        clearCredentials(); // Clear saved credentials if "Remember Me" is unchecked
+                        clearCredentials();
                     }
 
                     user = new User(username, N_high_score, S_high_score, E_high_score, 0);
+                    clearCredentials();
                     showLoggedInWindow();
                     return true;
                 }
@@ -148,7 +151,7 @@ public class Model {
             }
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             Class.forName("com.mysql.cj.jdbc.Driver");
-            //Replace with actual DB Username and password
+
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
             String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
@@ -174,18 +177,6 @@ public class Model {
         } catch (Exception e) {
             System.out.println(e);
         }
-    }
-
-    private String generateRandomPassword(int length) {
-        String chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()";
-        Random random = new SecureRandom();
-        StringBuilder password = new StringBuilder();
-
-        for (int i = 0; i < length; i++) {
-            password.append(chars.charAt(random.nextInt(chars.length())));
-        }
-
-        return password.toString();
     }
 
     /**
@@ -219,76 +210,54 @@ public class Model {
 
     public void createAccountFromEmail(String email) {
         try {
-            // Extract the username (part before @)
             String username = email.split("@")[0];
 
-            // Check if the user already exists in the database
             if (userExists(username)) {
                 System.out.println("User already exists. Logging in...");
-                // Automatically log in the user
-                String hashedPassword = loadPasswordFromDatabase(username); // Retrieve the hashed password from the database
-                verifyLogin(username, hashedPassword, true); // Pass the hashed password
+
+                // DIRECTLY LOGIN GOOGLE USER WITH NO PASSWORD
+                Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306",
+                        "sql3765767", "McsStSMGU6");
+
+                // LOAD USER DATA
+                String query = "SELECT N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setString(1, username);
+                ResultSet rs = stmt.executeQuery();
+
+                if (rs.next()) {
+                    user = new User(
+                            username,
+                            rs.getInt("N_high_score"),
+                            rs.getInt("S_high_score"),
+                            rs.getInt("E_high_score"),
+                            0
+                    );
+                    System.out.println("Should log in.....");
+                    showLoggedInWindow();
+                }
                 return;
             }
 
-            // Generate a random password
-            String plaintextPassword = generateRandomPassword(12); // 12-character password (plaintext)
-            System.out.println("Generated plaintext password: " + plaintextPassword); // Debugging
+            // Create new Google user account (no password needed)
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306",
+                    "sql3765767", "McsStSMGU6");
 
-            // Hash the password
-            String hashedPassword = BCrypt.hashpw(plaintextPassword, BCrypt.gensalt());
-
-            // Insert into the database
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
-            System.out.println("Connected to database");
-
-            String query = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
+            String query = "INSERT INTO sql3765767.users(username, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
-            stmt.setString(2, hashedPassword);
-            stmt.setInt(3, 0); // Default novice high score
-            stmt.setInt(4, 0); // Default seasonal high score
-            stmt.setInt(5, 0); // Default expert high score
+            stmt.setInt(2, 0);
+            stmt.setInt(3, 0);
+            stmt.setInt(4, 0);
             stmt.executeUpdate();
 
-            System.out.println("Account created for email: " + email);
-            System.out.println("Username: " + username);
-            System.out.println("Hashed Password: " + hashedPassword); // Debugging
+            user = new User(username, 0, 0, 0, 0);
+            showLoggedInWindow();
 
-            // Automatically log in the user after account creation
-            verifyLogin(username, plaintextPassword, true); // Pass the plaintext password
-
-            stmt.close();
-            con.close();
         } catch (Exception e) {
-            System.out.println("Error creating account: " + e.getMessage());
+            System.out.println("Error in Google login: " + e.getMessage());
         }
     }
-
-    private String loadPasswordFromDatabase(String username) {
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
-            System.out.println("Connected to database");
-
-            String query = "SELECT password FROM sql3765767.users WHERE username = ?";
-            PreparedStatement stmt = con.prepareStatement(query);
-            stmt.setString(1, username);
-            ResultSet rs = stmt.executeQuery();
-
-            if (rs.next()) {
-                return rs.getString("password"); // return  password
-            }
-
-            stmt.close();
-            con.close();
-        } catch (Exception e) {
-            System.out.println("Error retrieving password: " + e.getMessage());
-        }
-        return null;
-    }
-
 
     /**
      * Saves the username and password to a file.
@@ -363,20 +332,21 @@ public class Model {
     /** Populates pictures array with the passed csv to it
      * @param csv filepath to appropriate csv */
     public void selectPictureSet(String csv) {
-        this.pictures.clear(); // Clear any existing data before loading new data
+        this.pictures.clear(); // clear any existing data before loading new data
         this.picIndex = 0;
+
         // FileReader needs to catch IO Errors so we'll use try/catch
         try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
             String line;
             // Read csv file line-by-line and populate picture array
             while ((line = br.readLine()) != null) {
-                String[] parts = line.split(","); // Split by comma
+                String[] parts = line.split(",");
 
                 String path = parts[0].trim();
                 double latitude = Double.parseDouble(parts[1].trim());
                 double longitude = Double.parseDouble(parts[2].trim());
 
-                pictures.add(new Picture(path, latitude, longitude)); // Add to list
+                pictures.add(new Picture(path, latitude, longitude));
             }
         } catch (IOException | NumberFormatException e) {
             System.err.println("Error loading pictures: " + e.getMessage());
@@ -397,7 +367,7 @@ public class Model {
     public boolean adjustHighScore(){
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            //Replace with actual DB Username and password
+
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
             if (currentDifficulty == DIFFICULTY.NOVICE) {
@@ -450,7 +420,6 @@ public class Model {
 
     /** Retrieves current user scores for a specific round from user and their scores in Novice, Seasoned ad Expert and sorts them in descending order
      * @return int scores*/
-
     public List<Model.ScoreEntry> getHighScoresRound(int numberRound){
         List<Model.ScoreEntry> scores = new ArrayList<>();
         if(user ==null){
@@ -475,7 +444,6 @@ public class Model {
         }
 
         try {
-            // Replace with actual DB Username and password
             Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Connected to database");
 
@@ -506,9 +474,10 @@ public class Model {
         }
         return scores;
     }
+
+
     /** Retrieves all user scores from user dataset for Novice, Seasoned and Expert and sorts them in descending order
      * @return int scores*/
-
     public List<Model.ScoreEntry> getTop16scores(){
         List<Model.ScoreEntry> scores = new ArrayList<>();
         if(user ==null){
@@ -532,11 +501,9 @@ public class Model {
                 break;
         }
 
-
         String query = "SELECT username, " + column + " FROM sql3765767.users ORDER BY " + column +" DESC LIMIT 16";
 
         try {
-            // Replace with actual DB Username and password
             Class.forName("com.mysql.cj.jdbc.Driver");
             System.out.println("Connected to database");
 
@@ -568,7 +535,7 @@ public class Model {
                 difficulty = "Expert";
             }
             Class.forName("com.mysql.cj.jdbc.Driver");
-            //Replace with actual DB Username and password
+
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
 
@@ -597,6 +564,7 @@ public class Model {
         }
     }
 
+
     /** GETTERS */
     public DISPLAY getCurrentWindow() {
         return currentWindow;
@@ -623,6 +591,7 @@ public class Model {
         return this.user;
     }
 
+
     // PICTURE METHODS
     /** Gets the next picture from the shuffled array
      * Works such that we won't get duplicates in the same round
@@ -636,6 +605,7 @@ public class Model {
         this.currentPicture = current;
         return current;
     }
+
     /** Adds current photo to the users pinned */
     public void pin() {
         Picture current = this.getCurrentPicture();
@@ -643,7 +613,8 @@ public class Model {
 
         try{
             Class.forName("com.mysql.cj.jdbc.Driver");
-            //Replace with actual DB Username and password
+
+            // replace with actual DB username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
             String duplicateQuery = "SELEC";
@@ -663,6 +634,7 @@ public class Model {
 
         // TODO add current to the database
     }
+
     /** Unpin photo from the users pinned list
      * Won't be the current photo, need to get from the database,
      * maybe based off index of where the picture is in the list
@@ -670,11 +642,10 @@ public class Model {
     public void unpin(/* might need an argument*/) {
         //TODO figure this out
         // update view to not show what we just removed
-
         notifySubscribers();
     }
 
-    /* METHODS TO CHANGE VIEW */
+    ///* METHODS TO CHANGE VIEW *\\\
     /** Prompts View to show start-up display */
     public void showStartupWindow() {
         this.currentWindow = DISPLAY.STARTUP;
@@ -726,7 +697,7 @@ public class Model {
         notifySubscribers();
     }
 
-    /* MAP METHODS */
+    ///* MAP METHODS *\\\
     /** Get distance from guessed point to true point */
     public double getDistance() {
         // make sure it exists
@@ -770,13 +741,10 @@ public class Model {
             this.round = 1;
             return;
         }
-        // cycle photo
-        /** Breaks program. negative aura */
-        //Picture next = this.getNextPic();
         notifySubscribers(); // refresh view
     }
 
-    /** this is to calculate the distances in meters between two cordinates **/
+    /** This is to calculate the distances in meters between two cordinates **/
     public double haversine(double lat1, double lon1, double lat2, double lon2) {
         final int R = 6371000;
         double latDistance = Math.toRadians(lat2 - lat1);
@@ -799,29 +767,29 @@ public class Model {
         }
     }
 
-    /** setter for java connector **/
+    /** Setter for java connector **/
     public void setJavaConnector(JavaConnector connector) {
         this.connector = connector;
     }
 
-    /** getter for java connector **/
+    /** Getter for java connector **/
     public JavaConnector getJavaConnector() {
         return connector;
     }
 
+    /** Tests to see if the user is connected to the internet **/
     private boolean isInternetConnected() {
         try {
             URL test = new URL("https://git.cs.usask.ca");
             URLConnection connection = test.openConnection();
             connection.connect();
-
             return true;
 
         } catch (RuntimeException e) {
             // failed to connect due to network
             return false;
         } catch (IOException e) {
-            // failed due to error in url
+            // failed due to error in URL
             System.out.println("Error in getting URL connection test");
             return false;
         }

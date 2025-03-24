@@ -17,7 +17,7 @@ public class Controller {
     }
 
     /** Controller Constructor
-     * @param view takes view as a argument to set up HANDLING
+     * @param view takes view as an argument to set up HANDLING
      *             for all buttons and other elements, without a permanent connection */
     public Controller(View view) {
         // Sends to difficulty select, no account
