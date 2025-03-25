@@ -354,7 +354,7 @@ public class View extends StackPane implements Subscriber {
         logo.setTranslateY(-250);
 
         // Title
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 39));
+        this.gc.setFont(Font.font("Segoe UI This", FontWeight.BOLD, 46));
         this.gc.setTextAlign(TextAlignment.CENTER);
 
         // Add a drop shadow effect
@@ -412,7 +412,7 @@ public class View extends StackPane implements Subscriber {
 
         //Username, Score, Round Label
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(new Font("Courier Prime", 20));
+        this.gc.setFont(new Font("Segoe UI This", 20));
         this.gc.fillText("Username", textbX + 30, textbY + 25);
         if (this.model.getUser() != null) {
             if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE) {
@@ -437,7 +437,7 @@ public class View extends StackPane implements Subscriber {
 
         //Input for Username, Score and Round
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(Font.font("Courier Prime", FontWeight.BOLD, 25));
+        this.gc.setFont(Font.font("Segoe UI This", FontWeight.BOLD, 25));
         if (this.model.getUser() == null) {
             this.gc.fillText(String.valueOf("User"), textbX + 30, 105);
         } else {
@@ -582,7 +582,7 @@ public class View extends StackPane implements Subscriber {
 
         Text searchingText = new Text("SEARCHING");
         searchingText.setFill(Color.BLACK);
-        searchingText.setFont(Font.font("Courier Prime", 30));
+        searchingText.setFont(new Font("Segoe UI This", 30));
         // Position the text below the title; adjust as needed.
         searchingText.setTranslateX(400);
         searchingText.setTranslateY(320);
@@ -612,8 +612,9 @@ public class View extends StackPane implements Subscriber {
         this.createSignInBackground();
 
         // Title
-        this.gc.setFill(Color.WHITE);
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 36));
+        this.gc.setFill(Color.BLACK);
+        this.gc.setEffect(null);
+        this.gc.setFont(Font.font("Segoe UI Bold", 36));
         this.gc.setTextAlign(TextAlignment.CENTER);
         this.gc.fillText("Login", 600, 250);
 
@@ -642,7 +643,7 @@ public class View extends StackPane implements Subscriber {
         this.back1.setLayoutX(500);
         this.back1.setLayoutY(515);
 
-        this.RememberMe.setLayoutX(520);
+        this.RememberMe.setLayoutX(545);
         this.RememberMe.setLayoutY(570);
 
         // TODO this has to be moved to i juist need focus on the logic rihgt now SORRY...
@@ -687,8 +688,9 @@ public class View extends StackPane implements Subscriber {
         this.createSignInBackground();
 
         // Title
-        this.gc.setFill(Color.WHITE);
-        this.gc.setFont(Font.font("Arial Black", FontWeight.BOLD, 32));
+        this.gc.setFill(Color.BLACK);
+        this.gc.setEffect(null);
+        this.gc.setFont(Font.font("Segoe UI Bold", 36));
         this.gc.setTextAlign(TextAlignment.CENTER);
         this.gc.fillText("Create Account", 600, 250);
 
@@ -785,7 +787,7 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
 
         Text current = new Text("Your Score: " + this.model.getTotalScore());
-        current.setFont(new Font(30));
+        current.setFont(new Font("Segoe UI This", 30));
         boolean newBest = false;
         Text high = null;
         if (this.model.getUser() != null) {
@@ -814,12 +816,12 @@ public class View extends StackPane implements Subscriber {
                 }
                 high = new Text("High score: " + this.model.getUser().getExpertHighscore());
             }
-            high.setFont(new Font(30));
+            high.setFont(new Font("Segoe UI This:",30));
         }
         VBox display = new VBox(10);
         if (newBest) {
             Text nB = new Text("New High Score!");
-            nB.setFont(new Font(30));
+            nB.setFont(new Font("Segoe UI Bold", 30));
             display.getChildren().add(nB);
         }
         display.getChildren().add(current);
@@ -839,27 +841,25 @@ public class View extends StackPane implements Subscriber {
         this.getChildren().addAll(this.myCanvas, display);
     }
 
-    // TODO: x3
-
     /** Screen for viewing player history */
     private void createHistoryWindow() {
         this.createUserInfoBackground();
 
         // title
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(new Font("Courier Prime", 36));
-        this.gc.fillText("History", 680, 95);
+        this.gc.setFont(new Font("Segoe UI Bold", 55));
+        this.gc.fillText("History", 680, 105);
 
         //TODO - add conditional here to see if user has history to pull
         // ie. if (history empty) show "No History"
         // else { (do all this)
         int hboxSpacer = 200;
         Text date = new Text("Date");
-        date.setFont(new Font(32));
+        date.setFont(new Font("Segoe UI This", 32));
         Text diff = new Text("Difficulty");
-        diff.setFont(new Font(32));
+        diff.setFont(new Font("Segoe UI This", 32));
         Text score = new Text("Score");
-        score.setFont(new Font(32));
+        score.setFont(new Font("Segoe UI This", 32));
         HBox header = new HBox(hboxSpacer, date, diff, score);
 
         HBox[] entries = new HBox[5];
@@ -910,7 +910,12 @@ public class View extends StackPane implements Subscriber {
         entryContainer.setTranslateX(250);
         entryContainer.setTranslateY(175);
 
-        this.getChildren().addAll(entryContainer);
+        // Back button in bottom-left corner
+        VBox buttonContainer = new VBox(this.back2);
+        buttonContainer.setTranslateX(10);
+        buttonContainer.setTranslateY(720);
+
+        this.getChildren().addAll(entryContainer, buttonContainer);
     }
 
 
@@ -920,7 +925,7 @@ public class View extends StackPane implements Subscriber {
 
         // Title
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(new Font("Courier Prime", 36));
+        this.gc.setFont(new Font("Segoe UI This", 36));
         this.gc.fillText("Pinned Locations", 680, 95);
 
         VBox entryBox = new VBox(50);
@@ -949,9 +954,9 @@ public class View extends StackPane implements Subscriber {
                 imageView.setFitWidth(400);
 
                 Label latLabel = new Label("Latitude: " + latitude);
-                latLabel.setFont(new Font(25));
+                latLabel.setFont(new Font("Segoe UI This", 25));
                 Label longLabel = new Label("Longitude: " + longitude);
-                longLabel.setFont(new Font(25));
+                longLabel.setFont(new Font("Segoe UI This", 25));
                 VBox locationBox = new VBox(10, latLabel, longLabel);
                 HBox entryRow = new HBox(50, imageView, locationBox);
                 entryBox.getChildren().add(entryRow);
@@ -961,7 +966,7 @@ public class View extends StackPane implements Subscriber {
         }
         if (value == 0) {
             Text noPins = new Text("No Locations Pinned");
-            noPins.setFont(new Font(32));
+            noPins.setFont(new Font("Segoe UI This", 32));
             entryBox.getChildren().add(noPins);
         }
 
@@ -971,7 +976,12 @@ public class View extends StackPane implements Subscriber {
         entryContainer.setTranslateX(250);
         entryContainer.setTranslateY(175);
 
-        this.getChildren().add(entryContainer);
+        // Back button in bottom-left corner
+        VBox buttonContainer = new VBox(this.back2);
+        buttonContainer.setTranslateX(10);
+        buttonContainer.setTranslateY(720);
+
+        this.getChildren().addAll(entryContainer, buttonContainer);
     }
 
     /** Creates screen to show leaderboard */
@@ -981,8 +991,8 @@ public class View extends StackPane implements Subscriber {
 
         // Title
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(Font.font("Courier Prime", FontWeight.BOLD, 55));
-        this.gc.fillText("Leaderboard", 720, 105);
+        this.gc.setFont(Font.font("Segoe UI Bold", 55));
+        this.gc.fillText("Leaderboard", 690, 105);
 
         double borderX = 50;
         double borderY = 230;
@@ -1130,19 +1140,19 @@ public class View extends StackPane implements Subscriber {
         // Ranking
         Text rankText = new Text(rankX, poxY, String.valueOf(rank));
         rankText.setFill(Color.WHITE);
-        rankText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+        rankText.setFont(Font.font("Segoe UI Bold", 16));
         layout.getChildren().add(rankText);
 
         //Username
         Text usernameText = new Text(x + 60, poxY, username);
         usernameText.setFill(Color.WHITE);
-        usernameText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+        usernameText.setFont(Font.font("Segoe UI Bold", 16));
         layout.getChildren().add(usernameText);
 
         //Score
         Text scoreText = new Text(x + 390, poxY, String.valueOf(score));
         scoreText.setFill(Color.WHITE);
-        scoreText.setFont(Font.font("Courier Prime", FontWeight.BOLD, 16));
+        scoreText.setFont(Font.font("Segoe UI Bold", 16));
         layout.getChildren().add(scoreText);
     }
 

@@ -26,6 +26,7 @@
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
 }
 
+/* Font styling */
 @font-face {
     font-family: "Segoe UI This";
     src: url("/fonts/segoeuithis.ttf") format("truetype");
@@ -36,10 +37,11 @@
     src: url("/fonts/segoeuibold.ttf") format("truetype");
 }
 
+/* should apply to all */
 .root {
     -fx-font-family: "Segoe UI This";
 }
 
-.bold {
+.bold {     /* for titles */
     -fx-font-family: "Segoe UI Bold";
 }
