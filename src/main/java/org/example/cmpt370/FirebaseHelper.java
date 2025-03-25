@@ -32,5 +32,21 @@ public class FirebaseHelper {
             e.printStackTrace();
         }
     }
+    /** reads data from a node on the multiplayer server and returns it **/
+    public String readData(String node) {
+        try {
+            String url = FIREBASE_DB_URL + "/" + node + ".json";
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(new URI(url))
+                    .GET()
+                    .build();
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            System.out.println("Read Data: " + response.body()); //for debugging
+            return response.body();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
 
 }
