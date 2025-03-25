@@ -39,6 +39,10 @@ import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
 
+import javax.swing.*;
+import javax.swing.plaf.IconUIResource;
+import javax.swing.text.IconView;
+
 
 /** Class that handles all display output
  * Needs to be updated by the Model each time
@@ -85,6 +89,7 @@ public class View extends StackPane implements Subscriber {
     public Button next;
     public Button addPin;
     public Button unpin;
+    public Button addChat;
 
     // logged in
     public Button history;
@@ -164,6 +169,9 @@ public class View extends StackPane implements Subscriber {
 
         // pin current image
         this.addPin = new Button("Pin");
+        this.addPin.setPrefWidth(100);
+
+        this.addChat = new Button("Chat");
         this.addPin.setPrefWidth(100);
 
         // unpin from the Pinned window
@@ -519,7 +527,6 @@ public class View extends StackPane implements Subscriber {
             mapView.relocate(950, 590);
         });
 
-
         this.model.setJavaConnector(connector); //store in model
 
         // Load the map from the html file
@@ -531,13 +538,42 @@ public class View extends StackPane implements Subscriber {
         });
 
         // TODO- maybe add swap to an unpin button?
-        this.addPin.setTranslateX(-540);
-        this.addPin.setTranslateY(345);
+        Image pinImage = new Image(getClass().getResource("/icon/whitepin.png").toExternalForm());
+        ImageView pinImageView = new ImageView(pinImage);
+
+        pinImageView.setFitWidth(20);
+        pinImageView.setFitHeight(20);
+
+        Button addPin = new Button();
+        addPin.setGraphic(pinImageView);
+       // addPin.setPrefWidth(25);
+        addPin.setTranslateX(-540);
+        addPin.setTranslateY(100);
+        //this.addPin.setTranslateX(-540);
+        //this.addPin.setTranslateY(345);
+
+        Image chatImage = new Image(getClass().getResource("/icon/whitemessage.png").toExternalForm());
+        ImageView chatImageView = new ImageView(chatImage);
+
+        chatImageView.setFitWidth(20);
+        chatImageView.setFitHeight(20);
+
+        Button addChat = new Button();
+        addChat.setGraphic(chatImageView);
+        addChat.setPrefWidth(25);
+        addChat.setTranslateX(-540);
+        addChat.setTranslateY(25);
+
+        //VBox buttonContainer = new VBox(this.back2);
+        //buttonContainer.setTranslateX(-540);
+        //buttonContainer.setTranslateY(300);
+        this.back2.setTranslateX(-460);
+        this.back2.setTranslateY(350);
 
         layout.getChildren().add(0, c);
         layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
-        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack, this.addPin);
+        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack,addChat, addPin, this.back2);
     }
 
     /**
@@ -888,7 +924,7 @@ public class View extends StackPane implements Subscriber {
 
         // Back button in bottom-left corner
         VBox buttonContainer = new VBox(this.back2);
-        buttonContainer.setTranslateX(10);
+        buttonContainer.setTranslateX(500);
         buttonContainer.setTranslateY(720);
 
         this.getChildren().addAll(entryContainer, buttonContainer);
@@ -901,8 +937,8 @@ public class View extends StackPane implements Subscriber {
 
         // Title
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(new Font("Segoe UI This", 36));
-        this.gc.fillText("Pinned Locations", 680, 95);
+        this.gc.setFont(new Font("Segoe UI This", 55));
+        this.gc.fillText("Pinned Locations", 680, 105);
 
         VBox entryBox = new VBox(50);
 
@@ -954,7 +990,7 @@ public class View extends StackPane implements Subscriber {
 
         // Back button in bottom-left corner
         VBox buttonContainer = new VBox(this.back2);
-        buttonContainer.setTranslateX(10);
+        buttonContainer.setTranslateX(500);
         buttonContainer.setTranslateY(720);
 
         this.getChildren().addAll(entryContainer, buttonContainer);
@@ -968,7 +1004,7 @@ public class View extends StackPane implements Subscriber {
         // Title
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Segoe UI Bold", 55));
-        this.gc.fillText("Leaderboard", 690, 105);
+        this.gc.fillText("Leaderboard", 680, 105);
 
         double borderX = 50;
         double borderY = 230;
@@ -1290,7 +1326,7 @@ public class View extends StackPane implements Subscriber {
 
         // Back button in bottom-left corner
         VBox buttonContainer = new VBox(this.back2);
-        buttonContainer.setTranslateX(10);
+        buttonContainer.setTranslateX(500);
         buttonContainer.setTranslateY(720);
 
         this.getChildren().addAll(this.myCanvas, logo, buttonContainer);
@@ -1319,6 +1355,9 @@ public class View extends StackPane implements Subscriber {
      * then based on what state the model is in, show/update
      * the appropriate window
      */
+
+
+
     @Override
     public void modelUpdated() {
         // call needed methods based on what changed
