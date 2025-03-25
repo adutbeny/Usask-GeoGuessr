@@ -60,12 +60,16 @@ public class Model {
     private boolean internet;   // boolean if connected to internet
     // Connection class for map API
     private JavaConnector connector;
-    // etc...
 
+    // Google Sign-in fields
+    public Process pythonServerProcess;
+    public boolean isPythonServerStarted = false;
+    public GoogleAuthHandler googleAuthHandler;
     private boolean isGoogleSignIn = false;
 
     /** Constructor */
     public Model() {
+        this.googleAuthHandler = new GoogleAuthHandler(this);
         this.subscribers = new ArrayList<>();
         this.pictures = new ArrayList<>();
         this.round = 1;
@@ -90,14 +94,7 @@ public class Model {
         }
     }
 
-    /**
-     * Sets whether the user is signing in with Google.
-     *
-     * @param isGoogleSignIn True if the user is signing in with Google, false otherwise.
-     */
-    public void setGoogleSignIn(boolean isGoogleSignIn) {
-        this.isGoogleSignIn = isGoogleSignIn;
-    }
+
 
     /** Take info from login and load into class instance */
     public boolean verifyLogin(String username, String password, boolean rememberMe) {
@@ -180,12 +177,9 @@ public class Model {
         }
     }
 
-    /**
-     * Checks if a user already exists in the database.
-     *
+    /** Checks if a user already exists in the database
      * @param username The username to check.
-     * @return True if the user exists, false otherwise.
-     */
+     * @return True if the user exists, false otherwise. */
     private boolean userExists(String username) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -207,6 +201,24 @@ public class Model {
             System.out.println("Error checking if user exists: " + e.getMessage());
         }
         return false; // user does not exist 1!!!!!!!!!
+    }
+
+    /** Sets whether the user is signing in with Google.
+     * @param isGoogleSignIn True if the user is signing in with Google, false otherwise */
+    public void setGoogleSignIn(boolean isGoogleSignIn) {
+        this.isGoogleSignIn = isGoogleSignIn;
+    }
+
+    /** Initiates google sign in by triggering browser */
+    public void initiateGoogleSignIn() {
+        this.setGoogleSignIn(true);
+        this.googleAuthHandler.startPythonServer();
+        this.googleAuthHandler.openGoogleSignInPage();
+
+        this.googleAuthHandler.startTokenChecker(() -> {
+            System.out.println("Token received, updating UI...");
+            this.showLoggedInWindow();
+        });
     }
 
     public void createAccountFromEmail(String email) {
@@ -260,11 +272,9 @@ public class Model {
         }
     }
 
-    /**
-     * Saves the username and password to a file.
+    /** Saves the username and password to a file.
      * @param username The username to save.
-     * @param password The password to save.
-     */
+     * @param password The password to save. */
     public void saveCredentials(String username, String password) {
         try (FileWriter writer = new FileWriter("credentials.txt")) {
             writer.write(username + "\n");
@@ -274,11 +284,8 @@ public class Model {
         }
     }
 
-    /**
-     * Loads the saved username and password from a file.
-     *
-     * @return An array containing the username and password, or null if the file doesn't exist.
-     */
+    /** Loads the saved username and password from a file.
+     * @return An array containing the username and password, or null if the file doesn't exist */
     public String[] loadCredentials() {
         if (isGoogleSignIn) {
             return null; // skip loading if the user is using google
@@ -293,9 +300,7 @@ public class Model {
         }
     }
 
-    /**
-     * Clears the saved credentials by deleting the file.
-     */
+    /** Clears the saved credentials by deleting the file. */
     public void clearCredentials() {
         File file = new File("credentials.txt");
         if (file.exists()) {

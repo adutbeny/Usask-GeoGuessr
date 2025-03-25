@@ -93,11 +93,6 @@ public class View extends StackPane implements Subscriber {
     public Button back2;        // returns to logged in window
 
     // Need these to implement google sign in
-    private WebView googleWebView;
-    private WebEngine googleWebEngine;
-
-    public Process pythonServerProcess;
-    public boolean isPythonServerStarted = false;
     public GoogleAuthHandler googleAuthHandler;
 
     public CheckBox RememberMe;
@@ -132,7 +127,6 @@ public class View extends StackPane implements Subscriber {
     public View() {
         this.myCanvas = new Canvas(1200, 800);
         this.gc = this.myCanvas.getGraphicsContext2D();
-        this.googleAuthHandler = new GoogleAuthHandler();
 
         // Setup Buttons
         // Main Window
@@ -439,9 +433,9 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Segoe UI This", FontWeight.BOLD, 25));
         if (this.model.getUser() == null) {
-            this.gc.fillText(String.valueOf("User"), textbX + 30, 105);
+            this.gc.fillText(String.valueOf("User"), textbX + 20, 105);
         } else {
-            this.gc.fillText(String.valueOf(this.model.getUser().getUsername()), textbX + 30, 105);//Accounts for 10 char
+            this.gc.fillText(String.valueOf(this.model.getUser().getUsername()), textbX + 20, 105);//Accounts for 10 char
         }
 
         this.gc.fillText(String.valueOf(this.model.getTotalScore()), textbX + 230, 105);
@@ -654,27 +648,10 @@ public class View extends StackPane implements Subscriber {
             this.RememberMe.setSelected(true);
         }
 
-        // Set action for the Login button
-
-        // TODO this should be in controller if we can figure that out ( I AM VOLUTEENDING MATT BERRY TO DO THIS )
-        // Set action for Google Sign-In button
-        this.googleSignIn.setOnAction(event -> {
-            clearLoginFields();
-            model.setGoogleSignIn(true);
-            this.googleAuthHandler.startPythonServer();
-            this.googleAuthHandler.openGoogleSignInPage();
-        });
-
         // add to layout
         Pane layout = new Pane();
         layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1, this.RememberMe);
         this.getChildren().addAll(this.myCanvas, layout);
-
-        this.googleAuthHandler.startTokenChecker(() -> {
-            System.out.println("Token received, updating UI...");
-            createLoggedInWindow();
-
-        });
 
     }
 

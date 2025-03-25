@@ -83,6 +83,10 @@ public class Controller {
             System.out.println("Login attempted with username: " + username + ", password: " + password);
             this.model.createAccount(username, password);
         });
+        // cues google sign in
+        view.googleSignIn.setOnAction(event -> {
+            this.model.initiateGoogleSignIn();
+        });
         // Available after successful log-in
         view.history.setOnAction(event -> {
             this.model.showHistoryWindow();
