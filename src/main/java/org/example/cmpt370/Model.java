@@ -28,6 +28,7 @@ enum DISPLAY {
     LEADERBOARD,
     END,
     MATCHMAKING,
+    MULTIPLAYER,
 
 }
 
@@ -709,6 +710,10 @@ public class Model {
 
     public void showMatchmakingWindow(){
         this.currentWindow = DISPLAY.MATCHMAKING;
+        notifySubscribers();
+    }
+    public void showMultiplayerWindow() {
+        this.currentWindow = DISPLAY.MULTIPLAYER;
         notifySubscribers();
     }
     ///* MAP METHODS *\\\
