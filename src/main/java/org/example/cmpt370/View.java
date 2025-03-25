@@ -47,6 +47,7 @@ import javafx.util.Duration;
 public class View extends StackPane implements Subscriber {
 
     private Model model;
+    private ChatWindow chat;
     private WebView mapView;
     private WebEngine mapEngine;
     private Canvas myCanvas;
@@ -1307,6 +1308,10 @@ public class View extends StackPane implements Subscriber {
     public void setModel(Model m) {
         this.model = m;
         selectMainMenu();   // change this if you want to test a certain window
+    }
+    /** Connect Chat Window */
+    public void setChat(ChatWindow c) {
+        this.chat = c;
     }
 
     /**

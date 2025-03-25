@@ -67,6 +67,8 @@ public class Model {
     public GoogleAuthHandler googleAuthHandler;
     private boolean isGoogleSignIn = false;
 
+    private ChatWindow chat;
+
     /** Constructor */
     public Model() {
         this.googleAuthHandler = new GoogleAuthHandler(this);
@@ -93,7 +95,10 @@ public class Model {
             sub.modelUpdated();
         }
     }
-
+    /** Connect Chat Window */
+    public void setChat(ChatWindow c) {
+        this.chat = c;
+    }
 
 
     /** Take info from login and load into class instance */
