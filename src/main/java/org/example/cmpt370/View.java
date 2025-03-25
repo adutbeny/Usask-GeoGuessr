@@ -1345,19 +1345,12 @@ public class View extends StackPane implements Subscriber {
         this.model = m;
         selectMainMenu();   // change this if you want to test a certain window
     }
-    /** Connect Chat Window */
-    public void setChat(ChatWindow c) {
-        this.chat = c;
-    }
 
     /**
      * Gets called when the model signals a change,
      * then based on what state the model is in, show/update
      * the appropriate window
      */
-
-
-
     @Override
     public void modelUpdated() {
         // call needed methods based on what changed

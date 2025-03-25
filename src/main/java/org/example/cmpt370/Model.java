@@ -96,10 +96,6 @@ public class Model {
             sub.modelUpdated();
         }
     }
-    /** Connect Chat Window */
-    public void setChat(ChatWindow c) {
-        this.chat = c;
-    }
 
 
     /** Take info from login and load into class instance */

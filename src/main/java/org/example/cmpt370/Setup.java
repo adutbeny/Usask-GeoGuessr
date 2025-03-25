@@ -17,11 +17,6 @@ public class Setup extends StackPane {
         v.setModel(m);
         c.setModel(m);
 
-        // chat
-        ChatWindow chat = new ChatWindow();
-        m.setChat(chat);
-        v.setChat(chat);
-
         // Ensures View receives inputs
         v.requestFocus();
         this.getChildren().addAll(v);
