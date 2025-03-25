@@ -31,6 +31,15 @@
     src: url("/fonts/segoeuithis.ttf") format("truetype");
 }
 
+@font-face {
+    font-family: "Segoe UI Bold";
+    src: url("/fonts/segoeuibold.ttf") format("truetype");
+}
+
 .root {
     -fx-font-family: "Segoe UI This";
+}
+
+.bold {
+    -fx-font-family: "Segoe UI Bold";
 }
