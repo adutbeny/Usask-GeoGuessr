@@ -3,6 +3,8 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 
+credentials.txt
+
 ### IntelliJ IDEA ###
 .idea/misc.xml
 .idea/modules.xml
