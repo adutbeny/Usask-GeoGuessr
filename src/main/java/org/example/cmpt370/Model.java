@@ -131,7 +131,6 @@ public class Model {
                     }
 
                     user = new User(username, N_high_score, S_high_score, E_high_score, 0);
-                    clearCredentials();
                     showLoggedInWindow();
                     return true;
                 }
