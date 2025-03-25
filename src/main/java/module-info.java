@@ -9,6 +9,7 @@ module org.example.cmpt370 {
     requires jdk.httpserver;
     requires org.json;
     requires java.net.http;
+    requires com.google.gson;
 
 
     opens org.example.cmpt370 to javafx.fxml;
