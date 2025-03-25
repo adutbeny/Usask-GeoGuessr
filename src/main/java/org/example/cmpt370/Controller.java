@@ -124,7 +124,7 @@ public class Controller {
             view.submit.setVisible(true);
         });
         view.multiplayer.setOnAction(event ->{
-            this.model.showMatchmakingWindow();
+            this.model.initiateMultiplayer();
         });
         view.addPin.setOnAction(event -> {
             this.model.pin();
