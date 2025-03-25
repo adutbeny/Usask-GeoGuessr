@@ -118,4 +118,5 @@ public class Multiplayer {
                 playerUid, messageText, System.currentTimeMillis());
         fbHelper.writeData("matches/" + matchId + "/chat/" + messageKey, chatJson);
     }
+    // TODO: something to receive chats
 }
