@@ -97,10 +97,6 @@ public class Controller {
         view.leaderboard.setOnAction(event -> {
             this.model.showLeaderboard();
         });
-        view.multiplayer.setOnAction(event -> {
-            // TODO: Figure out how this looks
-            //this.model.initiateMultiplayer();
-        });
         // return to logged in menu
         view.back2.setOnAction(event -> this.model.showLoggedInWindow());
         view.menu.setOnAction(event -> {
