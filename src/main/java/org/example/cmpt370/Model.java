@@ -27,6 +27,7 @@ enum DISPLAY {
     PINNED,
     LEADERBOARD,
     END,
+    MATCHMAKING,
 
 }
 
@@ -697,6 +698,10 @@ public class Model {
         notifySubscribers();
     }
 
+    public void showMatchmakingWindow(){
+        this.currentWindow = DISPLAY.MATCHMAKING;
+        notifySubscribers();
+    }
     ///* MAP METHODS *\\\
     /** Get distance from guessed point to true point */
     public double getDistance() {

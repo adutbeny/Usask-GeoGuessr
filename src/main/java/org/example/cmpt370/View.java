@@ -32,6 +32,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import javafx.animation.KeyFrame;
+import javafx.animation.Timeline;
+import javafx.animation.Animation;
+import javafx.scene.text.Text;
+import javafx.scene.text.Font;
+import javafx.util.Duration;
+
+
 /** Class that handles all display output
  * Needs to be updated by the Model each time
  * the user does something that requires the screen
@@ -548,6 +556,51 @@ public class View extends StackPane implements Subscriber {
                 guessedLat, guessedLng, correctLat, correctLng, distance
         );
         mapEngine.executeScript(script);
+    }
+
+    public void showMatchmakingWindow() {
+        this.createDefaultBackground();
+
+        // Create a linear gradient for the text fill
+        LinearGradient gradient = new LinearGradient(
+                0, 0, 1, 0, true, CycleMethod.NO_CYCLE,
+                new Stop(0, Color.rgb(10, 106, 66)),
+                new Stop(1, Color.rgb(20, 150, 100))
+        );
+
+        // Draw the black outline
+        this.gc.setFill(Color.BLACK);
+        for (int i = -2; i <= 2; i++) {
+            for (int j = -2; j <= 2; j++) {
+                gc.fillText("Usask GeoGuessr", 400 + i, 270 + j);
+            }
+        }
+
+        // Main Text
+        this.gc.setFill(gradient);
+        this.gc.fillText("Usask GeoGuessr", 400, 270);
+
+        Text searchingText = new Text("SEARCHING");
+        searchingText.setFill(Color.BLACK);
+        searchingText.setFont(Font.font("Courier Prime", 30));
+        // Position the text below the title; adjust as needed.
+        searchingText.setTranslateX(400);
+        searchingText.setTranslateY(320);
+
+        // Add the animated text to your scene (assuming your view extends a Pane or similar).
+        this.getChildren().add(searchingText);
+        searchingText.toFront();
+
+        // timeline to make the animation
+        Timeline timeline = new Timeline(
+                new KeyFrame(Duration.seconds(0), e -> searchingText.setText("SEARCHING")),
+                new KeyFrame(Duration.seconds(1), e -> searchingText.setText("SEARCHING.")),
+                new KeyFrame(Duration.seconds(2), e -> searchingText.setText("SEARCHING..")),
+                new KeyFrame(Duration.seconds(3), e -> searchingText.setText("SEARCHING...")),
+                new KeyFrame(Duration.seconds(4), e -> searchingText.setText("SEARCHING..."))
+        );
+        timeline.setCycleCount(Animation.INDEFINITE);
+        timeline.play();
     }
 
     /**
@@ -1290,6 +1343,7 @@ public class View extends StackPane implements Subscriber {
             case HISTORY -> createHistoryWindow();
             case LEADERBOARD -> createLeaderboardWindow();
             case PINNED -> createPinnedWindow();
+            case MATCHMAKING -> showMatchmakingWindow();
         }
     }
 
