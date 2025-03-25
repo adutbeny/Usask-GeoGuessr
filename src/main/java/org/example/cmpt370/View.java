@@ -235,7 +235,7 @@ public class View extends StackPane implements Subscriber {
         this.Expert = new Button("Expert");
         this.Expert.setPrefWidth(200);
 
-        // TODO: Add future buttons here
+        // add future buttons here
     }
 
     /**
@@ -640,7 +640,6 @@ public class View extends StackPane implements Subscriber {
         this.RememberMe.setLayoutX(545);
         this.RememberMe.setLayoutY(570);
 
-        // TODO this has to be moved to i juist need focus on the logic rihgt now SORRY...
         String[] savedCredentials = model.loadCredentials();
         if (savedCredentials != null) {
             this.usernameField.setText(savedCredentials[0]);
@@ -758,7 +757,6 @@ public class View extends StackPane implements Subscriber {
         System.out.println("CreateEndScreen call");
         this.resetView();
 
-        // TODO: make this not temporary
         // green background
         this.gc.setFill(Color.rgb(10, 106, 66));
         this.gc.fillRect(0, 0, this.myCanvas.getWidth(), this.myCanvas.getHeight());
