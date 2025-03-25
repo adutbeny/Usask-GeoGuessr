@@ -24,8 +24,8 @@ public class GoogleAuthHandler {
 
     private Model model;
 
-    public GoogleAuthHandler() {
-        this.model = new Model();
+    public GoogleAuthHandler(Model m) {
+        this.model = m;
     }
 
     /**
