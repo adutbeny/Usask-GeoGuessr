@@ -335,7 +335,7 @@ public class View extends StackPane implements Subscriber {
 
         // background
         // completely idiotic but this is how you have to load an image
-        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller.jpeg")).toExternalForm());
+        Image background = new Image(Objects.requireNonNull(getClass().getResource("/OtherAssets/betterfiller_enhanced.jpeg")).toExternalForm());
         ImageView bg = new ImageView(background);
 
         // Set the image to fill the window
