@@ -27,7 +27,7 @@ public class Multiplayer {
     /* trys to match two players by checking waiting node queue, if two players,
     creates a match with all necessary nodes and writes to server
     returns true if match created and false otherwise */
-    public String MatchPlayers() {
+    public String matchPlayers() {
         // reads the waiting node from firebase
         String waitingData = fbHelper.readData("waiting");
         if (waitingData == null || waitingData.equals("null")) {

@@ -14,6 +14,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /** enum to signal different states within the model
  * Each value corresponds to a response from the view */
 enum DISPLAY {
@@ -70,6 +74,8 @@ public class Model {
 
     private Multiplayer ml;
     private ChatWindow chat;
+    private String currentMatchId;
+    private Multiplayer multiplayer;
 
     /** Constructor */
     public Model() {
@@ -811,6 +817,50 @@ public class Model {
     }
 
     // MULTIPLAYER
+    /** constantly polls the db to check if there are more than two people
+     * waiting in the queue, if yes, attempt to host the match, the player who
+     * joined the wait list first should have a lower time stamp and will be the
+     * player suggested to host the game, this forces one single instance of "match"
+     * in the db, sets currentMatchId so we can use it in the future for guesses and score**/
+    public void startMatchmaking() {
+        // init multiplayer instance and join wait queue
+        multiplayer = new Multiplayer(user.getUsername());
+        multiplayer.joinWaitQueue();
+
+        // this uses a scheduler to run every second so that we are constantly polling
+        // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
+        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+        scheduler.scheduleAtFixedRate(() -> {
+            // attempts to create a match by hosting
+            String matchId = multiplayer.matchPlayers();
+            if (matchId != null) {
+                currentMatchId = matchId;
+                System.out.println("match id is: " + matchId);
+                // TODO update the display here for multiplayer window
+                notifySubscribers(); // update view
+                scheduler.shutdown(); // stop polling
+                return;
+            }
+            // if not the host (you have lower timestamp than others)
+            // or if no other player in wait queue
+            matchId = multiplayer.findMatchForOpponent();
+            if (matchId != null) {
+                currentMatchId = matchId;
+                System.out.println("Match found for opponent: " + matchId);
+                // TODO update the display here for multiplayer window
+                notifySubscribers(); // update view
+                scheduler.shutdown(); // stop polling
+            } else {
+                System.out.println("Still waiting for a match...");
+            }
+        }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
+    }
+
+    // getter for currentMatchId
+    public String getCurrentMatchId() {
+        return currentMatchId;
+    }
+
     /** Initiates multiplayer process when user hits multiplayer button */
     public void initiateMultiplayer() {
         this.showMatchmakingWindow();
