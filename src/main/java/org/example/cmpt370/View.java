@@ -232,7 +232,7 @@ public class View extends StackPane implements Subscriber {
         this.RememberMe = new CheckBox("Remember Me?");
         this.RememberMe.setPrefWidth(400);
 
-        this.myHighScorebutton = new Button("My Scores");
+        this.myHighScorebutton = new Button("My High Score");
         this.myHighScorebutton.setPrefWidth(200);
 
         this.top16button = new Button("Top 16");
@@ -564,9 +564,7 @@ public class View extends StackPane implements Subscriber {
         addChat.setTranslateX(-540);
         addChat.setTranslateY(25);
 
-        //VBox buttonContainer = new VBox(this.back2);
-        //buttonContainer.setTranslateX(-540);
-        //buttonContainer.setTranslateY(300);
+        //might delete this button
         this.back2.setTranslateX(-460);
         this.back2.setTranslateY(350);
 
@@ -1006,9 +1004,9 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFont(Font.font("Segoe UI Bold", 55));
         this.gc.fillText("Leaderboard", 680, 105);
 
-        double borderX = 50;
+        double borderX = 45;
         double borderY = 230;
-        double borderWidth = 1100;
+        double borderWidth = 1110;
         double borderHeight = 470;
         this.gc.setFill(Color.rgb(10, 106, 66, 0.5));
         this.gc.fillRect(borderX, borderY, borderWidth, borderHeight);
@@ -1031,6 +1029,7 @@ public class View extends StackPane implements Subscriber {
             myHighScorebutton.setOpacity(1.0);
         });
 
+        //back button
         back2.setTranslateX(500);
         back2.setTranslateY(720);
         back2.setOnAction(event -> {
@@ -1135,14 +1134,18 @@ public class View extends StackPane implements Subscriber {
     }
 
     /**
-     * Renders each row one by one with ranking number, username and score
+     * Renders each row one by one with ranking number, username and score and highlights current user's ranking in Top16
      */
 
-    public void renderRow(Pane layout, double x, double y, String username, int score, int i) {
+    public void renderRow(Pane layout, double x, double y, String username, int score, int i, boolean isCurentUser) {
 
         //create rows
         Rectangle rectangle = new Rectangle(x, y, 500, 35);
-        rectangle.setFill(Color.rgb(10, 106, 66));
+        if (isCurentUser) {
+            rectangle.setFill(Color.rgb(255, 215, 0,0.25));
+        }else{
+            rectangle.setFill(Color.rgb(10, 106, 66));
+        }
         layout.getChildren().add(rectangle);
 
         double rankX = x + 13;
@@ -1173,7 +1176,7 @@ public class View extends StackPane implements Subscriber {
      */
 
     protected void renderEmptyRows(Pane layout, double x, double startY, int maxRows) {
-        for (int i = 0; i < maxRows; i++) renderRow(layout, x, startY + (i * 40),"",0,i);
+        for (int i = 0; i < maxRows; i++) renderRow(layout, x, startY + (i * 40),"",0,i,false);
 
     }
 
@@ -1204,14 +1207,13 @@ public class View extends StackPane implements Subscriber {
                 renderEmptyRows(layout, 350, 350, maxRows);
                 return;
             }
-
             for (int i = 0; i < maxRows; i++){
 
                 if (i < scores.size() && scores.get(i).username.equals(model.getUser().getUsername())) {
-                    renderRow(layout, 350, 350 + (i*40), scores.get(i).username,scores.get(i).score,i);
+                    renderRow(layout, 350, 350 + (i*40), scores.get(i).username,scores.get(i).score,i,false);
 
                 } else {
-                    renderRow(layout, 350, 350 + (i*40), "",0,i);
+                    renderRow(layout, 350, 350 + (i*40), "",0,i,false);
                 }
             }
 
@@ -1220,7 +1222,7 @@ public class View extends StackPane implements Subscriber {
 
 
     /**
-     * Displays a grid which contains the top 16 high scores
+     * Displays a grid which contains the top 16 high scores and feths data for the exact ranking of current user
      */
     private class top16Grid {
         public void render (Pane layout, Model model) {
@@ -1244,10 +1246,11 @@ public class View extends StackPane implements Subscriber {
 
                 if (i < scores.size()) {
                     Model.ScoreEntry entry = scores.get(i);
-                    renderRow(layout, x, y , entry.username,entry.score,i);
+                    boolean isCurrentUser = model.getUser() != null && entry.username.equals(model.getUser().getUsername());
+                    renderRow(layout, x, y , entry.username,entry.score,i,isCurrentUser);
 
                 } else {
-                    renderRow(layout, x,y, "",0,i);
+                    renderRow(layout, x,y, "",0,i,false);
                 }
 
             }
