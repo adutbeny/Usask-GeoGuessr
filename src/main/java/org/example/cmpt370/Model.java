@@ -835,8 +835,7 @@ public class Model {
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
-        boolean flag = true;
-        while(flag = true){
+        while(true){
             // attempts to create a match by hosting
             String matchId = multiplayer.matchPlayers();
             if (matchId != null) {
@@ -855,6 +854,8 @@ public class Model {
                 System.out.println("still waiting for a match...");
             }
         }
+        this.selectPictureSet("/BeginnerPhotos.csv");
+        this.setDifficulty("/BeginnerPhotos.csv");
     }
 
     /**  multiplayer version of calculate score will need to adjust a lot **/
