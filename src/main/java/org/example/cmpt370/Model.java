@@ -366,8 +366,9 @@ public class Model {
         } catch (IOException | NumberFormatException e) {
             System.err.println("Error loading pictures: " + e.getMessage());
         }
-
-        Collections.shuffle(this.pictures); // put in random order
+        if (!multiplayerMode) {
+            Collections.shuffle(this.pictures); // put in random order
+        }
         // This gets called on every consecutive play so we will reset model stats
         this.recentScore = 0;
         this.totalScore = 0;
