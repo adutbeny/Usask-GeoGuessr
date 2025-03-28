@@ -146,6 +146,7 @@ public class Controller {
             }
         });
         view.next.setOnAction(event -> {
+            this.model.clearMultiplayerGuesses();
             this.model.loadNextRound();
             view.next.setVisible(false);
             view.submit.setVisible(true);

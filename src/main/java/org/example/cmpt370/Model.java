@@ -899,7 +899,6 @@ public class Model {
         System.out.println("you got: " + distance + " meters away!");
         this.recentScore = calculateScore(distance);
         this.totalScore += this.recentScore;
-        clearMultiplayerGuesses();
         return distance;
     }
 
