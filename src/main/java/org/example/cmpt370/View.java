@@ -918,6 +918,15 @@ public class View extends StackPane implements Subscriber {
                 entries[i].getChildren().addAll(timeLabel, difficultyLabel, scoreLabel);
                 i++;
             }
+            if (i == 0){
+
+                Text noHistory = new Text("No History Found");
+                Text Blank = new Text("");
+                Text Blank2 = new Text("");
+                noHistory.setStyle("-fx-font-size: 30px; -fx-fill: white; -fx-font-weight: bold;");
+                entries[i] = new HBox(200);
+                entries[i].getChildren().addAll(Blank, noHistory, Blank2);
+            }
         } catch (Exception e){
                 System.out.println(e.toString());
         }
