@@ -76,6 +76,7 @@ public class Model {
     private ChatWindow chat;
     private String currentMatchId;
     private Multiplayer multiplayer;
+    private boolean multiplayerMode = false;
 
     /** Constructor */
     public Model() {
@@ -891,7 +892,18 @@ public class Model {
         this.totalScore += this.recentScore;
         return distance;
     }
-
+    // set mutliplayer mode, takes boolean parameter
+    public void setMultiplayerMode(boolean mode) {
+        this.multiplayerMode = mode;
+    }
+    // returns boolean true if multiplayer mode and false otherwise
+    public boolean isMultiplayerMode() {
+        return multiplayerMode;
+    }
+    // setter for current match id
+    public void setCurrentMatchId(String matchId) {
+        this.currentMatchId = matchId;
+    }
     // getter for currentMatchId
     public String getCurrentMatchId() {
         return currentMatchId;
