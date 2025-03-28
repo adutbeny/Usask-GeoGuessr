@@ -850,12 +850,12 @@ public class Model {
             matchId = multiplayer.findMatchForOpponent();
             if (matchId != null) {
                 setCurrentMatchId(matchId);
-                System.out.println("Match found for opponent: " + matchId);
+                System.out.println("match found for opponent: " + matchId);
                 this.showMatchmakingWindow();
                 notifySubscribers(); // update view
                 scheduler.shutdown(); // stop polling
             } else {
-                System.out.println("Still waiting for a match...");
+                System.out.println("still waiting for a match...");
             }
         }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
     }
@@ -863,11 +863,11 @@ public class Model {
     /**  multiplayer version of calculate score will need to adjust a lot **/
     public double calculateMultiplayerScore() {
         if (this.currentPicture == null) {
-            System.out.println("No picture loaded.");
+            System.out.println("no picture loaded");
             return -1;
         }
         if (this.connector == null) {
-            System.out.println("Marker coordinates not set.");
+            System.out.println("no maker coords yet");
             return -1;
         }
         double pictureLat = currentPicture.getLatitude();
@@ -875,7 +875,7 @@ public class Model {
         double markerLat = connector.getMarkerLat();
         double markerLng = connector.getMarkerLng();
         if (currentMatchId == null) {
-            System.out.println("No match set in multiplayer mode.");
+            System.out.println("no match set");
             return -1;
         }
         // record player guess in firebase
@@ -898,7 +898,7 @@ public class Model {
             return -1;
         }
         double distance = haversine(pictureLat, pictureLng, markerLat, markerLng);
-        System.out.println("You got: " + distance + " meters away!");
+        System.out.println("you got: " + distance + " meters away!");
         this.recentScore = calculateScore(distance);
         this.totalScore += this.recentScore;
         return distance;
