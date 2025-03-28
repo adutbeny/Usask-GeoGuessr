@@ -855,7 +855,7 @@ public class Model {
                 System.out.println("still waiting for a match...");
             }
         }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
-        this.showGameplayWindow();
+        this.selectPictureSet("/BeginnerPhotos.csv");
         notifySubscribers(); // update view
     }
 
