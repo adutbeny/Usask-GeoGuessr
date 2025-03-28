@@ -125,7 +125,7 @@ public class Multiplayer {
         fbHelper.writeData("matches/" + matchId + "/guesses/" + playerUid, guessJson);
     }
 
-    public void clearGuesses(String matchId, int roundNumber) {
+    public void clearGuesses(String matchId) {
         // Write "null" to the guesses node to remove it.
         fbHelper.writeData("matches/" + matchId + "/guesses", "null");
     }

@@ -825,6 +825,7 @@ public class Model {
      * in the db, sets currentMatchId so we can use it in the future for guesses and score**/
     public void startMatchmaking() {
         // init multiplayer instance and join wait queue
+        setMultiplayerMode(true);
         multiplayer = new Multiplayer(user.getUsername());
         multiplayer.joinWaitQueue();
         this.chat = new ChatWindow(this);
@@ -837,7 +838,7 @@ public class Model {
             // attempts to create a match by hosting
             String matchId = multiplayer.matchPlayers();
             if (matchId != null) {
-                currentMatchId = matchId;
+                setCurrentMatchId(matchId);
                 System.out.println("match id is: " + matchId);
                 this.showMatchmakingWindow();
                 notifySubscribers(); // update view
@@ -848,7 +849,7 @@ public class Model {
             // or if no other player in wait queue
             matchId = multiplayer.findMatchForOpponent();
             if (matchId != null) {
-                currentMatchId = matchId;
+                setCurrentMatchId(matchId);
                 System.out.println("Match found for opponent: " + matchId);
                 this.showMatchmakingWindow();
                 notifySubscribers(); // update view
@@ -859,38 +860,55 @@ public class Model {
         }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
     }
 
-    public double calculateMultiplayerSCore() {
+    /**  multiplayer version of calculate score will need to adjust a lot **/
+    public double calculateMultiplayerScore() {
         if (this.currentPicture == null) {
             System.out.println("No picture loaded.");
             return -1;
         }
-        // get the marker coordinates from model
         if (this.connector == null) {
             System.out.println("Marker coordinates not set.");
             return -1;
         }
-
-        // get pictures longitude and latitude, print statements for debugging
         double pictureLat = currentPicture.getLatitude();
-        System.out.println("picture latitude:" + pictureLat);
         double pictureLng = currentPicture.getLongitude();
-        System.out.println("picture longitude:" + pictureLng);
-
-        // Gets marker coordinates from connector
         double markerLat = connector.getMarkerLat();
-        System.out.println("marker latitude:" + markerLat);
         double markerLng = connector.getMarkerLng();
-        System.out.println("marker longitude:" + markerLng);
+        if (currentMatchId == null) {
+            System.out.println("No match set in multiplayer mode.");
+            return -1;
+        }
+        // record player guess in firebase
         multiplayer.recordGuess(currentMatchId, markerLat, markerLng);
 
-        // find distance between and print to console for now
-        double distance = this.haversine(pictureLat, pictureLng, markerLat, markerLng);
+        // polling for opponents guess herte
+        double[] opponentGuess = null;
+        int attempts = 0;
+        while (opponentGuess == null && attempts < 10) { // this should wait 30 seconds
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException ex) {
+                ex.printStackTrace();
+            }
+            opponentGuess = multiplayer.readOpponentGuess(currentMatchId);
+            attempts++;
+        }
+        if (opponentGuess == null) {
+            System.out.println("opponent guess not made");
+            return -1;
+        }
+        double distance = haversine(pictureLat, pictureLng, markerLat, markerLng);
         System.out.println("You got: " + distance + " meters away!");
-
-        // update scores
         this.recentScore = calculateScore(distance);
         this.totalScore += this.recentScore;
         return distance;
+    }
+
+    // clears the guesses in firebase
+    public void clearMultiplayerGuesses() {
+        if (currentMatchId != null) {
+            multiplayer.clearGuesses(currentMatchId);
+        }
     }
     // set mutliplayer mode, takes boolean parameter
     public void setMultiplayerMode(boolean mode) {
