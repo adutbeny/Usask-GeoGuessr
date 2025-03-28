@@ -909,6 +909,7 @@ public class Model {
         this.totalScore += this.recentScore;
         return distance;
     }
+
     // getter for opponents guess, this allows us to get the distance of opponents guess from controller
     public double[] getOpponentGuess() {
         return opponentGuess;

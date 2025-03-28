@@ -120,6 +120,27 @@ public class Controller {
                 view.next.setVisible(true);
             } else {
                 System.out.println("multiplayer is working");
+                double p1_dist = model.calculateMultiplayerScore();
+                double[] oppGuess = model.getOpponentGuess();
+
+                JavaConnector connector = model.getJavaConnector();
+                double p1_markerLat = connector.getMarkerLat();
+                double p1_markerLng = connector.getMarkerLng();
+                Picture curr = model.getCurrentPicture();
+                double pictureLat = curr.getLatitude();
+                double pictureLng = curr.getLongitude();
+
+                // this gets the opponents distance
+                if (oppGuess == null) {
+                    double p2_dist = 1000;
+                } else {
+                    double p2_dist = model.haversine(pictureLat, pictureLng, oppGuess[0], oppGuess[1]);
+                }
+                view.updateMapOverlay(p1_markerLat, p1_markerLng, pictureLat, pictureLng, p1_dist);
+
+                view.submit.setVisible(false);
+                view.next.setVisible(true);
+
             }
         });
         view.next.setOnAction(event -> {
