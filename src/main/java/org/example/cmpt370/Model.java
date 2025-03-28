@@ -899,10 +899,6 @@ public class Model {
             }
             attempts++;
         }
-        if (this.opponentGuess == null) {
-            System.out.println("opponent guess not made");
-            return -1;
-        }
         double distance = haversine(pictureLat, pictureLng, markerLat, markerLng);
         System.out.println("you got: " + distance + " meters away!");
         this.recentScore = calculateScore(distance);

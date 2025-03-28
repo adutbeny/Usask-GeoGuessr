@@ -587,6 +587,17 @@ public class View extends StackPane implements Subscriber {
         mapEngine.executeScript(script);
     }
 
+    public void multiplayerUpdateMapOverlay(double p1_markerLat, double p1_markerLng,
+                                            double p2_markerLat, double p2_markerLng,
+                                            double pictureLat, double pictureLng,
+                                            double p1_dist, double p2_dist) {
+        String script = String.format(
+                "showMultiplayerResult(%f, %f, %f, %f, %f, %f, %f, %f);",
+                p1_markerLat, p1_markerLng, p2_markerLat, p2_markerLng, pictureLat, pictureLng, p1_dist, p2_dist
+        );
+        mapEngine.executeScript(script);
+    }
+
     public void showMatchmakingWindow() {
         this.createDefaultBackground();
 

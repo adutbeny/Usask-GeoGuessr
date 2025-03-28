@@ -132,11 +132,13 @@ public class Controller {
 
                 // this gets the opponents distance
                 if (oppGuess == null) {
-                    double p2_dist = 1000;
+                    double p2_dist = 1000; // TODO need to make sure this score gets recorded somehow, only happens if opponent doesnt make a guess
+                    view.updateMapOverlay(p1_markerLat, p1_markerLng, pictureLat, pictureLng, p1_dist);
                 } else {
                     double p2_dist = model.haversine(pictureLat, pictureLng, oppGuess[0], oppGuess[1]);
+                    view.multiplayerUpdateMapOverlay(p1_markerLat, p1_markerLng, oppGuess[0], oppGuess[1], pictureLat, pictureLng, p1_dist, p2_dist);
+
                 }
-                view.updateMapOverlay(p1_markerLat, p1_markerLng, pictureLat, pictureLng, p1_dist);
 
                 view.submit.setVisible(false);
                 view.next.setVisible(true);
