@@ -421,17 +421,21 @@ public class View extends StackPane implements Subscriber {
             if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE) {
                 if (this.model.getRecentScore() > this.model.getUser().getNoviceHighscore()) {
                     this.gc.fillText("Score (New Best!)", textbX + 230, textbY + 25);
+                } else {
+                    this.gc.fillText("Score", textbX + 230, textbY + 25);
                 }
             } else if (this.model.getCurrentDifficulty() == DIFFICULTY.SEASONAL) {
                 if (this.model.getRecentScore() > this.model.getUser().getSeasonalHighscore()) {
                     this.gc.fillText("Score (New Best!)", textbX + 230, textbY + 25);
+                } else {
+                    this.gc.fillText("Score", textbX + 230, textbY + 25);
                 }
             } else if (this.model.getCurrentDifficulty() == DIFFICULTY.EXPERT) {
                 if (this.model.getRecentScore() > this.model.getUser().getExpertHighscore()) {
                     this.gc.fillText("Score (New Best!)", textbX + 230, textbY + 25);
+                } else {
+                    this.gc.fillText("Score", textbX + 230, textbY + 25);
                 }
-            } else {
-                this.gc.fillText("Score", textbX + 230, textbY + 25);
             }
         } else {
             this.gc.fillText("Score", textbX + 230, textbY + 25);
