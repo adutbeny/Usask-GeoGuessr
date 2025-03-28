@@ -826,6 +826,8 @@ public class Model {
         // init multiplayer instance and join wait queue
         multiplayer = new Multiplayer(user.getUsername());
         multiplayer.joinWaitQueue();
+        this.chat = new ChatWindow(this);
+        this.chat.addMessage("chat Connected successfully", false);
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
@@ -836,7 +838,7 @@ public class Model {
             if (matchId != null) {
                 currentMatchId = matchId;
                 System.out.println("match id is: " + matchId);
-                // TODO update the display here for multiplayer window
+                this.showMatchmakingWindow();
                 notifySubscribers(); // update view
                 scheduler.shutdown(); // stop polling
                 return;
@@ -847,7 +849,7 @@ public class Model {
             if (matchId != null) {
                 currentMatchId = matchId;
                 System.out.println("Match found for opponent: " + matchId);
-                // TODO update the display here for multiplayer window
+                this.showMatchmakingWindow();
                 notifySubscribers(); // update view
                 scheduler.shutdown(); // stop polling
             } else {
@@ -893,24 +895,6 @@ public class Model {
     // getter for currentMatchId
     public String getCurrentMatchId() {
         return currentMatchId;
-    }
-
-    /** Initiates multiplayer process when user hits multiplayer button */
-    public void initiateMultiplayer() {
-        this.showMatchmakingWindow();
-
-        this.ml = new Multiplayer(this.user.getUsername());
-        // put this back in the conditional once its ready
-        this.chat = new ChatWindow(this);
-        this.chat.addMessage("Connected successfully", false);
-
-        // TODO:
-        //ml.MatchPlayers();
-//        if (successful) {
-//            this.chat = new ChatWindow();
-//            this.chat.addMessage("Connected successfully", false);
-//        }
-
     }
 
     /** send a message to the other player */

@@ -46,12 +46,12 @@ public class ChatWindow extends StackPane {
         // message entry
         this.entry = new TextField();
         this.entry.setPrefWidth(180);
-        this.entry.setOnAction(_ -> this.send.fire());  // uses Enter key to trigger send
+        this.entry.setOnAction(event -> this.send.fire());  // uses Enter key to trigger send
 
         this.send = new Button("Send");
         this.send.setPrefSize(70, 15);
         this.send.setStyle("-fx-font-size: 14px;");
-        this.send.setOnAction(_ -> {
+        this.send.setOnAction(event -> {
             if (!this.entry.getText().trim().isEmpty()) {
                 this.model.sendMessage(this.entry.getText());
                 this.entry.clear();
