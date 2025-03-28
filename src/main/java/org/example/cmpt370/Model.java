@@ -856,6 +856,40 @@ public class Model {
         }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
     }
 
+    public double calculateMultiplayerSCore() {
+        if (this.currentPicture == null) {
+            System.out.println("No picture loaded.");
+            return -1;
+        }
+        // get the marker coordinates from model
+        if (this.connector == null) {
+            System.out.println("Marker coordinates not set.");
+            return -1;
+        }
+
+        // get pictures longitude and latitude, print statements for debugging
+        double pictureLat = currentPicture.getLatitude();
+        System.out.println("picture latitude:" + pictureLat);
+        double pictureLng = currentPicture.getLongitude();
+        System.out.println("picture longitude:" + pictureLng);
+
+        // Gets marker coordinates from connector
+        double markerLat = connector.getMarkerLat();
+        System.out.println("marker latitude:" + markerLat);
+        double markerLng = connector.getMarkerLng();
+        System.out.println("marker longitude:" + markerLng);
+        multiplayer.recordGuess(currentMatchId, markerLat, markerLng);
+
+        // find distance between and print to console for now
+        double distance = this.haversine(pictureLat, pictureLng, markerLat, markerLng);
+        System.out.println("You got: " + distance + " meters away!");
+
+        // update scores
+        this.recentScore = calculateScore(distance);
+        this.totalScore += this.recentScore;
+        return distance;
+    }
+
     // getter for currentMatchId
     public String getCurrentMatchId() {
         return currentMatchId;
