@@ -23,8 +23,7 @@ public class Controller {
         // Sends to difficulty select, no account
         view.quickplay.setOnAction(event -> {
             this.model.showDifficultyWindow();
-            //TODO: will need to disable leaderboards/high-score if
-            // this becomes like an "offline" mode
+            this.model.setMultiplayerMode(false);
         });
         view.login.setOnAction(event -> {
             this.model.showLoginWindow();
