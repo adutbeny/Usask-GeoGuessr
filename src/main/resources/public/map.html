@@ -150,12 +150,12 @@
                                        pictureLat, pictureLng, p1_dist, p2_dist) {
 
             // make latlng objs
-            var p1Guess = new google.maps.LatLng(p1_markerLat, p1_markerLng);
-            var p2Guess = new google.maps.LatLng(p2_markerLat, p2_markerLng);
-            var correctLocation = new google.maps.LatLng(pictureLat, pictureLng);
+            const p1Guess = new google.maps.LatLng(p1_markerLat, p1_markerLng);
+            const p2Guess = new google.maps.LatLng(p2_markerLat, p2_markerLng);
+            const correctLocation = new google.maps.LatLng(pictureLat, pictureLng);
 
             // make the dashed symbol again, same as singleplayer one
-            var dashSymbol = {
+            const dashSymbol = {
                 path: 'M 0,0 L15,0',
                 strokeOpacity: 1,
                 strokeColor: '#149563',
@@ -226,12 +226,15 @@
             });
 
             // get midpoints for the lines
-            var midPoint1 = new google.maps.LatLng((p1_markerLat + pictureLat) / 2, (p1_markerLng + pictureLng) / 2);
-            var midPoint2 = new google.maps.LatLng((p2_markerLat + pictureLat) / 2, (p2_markerLng + pictureLng) / 2);
+            const mid_lat_1 = (pictureLat + p1_markerLat) / 2;
+            const mid_lng_1 = (pictureLng + p1_markerLng) / 2;
+
+            const mid_lat_2 = (pictureLat + p2_markerLat) / 2;
+            const mid_lng_2 = (pictureLat + p2_markerLng) / 2;
 
             // build info windows for each line
-            var infoContent1 = "<div style='color: #0A6A42; font-weight: bold;'>You got: " + p1_dist.toFixed(0) + " m away!</div>";
-            var infoContent2 = "<div style='color: #0A6A42; font-weight: bold;'>Opponent got: " + p2_dist.toFixed(0) + " m away!</div>";
+            const infoContent1 = "<div style='color: #0A6A42; font-weight: bold;'>You got: " + p1_dist.toFixed(0) + " m away!</div>";
+            const infoContent2 = "<div style='color: #0A6A42; font-weight: bold;'>Opponent got: " + p2_dist.toFixed(0) + " m away!</div>";
 
             // clear existing windows, this again probably shouldnt ever happen since view resets
             if (distanceInfoWindow1) { distanceInfoWindow1.close(); }
@@ -240,11 +243,11 @@
             // draw info windows for both players
             distanceInfoWindow1 = new google.maps.InfoWindow({
                 content: infoContent1,
-                position: midPoint1
+                position: {lat: mid_lat_1, lng: mid_lng_1}
             });
             distanceInfoWindow2 = new google.maps.InfoWindow({
                 content: infoContent2,
-                position: midPoint2
+                position: {lat: mid_lat_2, lng: mid_lng_2}
             });
 
             // Open the InfoWindows.

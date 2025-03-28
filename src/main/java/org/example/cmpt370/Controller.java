@@ -152,6 +152,8 @@ public class Controller {
         });
         view.multiplayer.setOnAction(event ->{
             this.model.startMatchmaking();
+            this.model.selectPictureSet("/BeginnerPhotos.csv");
+            this.model.setDifficulty("/BeginnerPhotos.csv");
         });
         view.addPin.setOnAction(event -> {
             this.model.pin();
