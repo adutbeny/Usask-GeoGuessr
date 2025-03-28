@@ -829,9 +829,6 @@ public class Model {
         setMultiplayerMode(true);
         multiplayer = new Multiplayer(user.getUsername());
         multiplayer.joinWaitQueue();
-        this.chat = new ChatWindow(this);
-        this.chat.addMessage("chat Connected successfully", false);
-
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
@@ -854,6 +851,10 @@ public class Model {
                 System.out.println("still waiting for a match...");
             }
         }
+
+        this.chat = new ChatWindow(this);
+        this.chat.addMessage("chat Connected successfully", false);
+
         this.selectPictureSet("/BeginnerPhotos.csv");
         this.setDifficulty("/BeginnerPhotos.csv");
     }
