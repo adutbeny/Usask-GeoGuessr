@@ -815,6 +815,7 @@ public class View extends StackPane implements Subscriber {
         current.setFont(new Font("Segoe UI This", 30));
         boolean newBest = false;
         Text high = null;
+        this.model.CheckForPersonalBest(this.model.getTotalScore());
         if (this.model.getUser() != null) {
             this.model.saveHistory(this.model.getTotalScore());
             if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE){

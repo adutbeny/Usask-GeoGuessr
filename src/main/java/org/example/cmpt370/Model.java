@@ -538,6 +538,66 @@ public class Model {
         return scores;
     }
 
+    public void CheckForPersonalBest(int score){
+        String difficulty = "";
+        try {
+            if (currentDifficulty == DIFFICULTY.NOVICE){
+                difficulty = "Novice";
+            }
+            else if (currentDifficulty == DIFFICULTY.SEASONAL){
+                difficulty = "Seasonal";
+            }
+            else{
+                difficulty = "Expert";
+            }
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+
+            String deleteOldest = "DELETE FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ? ORDER BY score ASC LIMIT 1";
+            String countquery = "SELECT COUNT(*) FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ?";
+            String findLowest = "SELECT MIN(score) FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ?";
+
+            PreparedStatement loweststmt = con.prepareStatement(findLowest);
+            loweststmt.setString(1, user.getUsername());
+            loweststmt.setString(2, difficulty);
+            ResultSet lowestScore = loweststmt.executeQuery();
+
+            int lowScore = 0;
+            if (lowestScore.next()){
+                lowScore = lowestScore.getInt(1);
+            }
+
+            PreparedStatement countstmt = con.prepareStatement(countquery);
+            countstmt.setString(1, user.getUsername());
+            countstmt.setString(2, difficulty);
+            ResultSet countset = countstmt.executeQuery();
+
+            boolean difficultyAmount = false;
+            if (countset.next() && countset.getInt(1) >= 8){
+                difficultyAmount = true;
+            }
+
+            if (lowScore < score && difficultyAmount){
+                PreparedStatement deletestmt = con.prepareStatement(deleteOldest);
+                deletestmt.setString(1, user.getUsername());
+                deletestmt.setString(2, difficulty);
+                deletestmt.executeUpdate();
+            }
+
+            String querycreate = "INSERT INTO sql3765767.userhscorehistory(username, difficulty, score) " + "VALUES (?, ?, ?)";
+            PreparedStatement createstmt = con.prepareStatement(querycreate);
+            createstmt.setString(1, user.getUsername());
+            createstmt.setString(2, difficulty);
+            createstmt.setInt(3, score);
+            createstmt.executeUpdate();
+            System.out.println("Added to History!");
+        } catch (Exception e){
+            System.out.println(e.toString());
+        }
+    }
+
     public void saveHistory(int score){
         String difficulty = "";
         try {
