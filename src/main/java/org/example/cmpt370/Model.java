@@ -72,7 +72,6 @@ public class Model {
     public GoogleAuthHandler googleAuthHandler;
     private boolean isGoogleSignIn = false;
 
-    private Multiplayer ml;
     private ChatWindow chat;
     private String currentMatchId;
     private Multiplayer multiplayer;
@@ -937,7 +936,7 @@ public class Model {
 
     /** send a message to the other player */
     public void sendMessage(String msg) {
-        this.ml.sendChatMessage("id", msg); // TODO replace ID
+        this.multiplayer.sendChatMessage("id", msg); // TODO replace ID
         this.chat.addMessage(msg, true);
     }
     /** recieve a message from the other player */
