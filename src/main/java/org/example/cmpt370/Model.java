@@ -831,6 +831,7 @@ public class Model {
         multiplayer.joinWaitQueue();
         this.chat = new ChatWindow(this);
         this.chat.addMessage("chat Connected successfully", false);
+        this.showMatchmakingWindow();
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
@@ -841,7 +842,7 @@ public class Model {
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match id is: " + matchId);
-                this.showMatchmakingWindow();
+                this.showGameplayWindow();
                 notifySubscribers(); // update view
                 scheduler.shutdown(); // stop polling
                 return;
@@ -852,7 +853,7 @@ public class Model {
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match found for opponent: " + matchId);
-                this.showMatchmakingWindow();
+                this.showGameplayWindow();
                 notifySubscribers(); // update view
                 scheduler.shutdown(); // stop polling
             } else {
