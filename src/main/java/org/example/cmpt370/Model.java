@@ -841,8 +841,6 @@ public class Model {
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match id is: " + matchId);
-                this.selectPictureSet("/BeginnerPhotos.csv");
-                notifySubscribers();
                 scheduler.shutdown(); // stop polling
                 return;
             }
@@ -852,13 +850,13 @@ public class Model {
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match found for opponent: " + matchId);
-                this.selectPictureSet("/BeginnerPhotos.csv");
-                notifySubscribers();
                 scheduler.shutdown(); // stop polling
             } else {
                 System.out.println("still waiting for a match...");
             }
         }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
+        this.selectPictureSet("/BeginnerPhotos.csv");
+        notifySubscribers();
     }
 
     /**  multiplayer version of calculate score will need to adjust a lot **/
