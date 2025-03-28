@@ -77,6 +77,7 @@ public class Model {
     private String currentMatchId;
     private Multiplayer multiplayer;
     private boolean multiplayerMode = false;
+    private double[] opponentGuess;
 
     /** Constructor */
     public Model() {
@@ -882,18 +883,23 @@ public class Model {
         multiplayer.recordGuess(currentMatchId, markerLat, markerLng);
 
         // polling for opponents guess herte
-        double[] opponentGuess = null;
+        double[] oppGuess = null;
         int attempts = 0;
-        while (opponentGuess == null && attempts < 10) { // this should wait 30 seconds
+        while (oppGuess == null && attempts < 10) { // this should wait 30 seconds
             try {
                 Thread.sleep(3000);
             } catch (InterruptedException ex) {
                 ex.printStackTrace();
             }
-            opponentGuess = multiplayer.readOpponentGuess(currentMatchId);
+            oppGuess = multiplayer.readOpponentGuess(currentMatchId);
+            if (oppGuess != null) {
+                this.opponentGuess = oppGuess;
+            } else {
+                System.out.println("opponents guess not recieved");
+            }
             attempts++;
         }
-        if (opponentGuess == null) {
+        if (this.opponentGuess == null) {
             System.out.println("opponent guess not made");
             return -1;
         }
@@ -903,7 +909,10 @@ public class Model {
         this.totalScore += this.recentScore;
         return distance;
     }
-
+    // getter for opponents guess, this allows us to get the distance of opponents guess from controller
+    public double[] getOpponentGuess() {
+        return opponentGuess;
+    }
     // clears the guesses in firebase
     public void clearMultiplayerGuesses() {
         if (currentMatchId != null) {
