@@ -449,14 +449,14 @@ public class Model {
 
         String query;
         if (currentDifficulty == DIFFICULTY.NOVICE){
-            query = "SELECT username, N_high_score FROM sql3765767.users WHERE username = ? ORDER BY N_high_score DESC LIMIT 8";
+            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Novice' ORDER BY score DESC LIMIT 8";
         }
 
         else if (currentDifficulty == DIFFICULTY.SEASONAL){
-            query = "SELECT users.username, users.S_high_score FROM sql3765767.users WHERE username =? ORDER BY S_high_score DESC LIMIT 8";
+            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Seasonal' ORDER BY score DESC LIMIT 8";
         }
         else{
-            query = "SELECT users.username, users.E_high_score FROM sql3765767.users WHERE username =? ORDER BY E_high_score DESC LIMIT 8";
+            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Expert' ORDER BY score DESC LIMIT 8";
         }
 
         try {
@@ -468,16 +468,7 @@ public class Model {
 
                 try (ResultSet rs = stmt.executeQuery()) {
                     while (rs.next()) {
-
-                        if (currentDifficulty == DIFFICULTY.NOVICE) {
-                            scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("N_high_score")));
-                        }
-                        else if (currentDifficulty == DIFFICULTY.SEASONAL) {
-                            scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("S_high_score")));
-                        }
-                        else{
-                            scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("E_high_score")));
-                        }
+                        scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("score")));
                     }
                 }
             }
