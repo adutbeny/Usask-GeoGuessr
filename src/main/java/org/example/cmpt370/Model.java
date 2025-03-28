@@ -831,7 +831,7 @@ public class Model {
         multiplayer.joinWaitQueue();
         this.chat = new ChatWindow(this);
         this.chat.addMessage("chat Connected successfully", false);
-        this.showMatchmakingWindow();
+
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
