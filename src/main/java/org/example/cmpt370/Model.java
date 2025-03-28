@@ -835,15 +835,14 @@ public class Model {
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
-        ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-        scheduler.scheduleAtFixedRate(() -> {
+        boolean flag = true;
+        while(flag = true){
             // attempts to create a match by hosting
             String matchId = multiplayer.matchPlayers();
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match id is: " + matchId);
-                scheduler.shutdown(); // stop polling
-                return;
+                break;
             }
             // if not the host (you have lower timestamp than others)
             // or if no other player in wait queue
@@ -851,11 +850,11 @@ public class Model {
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match found for opponent: " + matchId);
-                scheduler.shutdown(); // stop polling
+                break;
             } else {
                 System.out.println("still waiting for a match...");
             }
-        }, 0, 3, TimeUnit.SECONDS); // this is the polling time we can change it
+        }
     }
 
     /**  multiplayer version of calculate score will need to adjust a lot **/
