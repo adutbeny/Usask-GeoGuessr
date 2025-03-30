@@ -77,6 +77,7 @@ public class Model {
     private Multiplayer multiplayer;
     private boolean multiplayerMode = false;
     private double[] opponentGuess;
+    public ScheduledExecutorService chatScheduler;
 
     /** Constructor */
     public Model() {
@@ -893,14 +894,14 @@ public class Model {
     public void startMatchmaking() {
         // init multiplayer instance and join wait queue
         setMultiplayerMode(true);
-        multiplayer = new Multiplayer(user.getUsername());
-        multiplayer.joinWaitQueue();
+        this.multiplayer = new Multiplayer(user.getUsername());
+        this.multiplayer.joinWaitQueue();
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
         while(true){
             // attempts to create a match by hosting
-            String matchId = multiplayer.matchPlayers();
+            String matchId = this.multiplayer.matchPlayers();
             if (matchId != null) {
                 setCurrentMatchId(matchId);
                 System.out.println("match id is: " + matchId);
@@ -920,6 +921,9 @@ public class Model {
 
         this.chat = new ChatWindow(this);
         this.chat.addMessage("chat Connected successfully", false);
+
+        // start poll for messages to receive
+        this.pollIncomingMessage();
 
         this.selectPictureSet("/BeginnerPhotos.csv");
         this.setDifficulty("/BeginnerPhotos.csv");
@@ -999,13 +1003,21 @@ public class Model {
 
     /** send a message to the other player */
     public void sendMessage(String msg) {
-        this.multiplayer.sendChatMessage("id", msg); // TODO replace ID
+        this.multiplayer.sendChatMessage(this.getCurrentMatchId(), msg);
         this.chat.addMessage(msg, true);
     }
-    /** recieve a message from the other player */
-    public void recieveMessage(String msg) {
-        //this.ml.sendChatMessage("id", msg); // TODO replace with recieve
-        this.chat.addMessage(msg, false);
+    /** Polling function that checks every two seconds for
+     * an incoming message to receive from the other player.
+     * Should be called on successful match and run until match ends */
+    private void pollIncomingMessage() {
+        this.chatScheduler = Executors.newScheduledThreadPool(1);
+        this.chatScheduler.scheduleAtFixedRate(() -> {
+            String msg = this.multiplayer.receiveChatMessage();
+            if (msg != null) {
+                this.chat.addMessage(msg, false);
+            }
+            // killed from controller when user hits 'exit'
+        }, 0, 2, TimeUnit.SECONDS); // check every 2 seconds
     }
 
 }
