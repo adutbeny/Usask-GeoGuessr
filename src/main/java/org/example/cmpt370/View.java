@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.*;
@@ -168,11 +169,28 @@ public class View extends StackPane implements Subscriber {
         this.next.setPrefWidth(200);
 
         // pin current image
-        this.addPin = new Button("Pin");
-        this.addPin.setPrefWidth(100);
+        Image pinImage = new Image(getClass().getResource("/icon/whitepin.png").toExternalForm());
+        ImageView pinImageView = new ImageView(pinImage);
+        pinImageView.setFitWidth(20);
+        pinImageView.setFitHeight(20);
+        this.addPin = new Button();
+        addPin.setGraphic(pinImageView);
+        addPin.setTranslateX(-540);
+        addPin.setTranslateY(100);
+        //
 
-        this.addChat = new Button("Chat");
-        this.addPin.setPrefWidth(100);
+        Image chatImage = new Image(getClass().getResource("/icon/whitemessage.png").toExternalForm());
+        ImageView chatImageView = new ImageView(chatImage);
+
+        chatImageView.setFitWidth(20);
+        chatImageView.setFitHeight(20);
+
+        this.addChat = new Button();
+        addChat.setGraphic(chatImageView);
+        addChat.setPrefWidth(25);
+        addChat.setTranslateX(-540);
+        addChat.setTranslateY(25);
+
 
         // unpin from the Pinned window
         this.unpin = new Button("Unpin");
@@ -542,19 +560,6 @@ public class View extends StackPane implements Subscriber {
         });
 
         // TODO- maybe add swap to an unpin button?
-        Image pinImage = new Image(getClass().getResource("/icon/whitepin.png").toExternalForm());
-        ImageView pinImageView = new ImageView(pinImage);
-
-        pinImageView.setFitWidth(20);
-        pinImageView.setFitHeight(20);
-
-        Button addPin = new Button();
-        addPin.setGraphic(pinImageView);
-       // addPin.setPrefWidth(25);
-        addPin.setTranslateX(-540);
-        addPin.setTranslateY(100);
-        //this.addPin.setTranslateX(-540);
-        //this.addPin.setTranslateY(345);
 
         Image chatImage = new Image(getClass().getResource("/icon/whitemessage.png").toExternalForm());
         ImageView chatImageView = new ImageView(chatImage);
@@ -964,9 +969,10 @@ public class View extends StackPane implements Subscriber {
         this.gc.fillText("Pinned Locations", 680, 105);
 
         VBox entryBox = new VBox(50);
+        entryBox.setAlignment(Pos.TOP_CENTER);
+        entryBox.setPrefWidth(800);
+        entryBox.setFillWidth(true);
 
-        //TODO
-        // if pinned is not empty:
         ArrayList<Picture> pinnedLocations = new ArrayList<Picture>();
         int value = 0;
         try {
@@ -978,6 +984,7 @@ public class View extends StackPane implements Subscriber {
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, this.model.getUser().getUsername());
             ResultSet rs = stmt.executeQuery();
+            int mapCount = 0;
             while (rs.next()) {
                 value++;
                 String picturepath = rs.getString("pinnedlocation");
@@ -988,12 +995,35 @@ public class View extends StackPane implements Subscriber {
                 imageView.setFitHeight(400);
                 imageView.setFitWidth(400);
 
+                WebView mapView = new WebView();
+                mapView.setPrefSize(400,300);
+                WebEngine mapEngine = mapView.getEngine();
+
+                mapEngine.load(Objects.requireNonNull(getClass().getResource("/public/pinMap.html")).toExternalForm());
+
+                mapEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+                    if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                        // Execute JavaScript to place the marker on the map
+                        String script = String.format("showCorrect(%f, %f);", latitude, longitude);
+                        mapEngine.executeScript(script);
+                    }
+                });
+
+
                 Label latLabel = new Label("Latitude: " + latitude);
                 latLabel.setFont(new Font("Segoe UI This", 25));
                 Label longLabel = new Label("Longitude: " + longitude);
                 longLabel.setFont(new Font("Segoe UI This", 25));
-                VBox locationBox = new VBox(10, latLabel, longLabel);
-                HBox entryRow = new HBox(50, imageView, locationBox);
+                Button unpin = new Button("Unpin");
+                unpin.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-family: 'Segoe UI';");
+                unpin.setOnAction(e -> this.model.unpin(this.model.getUser().getUsername(), picturepath));
+
+                imageView.setFitWidth(300);
+                imageView.setFitHeight(300);
+                mapView.setPrefWidth(300);
+                mapView.setPrefHeight(300);
+
+                HBox entryRow = new HBox(imageView, mapView, unpin);
                 entryBox.getChildren().add(entryRow);
             }
         } catch (Exception e){
@@ -1006,10 +1036,16 @@ public class View extends StackPane implements Subscriber {
         }
 
         ScrollPane entryContainer = new ScrollPane(entryBox);
+        entryContainer.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E)");
+        entryBox.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E)");
+
+
+        entryContainer.setFitToWidth(true);
+        entryContainer.setFitToHeight(true);
         entryContainer.setPrefWidth(800);
-        entryContainer.setPrefHeight(600);
-        entryContainer.setTranslateX(250);
-        entryContainer.setTranslateY(175);
+        entryContainer.setPrefHeight(500);
+        entryContainer.setMaxHeight(500);
+        entryContainer.setLayoutY(150);
 
         // Back button in bottom-left corner
         VBox buttonContainer = new VBox(this.back2);

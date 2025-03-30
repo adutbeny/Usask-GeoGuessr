@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Campus Map</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #005100;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script>
+        let map;
+        let mapInitialized = false;
+        let pendingMarkers = [];
+        function initMap() {
+
+            const campusBounds = {
+                north: 52.139,
+                south: 52.125,
+                west: -106.6547,
+                east: -106.6215
+            };
+
+            // creates the map
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: {lat: 52.13, lng: -106.63},
+                zoom: 15,
+                mapTypeId: "satellite",
+
+                // this makes so zooming in doesnt turn the view sideways
+                tilt: 0,
+                heading: 0,
+
+                restriction: {
+                    latLngBounds: campusBounds,
+                    strictBounds: true
+                },
+                // making the map a little cleaner by removing default things
+                streetViewControl: false,
+                mapTypeControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+                zoomControl: false,
+
+            });
+
+            mapInitialized = true;
+            processPendingMarkers();
+
+        }
+
+        function processPendingMarkers(){
+            if (pendingMarkers.length > 0 && mapInitialized){
+
+                const markerData = pendingMarkers[0];
+                addMarkerToMap(markerData.lat, markerData.lng);
+                pendingMarkers = [];
+            }
+        }
+
+        function addMarkerToMap(lat, lng){
+            const location = new google.maps.LatLng(lat, lng);
+
+            let marker = new google.maps.Marker({
+                position: location,
+                map: map,
+                title: "Pinned Location",
+                icon: {
+                    url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                    scaledSize: new google.maps.Size(32, 32)
+                }
+            });
+            map.setCenter(location);
+            map.setZoom(17);
+        }
+
+        function showCorrect(lat, lng){
+            if (mapInitialized){
+                addMarkerToMap(lat, lng)
+            }else {
+                pendingMarkers.push({lat: lat, lng: lng})
+            }
+        }
+    </script>
+    <script
+        defer
+        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTZX06rG8Xci6r-8B4KdkGRHI6ax7hNNU&callback=initMap">
+    </script>
+</head>
+
+<body>
+<div id="map"></div>
+</body>
+</html>

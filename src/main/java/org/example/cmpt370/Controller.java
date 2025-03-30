@@ -154,11 +154,12 @@ public class Controller {
             this.model.showMatchmakingWindow();
             this.model.startMatchmaking();
         });
+
         view.addPin.setOnAction(event -> {
             this.model.pin();
         });
         view.unpin.setOnAction(event -> {
-            this.model.unpin();
+            this.model.unpin(this.model.getUser().getUsername(), this.model.getCurrentPicture().getPath());
         });
         view.playAgain.setOnAction(event -> {
             this.model.showDifficultyWindow();

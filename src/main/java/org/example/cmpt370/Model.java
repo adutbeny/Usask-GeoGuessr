@@ -684,7 +684,6 @@ public class Model {
             // replace with actual DB username and password
             Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
             System.out.println("Connected to database");
-            String duplicateQuery = "SELEC";
 
             String addQuery = "INSERT into sql3765767.userpinned(username, pinnedlocation, latitude, longitude) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(addQuery);
@@ -706,9 +705,25 @@ public class Model {
      * Won't be the current photo, need to get from the database,
      * maybe based off index of where the picture is in the list
      * of pinned pictures? */
-    public void unpin(/* might need an argument*/) {
+    public void unpin(String username, String path) {
         //TODO figure this out
         // update view to not show what we just removed
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            // replace with actual DB username and password
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            notifySubscribers();
+            String delete = "DELETE FROM sql3765767.userpinned WHERE username = ? AND pinnedlocation = ?";
+            PreparedStatement query = con.prepareStatement(delete);
+            query.setString(1, username);
+            query.setString(2, path);
+            query.executeUpdate();
+            System.out.println("Pins updated");
+        } catch (Exception e){
+            System.out.println(e.toString());
+        }
         notifySubscribers();
     }
 
