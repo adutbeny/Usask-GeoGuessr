@@ -167,9 +167,15 @@ public class Multiplayer {
         public String text;
         public long timestamp;
     }
+    // send a chat message to the other player
+    public void sendChatMessage(String matchId, String messageText) {
+        String messageKey = "msg" + System.currentTimeMillis();
+        String chatJson = String.format("{ \"sender\": \"%s\", \"text\": \"%s\", \"timestamp\": %d }",
+                this.playerUid, messageText, System.currentTimeMillis());
+        this.fbHelper.writeData("matches/" + matchId + "/chat/" + messageKey, chatJson);
+    }
 
-
-    /** Send a chat message to the other player */
+    /** receives messages that are not your own and are only the latest used message */
     public String receiveChatMessage() {
         // reads all chat nodes from firebase
         String chatData = this.fbHelper.readData("matches/" + this.currentMatchId + "/chat");
