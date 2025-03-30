@@ -899,7 +899,7 @@ public class Model {
 
         // this uses a scheduler to run every second so that we are constantly polling
         // matchPlayers() and findMatchForOpponent(), these ensure only one match is created for two players
-        while(true){
+        while(true) {
             // attempts to create a match by hosting
             String matchId = this.multiplayer.matchPlayers();
             if (matchId != null) {
@@ -1012,6 +1012,9 @@ public class Model {
     private void pollIncomingMessage() {
         this.chatScheduler = Executors.newScheduledThreadPool(1);
         this.chatScheduler.scheduleAtFixedRate(() -> {
+            if (!this.multiplayerMode) {    // if we've left multiplayer mode, kill scheduler
+                this.chatScheduler.shutdown();
+            }
             String msg = this.multiplayer.receiveChatMessage();
             if (msg != null) {
                 this.chat.addMessage(msg, false);
