@@ -17,6 +17,7 @@ import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+import javafx.application.Platform;
 
 /** enum to signal different states within the model
  * Each value corresponds to a response from the view */
@@ -1017,7 +1018,7 @@ public class Model {
             }
             String msg = this.multiplayer.receiveChatMessage();
             if (msg != null) {
-                this.chat.addMessage(msg, false);
+                Platform.runLater(() -> this.chat.addMessage(msg, false));
             }
             // killed from controller when user hits 'exit'
         }, 0, 2, TimeUnit.SECONDS); // check every 2 seconds
