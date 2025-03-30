@@ -10,6 +10,7 @@ import java.util.Map;
 public class Multiplayer {
     private FirebaseHelper fbHelper;
     private String playerUid;
+    private long lastTimestamp = 0;
     private String currentMatchId;
     private Gson gson = new Gson();
 
@@ -161,22 +162,46 @@ public class Multiplayer {
         return null;
     }
 
-    /** Send a chat message to the other player */
-    public void sendChatMessage(String matchId, String messageText) {
-        String messageKey = "msg" + System.currentTimeMillis();
-        String chatJson = String.format("{ \"sender\": \"%s\", \"text\": \"%s\", \"timestamp\": %d }",
-                this.playerUid, messageText, System.currentTimeMillis());
-        this.fbHelper.writeData("matches/" + matchId + "/chat/" + messageKey, chatJson);
+    public static class ChatMessage {
+        public String sender;
+        public String text;
+        public long timestamp;
     }
-    /** Check for incoming messages from the other player
-     * Needs to be clear messages so we don't read them twice */
-     public String receiveChatMessage() {
-         // read the chat node from firebase
-         String chatData = this.fbHelper.readData("matches/" + this.currentMatchId + "/chat");
-         if (chatData == null) {
-             return null;
-         }
-         // TODO this is definitely way too simple
-         return chatData;
-     }
+
+
+    /** Send a chat message to the other player */
+    public String receiveChatMessage() {
+        // reads all chat nodes from firebase
+        String chatData = this.fbHelper.readData("matches/" + this.currentMatchId + "/chat");
+        if (chatData == null || chatData.equals("null")) {
+            return null;
+        }
+
+        // parse the json into Map where each key is a message key and each value is a ChatMessage.
+        Type type = new TypeToken<Map<String, ChatMessage>>(){}.getType();
+        Map<String, ChatMessage> messages = gson.fromJson(chatData, type);
+        if (messages == null || messages.isEmpty()) {
+            return null;
+        }
+
+        ChatMessage latestNewMessage = null;
+        // iterate over all messages
+        for (ChatMessage msg : messages.values()) {
+            // ignore players own messages and all messages that have already been read
+            // this is a bad solution because the time to read gets worse every single time
+            if (!msg.sender.equals(this.playerUid) && msg.timestamp > lastTimestamp) {
+                // find most recent message
+                if (latestNewMessage == null || msg.timestamp > latestNewMessage.timestamp) {
+                    latestNewMessage = msg;
+                }
+            }
+        }
+
+        if (latestNewMessage != null) { // if we find message than update recent timestamp and return
+            lastTimestamp = latestNewMessage.timestamp;
+            return latestNewMessage.text;
+        }
+
+        return null;
+    }
 }
