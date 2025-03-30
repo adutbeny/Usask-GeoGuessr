@@ -166,9 +166,10 @@ public class Controller {
         });
         // kills program
         view.exit.setOnAction(event -> {
-            this.model.chatScheduler.shutdown();
+            if (this.model.chatScheduler != null) {
+                this.model.chatScheduler.shutdown();
+            }
             Platform.exit();
         });
-
     }
 }
