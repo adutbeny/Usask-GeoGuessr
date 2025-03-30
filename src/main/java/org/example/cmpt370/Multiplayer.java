@@ -65,9 +65,9 @@ public class Multiplayer {
         }
         // pick an opponent here pick first remaining player.
         String opponent = waitingMap.keySet().iterator().next();
-        // create a matcID using the current timestamp
+        // create a matchID using the current timestamp
         String matchId = "match-" + System.currentTimeMillis();
-        currentMatchId = matchId;
+        this.currentMatchId = matchId;
         // build match json data.
         String matchJson = "{"
                 + "\"players\": {"
@@ -161,11 +161,22 @@ public class Multiplayer {
         return null;
     }
 
+    /** Send a chat message to the other player */
     public void sendChatMessage(String matchId, String messageText) {
         String messageKey = "msg" + System.currentTimeMillis();
         String chatJson = String.format("{ \"sender\": \"%s\", \"text\": \"%s\", \"timestamp\": %d }",
-                playerUid, messageText, System.currentTimeMillis());
-        fbHelper.writeData("matches/" + matchId + "/chat/" + messageKey, chatJson);
+                this.playerUid, messageText, System.currentTimeMillis());
+        this.fbHelper.writeData("matches/" + matchId + "/chat/" + messageKey, chatJson);
     }
-    // TODO: something to receive chats
+    /** Check for incoming messages from the other player
+     * Needs to be clear messages so we don't read them twice */
+     public String receiveChatMessage() {
+         // read the chat node from firebase
+         String chatData = this.fbHelper.readData("matches/" + this.currentMatchId + "/chat");
+         if (chatData == null) {
+             return null;
+         }
+         // TODO this is definitely way too simple
+         return chatData;
+     }
 }
