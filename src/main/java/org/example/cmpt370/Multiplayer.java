@@ -138,8 +138,8 @@ public class Multiplayer {
             System.out.println("no matches found");
             return null;
         }
-        Type type = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
-        Map<String, Map<String, Object>> matchesMap = gson.fromJson(matchesData, type);
+        Type matchType = new TypeToken<Map<String, Map<String, Object>>>() {}.getType();
+        Map<String, Map<String, Object>> matchesMap = gson.fromJson(matchesData, matchType);
         if (matchesMap == null || matchesMap.isEmpty()) {
             System.out.println("matches map empty");
             return null;
