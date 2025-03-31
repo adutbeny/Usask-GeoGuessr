@@ -42,6 +42,27 @@ public class Multiplayer {
             System.out.println("Not enough players waiting for a match.");
             return null;
         }
+
+        // cleans wait queue of entries that are 60 seconds or longer
+        long currentTime = System.currentTimeMillis();
+        long threshold = 60000; // 60 seconds limit
+        Iterator<Map.Entry<String, Map<String, Long>>> it = waitingMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Map<String, Long>> entry = it.next();
+            long ts = entry.getValue().get("timestamp");
+            if (currentTime - ts > threshold) {
+                System.out.println("Removing stale entry for player: " + entry.getKey());
+                fbHelper.writeData("waiting/" + entry.getKey(), "null");
+                it.remove();
+            }
+        }
+
+        // After cleanup, check if enough players remain.
+        if (waitingMap.size() < 2) {
+            System.out.println("Not enough players waiting after cleanup.");
+            return null;
+        }
+
         // find player with earliest timestamp
         // this is how we try to force one central match node between the two players
         String earliestPlayer = null;
@@ -89,6 +110,29 @@ public class Multiplayer {
     }
 
     public String findMatchForOpponent() {
+        String waitingData = fbHelper.readData("waiting");
+        if (waitingData == null || waitingData.equals("null")) {
+            System.out.println("No waiting players found.");
+            return null;
+        }
+        // parse data from wait queue to clean old entires
+        Type type = new TypeToken<Map<String, Map<String, Long>>>() {}.getType();
+        Map<String, Map<String, Long>> waitingMap = gson.fromJson(waitingData, type);
+
+        // clean entries older than 60 seconds
+        long currentTime = System.currentTimeMillis();
+        long threshold = 60000; // 60 seconds limit
+        Iterator<Map.Entry<String, Map<String, Long>>> it = waitingMap.entrySet().iterator();
+        while (it.hasNext()) {
+            Map.Entry<String, Map<String, Long>> entry = it.next();
+            long ts = entry.getValue().get("timestamp");
+            if (currentTime - ts > threshold) {
+                System.out.println("Removing stale waiting entry for player: " + entry.getKey());
+                fbHelper.writeData("waiting/" + entry.getKey(), "null");
+                it.remove();
+            }
+        }
+
         String matchesData = fbHelper.readData("matches");
         if (matchesData == null || matchesData.equals("null")) {
             System.out.println("no matches found");
