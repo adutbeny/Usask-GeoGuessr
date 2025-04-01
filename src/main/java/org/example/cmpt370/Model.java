@@ -1053,4 +1053,13 @@ public class Model {
         }, 0, 2, TimeUnit.SECONDS); // check every 2 seconds
     }
 
+    /** Toggle the visibility of the chat window
+     * Called by controller when user presses chat button in gameplay window */
+    public void toggleChatVisibility() {
+        if (this.chat.isShowing()) {
+            this.chat.hide();
+        } else {
+            this.chat.show();
+        }
+    }
 }
