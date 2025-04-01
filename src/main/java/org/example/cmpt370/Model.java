@@ -97,7 +97,9 @@ public class Model {
     /** Exits both the main window and the chat */
     public void exitGame() {
         Platform.exit();
-        this.chat.exitChatWindow();
+        if (this.chat != null) {
+            this.chat.exitChatWindow();
+        }
     }
     /** Add any displays to the list of objects updated on
      * every change to Model
@@ -766,7 +768,9 @@ public class Model {
     }
     /** Prompts View to show logged in window */
     public void showLoggedInWindow() {
-        this.chat.exitChatWindow();
+        if (this.chat != null) {
+            this.chat.exitChatWindow();
+        }
         this.currentWindow = DISPLAY.LOGGED_IN;
         notifySubscribers();
     }
