@@ -13,11 +13,12 @@ import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.scene.text.*;
 import javafx.stage.Stage;
+import javafx.stage.StageStyle;
 
 /** Display class for the chat function
  * Needs to see model/server to get messages
  * Needs to be seen by the view to be displayed */
-public class ChatWindow extends StackPane {
+public class ChatWindow extends Stage {
 
     private VBox messages;          // stack of all messages
     private TextField entry;        // entry field to type outgoing
@@ -28,9 +29,6 @@ public class ChatWindow extends StackPane {
      * @param m take the model as an arg to set up handler */
     public ChatWindow(Model m) {
         // the View will toggle this so we can hide the chat window during play
-        this.setPrefSize(250, 300);
-        this.setMinSize(250, 300);
-        this.setMaxSize(250, 300);
         this.model = m;
 
         this.messages = new VBox(10);
@@ -67,16 +65,17 @@ public class ChatWindow extends StackPane {
         container.setPrefSize(250, 300);
         container.setPadding(new Insets(5));
 
-        this.getChildren().add(container);
-
-        // Display in a separate window from View
-        Scene scene = new Scene(this, 250, 300);
+        // Create and set the scene
+        Scene scene = new Scene(container, 250, 300);
         scene.getStylesheets().addAll("buttonstyle.css");
+        this.setScene(scene);
 
-        Stage chatStage = new Stage();
-        chatStage.setScene(scene);
-        chatStage.setTitle("Chat");
-        chatStage.show();
+        // Set stage properties
+        this.setTitle("Chat");
+        this.setWidth(250);
+        this.setHeight(300);
+        this.initStyle(StageStyle.UNDECORATED);     // remove OS buttons
+        this.show();
     }
 
     /** Adds a message to itself for display
@@ -110,5 +109,4 @@ public class ChatWindow extends StackPane {
     public void exitChatWindow() {
         Platform.exit();
     }
-
 }
