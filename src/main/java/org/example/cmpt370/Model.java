@@ -78,6 +78,7 @@ public class Model {
     private Multiplayer multiplayer;
     private boolean multiplayerMode = false;
     private double[] opponentGuess;
+    private int opponentScore;
     public ScheduledExecutorService chatScheduler;
 
     /** Constructor */
@@ -659,6 +660,9 @@ public class Model {
     public User getUser() {
         return this.user;
     }
+    public int getOpponentScore() {
+        return this.opponentScore;
+    }
 
 
     // PICTURE METHODS
@@ -780,7 +784,6 @@ public class Model {
         this.currentWindow = DISPLAY.END;
         notifySubscribers();
     }
-
     public void showMatchmakingWindow(){
         this.currentWindow = DISPLAY.MATCHMAKING;
         notifySubscribers();
@@ -789,6 +792,7 @@ public class Model {
         this.currentWindow = DISPLAY.MULTIPLAYER;
         notifySubscribers();
     }
+
     ///* MAP METHODS *\\\
     /** Get distance from guessed point to true point */
     public double getDistance() {
@@ -951,7 +955,7 @@ public class Model {
         // record player guess in firebase
         multiplayer.recordGuess(currentMatchId, markerLat, markerLng);
 
-        // polling for opponents guess herte
+        // polling for opponents guess here
         double[] oppGuess = null;
         int attempts = 0;
         while (oppGuess == null && attempts < 10) { // this should wait 30 seconds
@@ -968,6 +972,13 @@ public class Model {
             }
             attempts++;
         }
+        // add tally of opponent score to display on end screen
+        if (oppGuess != null) {
+            double oppDistance = this.haversine(oppGuess[0], oppGuess[1], markerLat, markerLng);
+            int oppScore = this.calculateScore(oppDistance);
+            this.opponentScore += oppScore;
+        }
+        // calculate our score
         double distance = haversine(pictureLat, pictureLng, markerLat, markerLng);
         System.out.println("you got: " + distance + " meters away!");
         this.recentScore = calculateScore(distance);

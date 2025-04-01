@@ -175,6 +175,7 @@ public class Multiplayer {
         fbHelper.writeData("matches/" + matchId + "/guesses", "null");
     }
 
+    /** Returns the lat and long coordinates of the opponents guess */
     public double[] readOpponentGuess(String matchId) {
         // read guess node from firebase
         String jsonData = fbHelper.readData("matches/" + matchId + "/guesses");
