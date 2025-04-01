@@ -10,12 +10,14 @@ import java.util.Map;
 public class Multiplayer {
     private FirebaseHelper fbHelper;
     private String playerUid;
+    private String opponentUid;
     private long lastTimestamp = 0;
     private String currentMatchId;
     private Gson gson = new Gson();
 
     public Multiplayer(String playerUid) {
         this.playerUid = playerUid; // this will have to be the username of the player, or maybe the hash??
+        this.opponentUid = null;
         fbHelper = new FirebaseHelper();
     }
     /** joins the wating cue for multiplayer **/
@@ -105,6 +107,7 @@ public class Multiplayer {
         fbHelper.writeData("waiting/" + playerUid, "null");
         fbHelper.writeData("waiting/" + opponent, "null");
 
+        this.opponentUid = opponent;
         System.out.println("Match created: " + matchId + " for players " + playerUid + " and " + opponent);
         return matchId;
     }
@@ -254,5 +257,9 @@ public class Multiplayer {
         }
 
         return null;
+    }
+
+    public String getOpponentUid() {
+        return this.opponentUid;
     }
 }

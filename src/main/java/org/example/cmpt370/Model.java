@@ -990,6 +990,12 @@ public class Model {
     public double[] getOpponentGuess() {
         return opponentGuess;
     }
+    public String getOpponentUserName() {
+        if (this.multiplayer.getOpponentUid() == null) {
+            return "Opponent";
+        }
+        return this.multiplayer.getOpponentUid();
+    }
     // clears the guesses in firebase
     public void clearMultiplayerGuesses() {
         if (currentMatchId != null) {
