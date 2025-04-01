@@ -169,7 +169,7 @@ public class Controller {
             if (this.model.chatScheduler != null) {
                 this.model.chatScheduler.shutdown();
             }
-            Platform.exit();
+            this.model.exitGame();
         });
     }
 }

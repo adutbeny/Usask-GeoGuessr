@@ -94,6 +94,11 @@ public class Model {
         this.user = null;
     }
 
+    /** Exits both the main window and the chat */
+    public void exitGame() {
+        Platform.exit();
+        this.chat.exitChatWindow();
+    }
     /** Add any displays to the list of objects updated on
      * every change to Model
      * @param sub object to be added */
