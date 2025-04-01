@@ -766,6 +766,7 @@ public class Model {
     }
     /** Prompts View to show logged in window */
     public void showLoggedInWindow() {
+        this.chat.exitChatWindow();
         this.currentWindow = DISPLAY.LOGGED_IN;
         notifySubscribers();
     }
@@ -904,7 +905,8 @@ public class Model {
     public void startMatchmaking() {
         // init multiplayer instance and join wait queue
         setMultiplayerMode(true);
-        this.multiplayer = new Multiplayer(user.getUsername());
+        this.opponentScore = 0;
+        this.multiplayer = new Multiplayer(this.user.getUsername());
         this.multiplayer.joinWaitQueue();
 
         // this uses a scheduler to run every second so that we are constantly polling

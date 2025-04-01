@@ -22,6 +22,7 @@ public class Multiplayer {
     }
     /** joins the wating cue for multiplayer **/
     public void joinWaitQueue() {
+        this.opponentUid = null;
         String waitingJson = "{\"timestamp\": " + System.currentTimeMillis() + "}";
         fbHelper.writeData("waiting/" + playerUid, waitingJson);
     }
