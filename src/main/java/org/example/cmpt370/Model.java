@@ -986,7 +986,7 @@ public class Model {
         }
         // add tally of opponent score to display on end screen
         if (oppGuess != null) {
-            double oppDistance = this.haversine(oppGuess[0], oppGuess[1], pictureLat, pictureLng);
+            double oppDistance = this.haversine(pictureLat, pictureLng, oppGuess[0], oppGuess[1]);
             int oppScore = this.calculateScore(oppDistance);
             this.opponentScore += oppScore;
         }
