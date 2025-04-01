@@ -826,7 +826,7 @@ public class View extends StackPane implements Subscriber {
                     this.model.adjustHighScore();
                     newBest = true;
                 }
-                high = new Text("High score: " + this.model.getUser().getNoviceHighscore());
+                high = new Text("High Score: " + this.model.getUser().getNoviceHighscore());
             }
             else if (this.model.getCurrentDifficulty() == DIFFICULTY.SEASONAL){
                 if (this.model.getTotalScore() > this.model.getUser().getSeasonalHighscore()){
@@ -834,7 +834,7 @@ public class View extends StackPane implements Subscriber {
                     this.model.adjustHighScore();
                     newBest = true;
                 }
-                high = new Text("High score: " + this.model.getUser().getSeasonalHighscore());
+                high = new Text("High Score: " + this.model.getUser().getSeasonalHighscore());
             }
             else {
                 if (this.model.getTotalScore() > this.model.getUser().getExpertHighscore()){
@@ -842,7 +842,7 @@ public class View extends StackPane implements Subscriber {
                     this.model.adjustHighScore();
                     newBest = true;
                 }
-                high = new Text("High score: " + this.model.getUser().getExpertHighscore());
+                high = new Text("High Score: " + this.model.getUser().getExpertHighscore());
             }
             high.setFont(new Font("Segoe UI This:",30));
         }
@@ -859,7 +859,7 @@ public class View extends StackPane implements Subscriber {
         }
 
         if (this.model.isMultiplayerMode()) {
-            Text oppScore = new Text(this.model.getOpponentUserName() + " got " + this.model.getOpponentScore());
+            Text oppScore = new Text(this.model.getOpponentUserName() + "'s Score: " + this.model.getOpponentScore());
             oppScore.setFont(new Font("Segoe UI Bold", 30));
             display.getChildren().add(oppScore);
         }
