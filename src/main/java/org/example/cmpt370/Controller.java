@@ -98,6 +98,7 @@ public class Controller {
         });
         // return to logged in menu
         view.back2.setOnAction(event -> this.model.showLoggedInWindow());
+
         view.menu.setOnAction(event -> {
             this.model.showLoggedInWindow();
         });
@@ -150,6 +151,10 @@ public class Controller {
             view.next.setVisible(false);
             view.submit.setVisible(true);
         });
+        view.addChat.setOnAction(event -> {
+            this.model.toggleChatVisibility();
+        });
+
         view.multiplayer.setOnAction(event ->{
             this.model.showMatchmakingWindow();
             this.model.startMatchmaking();
