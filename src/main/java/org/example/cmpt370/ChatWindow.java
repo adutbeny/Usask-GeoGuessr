@@ -106,13 +106,9 @@ public class ChatWindow extends StackPane {
         this.messages.getChildren().add(textFlow);
     }
 
-
-    /** Shows or hides the Chat window */
-    public void show() {
-        this.setVisible(true);
-    }
-    public void hide() {
-        this.setVisible(false);
+    /** Close chat window */
+    public void exitChatWindow() {
+        Platform.exit();
     }
 
 }
