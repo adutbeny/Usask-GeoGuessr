@@ -573,6 +573,10 @@ public class View extends StackPane implements Subscriber {
         this.back2.setTranslateX(-460);
         this.back2.setTranslateY(350);
 
+        if (!this.model.isMultiplayerMode()) {
+            this.addChat.setVisible(false);
+        }
+
         layout.getChildren().add(0, c);
         layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
