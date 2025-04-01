@@ -454,6 +454,8 @@ public class View extends StackPane implements Subscriber {
                 } else {
                     this.gc.fillText("Score", textbX + 230, textbY + 25);
                 }
+            } else {
+                this.gc.fillText("Score", textbX + 230, textbY + 25);
             }
         } else {
             this.gc.fillText("Score", textbX + 230, textbY + 25);
@@ -818,13 +820,14 @@ public class View extends StackPane implements Subscriber {
 
         Text current = new Text("Your Score: " + this.model.getTotalScore());
         current.setFont(new Font("Segoe UI This", 30));
+
         boolean newBest = false;
         Text high = null;
         this.model.CheckForPersonalBest(this.model.getTotalScore());
         if (this.model.getUser() != null) {
             this.model.saveHistory(this.model.getTotalScore());
-            if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE){
-                if (this.model.getTotalScore() > this.model.getUser().getNoviceHighscore()){
+            if (this.model.getCurrentDifficulty() == DIFFICULTY.NOVICE) {
+                if (this.model.getTotalScore() > this.model.getUser().getNoviceHighscore()) {
                     this.model.getUser().setN_highscore(this.model.getTotalScore());
                     this.model.adjustHighScore();
                     newBest = true;
@@ -849,6 +852,7 @@ public class View extends StackPane implements Subscriber {
             }
             high.setFont(new Font("Segoe UI This:",30));
         }
+
         VBox display = new VBox(10);
         if (newBest) {
             Text nB = new Text("New High Score!");
@@ -860,7 +864,15 @@ public class View extends StackPane implements Subscriber {
             display.getChildren().add(high);
         }
 
-        display.getChildren().add(this.playAgain);
+        if (this.model.isMultiplayerMode()) {
+            Text oppScore = new Text(this.model.getOpponentUserName() + "got " + this.model.getOpponentScore());
+            oppScore.setFont(new Font("Segoe UI Bold", 30));
+            display.getChildren().add(oppScore);
+        }
+
+        if (!this.model.isMultiplayerMode()) {
+            display.getChildren().add(this.playAgain);
+        }
         if (this.model.getUser() != null) {
             display.getChildren().add(this.menu);
         }
