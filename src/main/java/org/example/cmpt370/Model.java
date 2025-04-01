@@ -768,9 +768,10 @@ public class Model {
     }
     /** Prompts View to show logged in window */
     public void showLoggedInWindow() {
-        if (this.chat != null) {
-            this.chat.exitChatWindow();
-        }
+//        if (this.chat != null) {
+//            this.chat.exitChatWindow();
+//        }
+        this.chat = null;
         this.currentWindow = DISPLAY.LOGGED_IN;
         notifySubscribers();
     }
@@ -938,11 +939,11 @@ public class Model {
         this.chat = new ChatWindow(this);
         this.chat.addMessage("chat Connected successfully", false);
 
-        // start poll for messages to receive
-        this.pollIncomingMessage();
-
         this.selectPictureSet("/BeginnerPhotos.csv");
         this.setDifficulty("/BeginnerPhotos.csv");
+
+        // start poll for messages to receive
+        this.pollIncomingMessage();
     }
 
     /**  multiplayer version of calculate score will need to adjust a lot **/
@@ -985,7 +986,7 @@ public class Model {
         }
         // add tally of opponent score to display on end screen
         if (oppGuess != null) {
-            double oppDistance = this.haversine(oppGuess[0], oppGuess[1], markerLat, markerLng);
+            double oppDistance = this.haversine(oppGuess[0], oppGuess[1], pictureLat, pictureLng);
             int oppScore = this.calculateScore(oppDistance);
             this.opponentScore += oppScore;
         }

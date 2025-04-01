@@ -569,12 +569,6 @@ public class View extends StackPane implements Subscriber {
         chatImageView.setFitWidth(20);
         chatImageView.setFitHeight(20);
 
-        Button addChat = new Button();
-        addChat.setGraphic(chatImageView);
-        addChat.setPrefWidth(25);
-        addChat.setTranslateX(-540);
-        addChat.setTranslateY(25);
-
         //might delete this button
         this.back2.setTranslateX(-460);
         this.back2.setTranslateY(350);
@@ -582,7 +576,7 @@ public class View extends StackPane implements Subscriber {
         layout.getChildren().add(0, c);
         layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
-        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack,addChat, addPin, this.back2);
+        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack, this.addChat, addPin, this.back2);
     }
 
     /**
@@ -865,7 +859,7 @@ public class View extends StackPane implements Subscriber {
         }
 
         if (this.model.isMultiplayerMode()) {
-            Text oppScore = new Text(this.model.getOpponentUserName() + "got " + this.model.getOpponentScore());
+            Text oppScore = new Text(this.model.getOpponentUserName() + " got " + this.model.getOpponentScore());
             oppScore.setFont(new Font("Segoe UI Bold", 30));
             display.getChildren().add(oppScore);
         }
