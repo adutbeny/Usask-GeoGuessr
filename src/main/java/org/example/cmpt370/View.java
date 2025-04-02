@@ -576,11 +576,38 @@ public class View extends StackPane implements Subscriber {
         if (!this.model.isMultiplayerMode()) {
             this.addChat.setVisible(false);
         }
+        if (this.model.getUser() == null) {
+            this.addPin.setVisible(false);
+        }
 
         layout.getChildren().add(0, c);
         layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
         this.getChildren().addAll(this.myCanvas, c, layout, buttonStack, this.addChat, addPin, this.back2);
+    }
+
+    /** Modifies display of pin button to provide feedback to user
+     * that the task was performed */
+    public void showPinFeedback() {
+        // TODO fix this
+        // swap to check mark button
+        Image pinImage = new Image(getClass().getResource("/icon/whitecheck.png").toExternalForm());
+        System.out.println(getClass().getResource("/icon/whitecheck.png").toExternalForm());
+        ImageView pinImageView = new ImageView(pinImage);
+        pinImageView.setFitWidth(20);
+        pinImageView.setFitHeight(20);
+        this.addPin.setGraphic(pinImageView);
+
+        // Reset the style after 500ms
+        javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.millis(1000));
+        delay.setOnFinished(event -> {
+            Image pin = new Image(getClass().getResource("/icon/whitepin.png").toExternalForm());
+            ImageView pinView = new ImageView(pin);
+            pinView.setFitWidth(20);
+            pinView.setFitHeight(20);
+            this.addPin.setGraphic(pinView);
+        });
+        delay.play();
     }
 
     /**

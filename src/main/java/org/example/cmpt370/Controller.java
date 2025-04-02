@@ -162,6 +162,7 @@ public class Controller {
 
         view.addPin.setOnAction(event -> {
             this.model.pin();
+            view.showPinFeedback();
         });
         view.unpin.setOnAction(event -> {
             this.model.unpin(this.model.getUser().getUsername(), this.model.getCurrentPicture().getPath());
