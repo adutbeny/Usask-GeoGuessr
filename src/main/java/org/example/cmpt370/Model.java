@@ -49,7 +49,6 @@ enum DIFFICULTY {
  * while the View pulls needed data from the Model for display */
 public class Model {
 
-    // Model attributes
     private ArrayList<Subscriber> subscribers;      // connects to view
     private ArrayList<Picture> pictures;            // array of photos by difficulty
     private int picIndex;                           // current index of above array
@@ -57,6 +56,7 @@ public class Model {
 
     private DISPLAY currentWindow; // This field's value will tell the view what to do
     private DIFFICULTY currentDifficulty; //The current difficulty selected
+
     // User Data
     private User user;
     private int round;          // round number out of 5 (5/5 = last round)
@@ -64,22 +64,22 @@ public class Model {
     private int recentScore;    // most recent score
 
     private boolean internet;   // boolean if connected to internet
+
     // Connection class for map API
     private JavaConnector connector;
 
     // Google Sign-in fields
-    public Process pythonServerProcess;
-    public boolean isPythonServerStarted = false;
     public GoogleAuthHandler googleAuthHandler;
     private boolean isGoogleSignIn = false;
 
-    private ChatWindow chat;
-    private String currentMatchId;
-    private Multiplayer multiplayer;
     private boolean multiplayerMode = false;
+    private String currentMatchId;
+    private ChatWindow chat;
+    public ScheduledExecutorService chatScheduler;
+    private Multiplayer multiplayer;
     private double[] opponentGuess;
     private int opponentScore;
-    public ScheduledExecutorService chatScheduler;
+
 
     /** Constructor */
     public Model() {
@@ -115,7 +115,158 @@ public class Model {
         }
     }
 
+    /** GETTERS */
+    public DISPLAY getCurrentWindow() {
+        return currentWindow;
+    }
+    public DIFFICULTY getCurrentDifficulty(){
+        return currentDifficulty;
+    }
+    public int getRound() {
+        return round;
+    }
+    public boolean getInternetStatus() {
+        return this.internet;
+    }
+    public Picture getCurrentPicture() {
+        return currentPicture;
+    }
+    public int getTotalScore() {
+        return this.totalScore;
+    }
+    public int getRecentScore() {
+        return this.recentScore;
+    }
+    public User getUser() {
+        return this.user;
+    }
+    public int getOpponentScore() {
+        return this.opponentScore;
+    }
+    /** Gets the URL connection to the Database */
+    private Connection getConnection() throws SQLException{
+        return DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
 
+    }
+    /** Getter for java connector, needed for Map API **/
+    public JavaConnector getJavaConnector() {
+        return connector;
+    }
+
+
+    /** GENERAL SETTERS */
+    /** Set difficulty by csv path */
+    public void setDifficulty(String csv){
+        if (csv == null){
+            System.out.println("Error: CSV is null.Defaulting to Novice");
+            this.currentDifficulty = DIFFICULTY.NOVICE;
+            return;
+        }
+        if (csv.equals("/BeginnerPhotos.csv")){
+            this.currentDifficulty = DIFFICULTY.NOVICE;
+        }
+        else if (csv.equals("/MediumPictures.csv")){
+            this.currentDifficulty = DIFFICULTY.SEASONAL;
+        }
+        else if (csv.equals("/HardPictures.csv")) {
+            this.currentDifficulty = DIFFICULTY.EXPERT;
+        }
+    }
+    /** Set Difficulty by DIFFICULTY instance */
+    public void setCurrentDifficulty(DIFFICULTY difficulty){
+        if (difficulty == null){
+            this.currentDifficulty = DIFFICULTY.NOVICE;
+        } else {
+            this.currentDifficulty = difficulty;
+            System.out.println("Current Difficulty: " + this.currentDifficulty);
+        }
+    }
+    /** Setter for java connector **/
+    public void setJavaConnector(JavaConnector connector) {
+        this.connector = connector;
+    }
+    /** Tests to see if the user is connected to the internet **/
+    private boolean isInternetConnected() {
+        try {
+            URL test = new URL("https://git.cs.usask.ca");
+            URLConnection connection = test.openConnection();
+            connection.connect();
+            return true;
+
+        } catch (RuntimeException e) {
+            // failed to connect due to network
+            return false;
+        } catch (IOException e) {
+            // failed due to error in URL
+            System.out.println("Error in getting URL connection test");
+            return false;
+        }
+    }
+
+
+    /** METHODS TO CHANGE VIEW */
+    /** Prompts View to show start-up display */
+    public void showStartupWindow() {
+        this.currentWindow = DISPLAY.STARTUP;
+        notifySubscribers();
+    }
+    /** Prompts View to show select difficulty display */
+    public void showDifficultyWindow() {
+        this.currentWindow = DISPLAY.DIFF;
+        notifySubscribers();
+    }
+    /** Prompts View to show main gameplay window */
+    public void showGameplayWindow() {
+        this.currentWindow = DISPLAY.GAMEPLAY;
+        notifySubscribers();
+    }
+    /** Prompts View to show Login window */
+    public void showLoginWindow() {
+        this.currentWindow = DISPLAY.LOGIN;
+        notifySubscribers();
+    }
+    /** Prompts View to show Create Acc window */
+    public void showCreateAccWindow() {
+        this.currentWindow = DISPLAY.CREATE;
+        notifySubscribers();
+    }
+    /** Prompts View to show logged in window */
+    public void showLoggedInWindow() {
+//        if (this.chat != null) {
+//            this.chat.exitChatWindow();
+//        }
+        this.chat = null;
+        this.currentWindow = DISPLAY.LOGGED_IN;
+        notifySubscribers();
+    }
+    /** ... History window */
+    public void showHistoryWindow() {
+        this.currentWindow = DISPLAY.HISTORY;
+        notifySubscribers();
+    }
+    /** ... Pinned locations */
+    public void showPinnedWindow() {
+        this.currentWindow = DISPLAY.PINNED;
+        notifySubscribers();
+    }
+    /** ... Leaderboard */
+    public void showLeaderboard() {
+        this.currentWindow = DISPLAY.LEADERBOARD;
+        notifySubscribers();
+    }
+    /** Prompts endgame screen, displaying final scores */
+    public void showEndWindow() {
+        this.currentWindow = DISPLAY.END;
+        notifySubscribers();
+    }
+    /** Show waiting screen while matchmaking */
+    public void showMatchmakingWindow(){
+        this.currentWindow = DISPLAY.MATCHMAKING;
+        notifySubscribers();
+    }
+
+
+    /** LOGIN */
     /** Take info from login and load into class instance */
     public boolean verifyLogin(String username, String password, boolean rememberMe) {
         try {
@@ -222,6 +373,8 @@ public class Model {
         return false; // user does not exist 1!!!!!!!!!
     }
 
+
+    /** GOOGLE LOG IN */
     /** Sets whether the user is signing in with Google.
      * @param isGoogleSignIn True if the user is signing in with Google, false otherwise */
     public void setGoogleSignIn(boolean isGoogleSignIn) {
@@ -291,6 +444,8 @@ public class Model {
         }
     }
 
+
+    /** REMEMBER ME */
     /** Saves the username and password to a file.
      * @param username The username to save.
      * @param password The password to save. */
@@ -328,217 +483,7 @@ public class Model {
     }
 
 
-    public void setDifficulty(String csv){
-        if (csv == null){
-            System.out.println("Error: CSV is null.Defaulting to Novice");
-            this.currentDifficulty = DIFFICULTY.NOVICE;
-            return;
-        }
-        if (csv.equals("/BeginnerPhotos.csv")){
-            this.currentDifficulty = DIFFICULTY.NOVICE;
-        }
-        else if (csv.equals("/MediumPictures.csv")){
-            this.currentDifficulty = DIFFICULTY.SEASONAL;
-        }
-        else if (csv.equals("/HardPictures.csv")) {
-            this.currentDifficulty = DIFFICULTY.EXPERT;
-        }
-    }
-
-    public void setCurrentDifficulty(DIFFICULTY difficulty){
-        if (difficulty == null){
-            this.currentDifficulty = DIFFICULTY.NOVICE;
-        } else {
-            this.currentDifficulty = difficulty;
-            System.out.println("Current Difficulty: " + this.currentDifficulty);
-        }
-    }
-
-    /** Populates pictures array with the passed csv to it
-     * @param csv filepath to appropriate csv */
-    public void selectPictureSet(String csv) {
-        this.pictures.clear(); // clear any existing data before loading new data
-        this.picIndex = 0;
-
-        // FileReader needs to catch IO Errors so we'll use try/catch
-        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
-            String line;
-            // Read csv file line-by-line and populate picture array
-            while ((line = br.readLine()) != null) {
-                String[] parts = line.split(",");
-
-                String path = parts[0].trim();
-                double latitude = Double.parseDouble(parts[1].trim());
-                double longitude = Double.parseDouble(parts[2].trim());
-
-                pictures.add(new Picture(path, latitude, longitude));
-            }
-        } catch (IOException | NumberFormatException e) {
-            System.err.println("Error loading pictures: " + e.getMessage());
-        }
-        if (!multiplayerMode) {
-            Collections.shuffle(this.pictures); // put in random order
-        }
-        // This gets called on every consecutive play so we will reset model stats
-        this.recentScore = 0;
-        this.totalScore = 0;
-        this.round = 1;
-        this.getNextPic();
-        this.showGameplayWindow();
-    }
-
-    /** Modifies data entry in database according to which difficulty level
-     * the user set a new high score in
-     * @return true or false based on success */
-    public boolean adjustHighScore(){
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
-            System.out.println("Connected to database");
-            if (currentDifficulty == DIFFICULTY.NOVICE) {
-                String query = "UPDATE sql3765767.users SET N_high_score = ? WHERE username = ?";
-                PreparedStatement stmt = con.prepareStatement(query);
-                stmt.setInt(1, user.getNoviceHighscore());
-                stmt.setString(2, user.getUsername());
-                stmt.executeUpdate();
-                System.out.println("Adjusted a rookie high score!");
-            }
-            else if (currentDifficulty == DIFFICULTY.SEASONAL){
-                String query = "UPDATE sql3765767.users SET S_high_score = ? WHERE username = ?";
-                PreparedStatement stmt = con.prepareStatement(query);
-                System.out.println("This is my username" + user.getUsername());
-                System.out.println("This is my high score" + user.getSeasonalHighscore());
-                stmt.setInt(1, user.getSeasonalHighscore());
-                stmt.setString(2, user.getUsername());
-                stmt.executeUpdate();
-                System.out.println("Adjusted a intermediate high score! of " + user.getSeasonalHighscore());
-            }
-            else{
-                String query = "UPDATE sql3765767.users SET E_high_score = ? WHERE username = ?";
-                PreparedStatement stmt = con.prepareStatement(query);
-                stmt.setInt(1, user.getExpertHighscore());
-                stmt.setString(2, user.getUsername());
-                stmt.executeUpdate();
-                System.out.println("Adjusted a expert high score!");
-            }
-        } catch (Exception e){
-            System.out.println(e.toString());
-            return false;
-        }
-        return true;
-    }
-
-    public class ScoreEntry{
-        public String username;
-        public int score;
-
-        public ScoreEntry(String username, int score){
-            this.username = username;
-            this.score = score;
-        }
-    }
-
-    private Connection getConnection() throws SQLException{
-        return DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
-
-    }
-
-    /** Retrieves current user scores for a specific round from user and their scores in Novice, Seasoned ad Expert and sorts them in descending order
-     * @return int scores*/
-    public List<Model.ScoreEntry> getHighScoresRound(int numberRound){
-        List<Model.ScoreEntry> scores = new ArrayList<>();
-        if(user ==null){
-            System.out.println("Error: User is null, Cannot Retireve high scores");
-            return scores;
-        }
-        if(currentDifficulty ==null){
-            System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
-            currentDifficulty = DIFFICULTY.NOVICE;
-        }
-
-        String query;
-        if (currentDifficulty == DIFFICULTY.NOVICE){
-            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Novice' ORDER BY score DESC LIMIT 8";
-        }
-
-        else if (currentDifficulty == DIFFICULTY.SEASONAL){
-            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Seasonal' ORDER BY score DESC LIMIT 8";
-        }
-        else{
-            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Expert' ORDER BY score DESC LIMIT 8";
-        }
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("Connected to database");
-
-            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
-                stmt.setString(1, user.getUsername());
-
-                try (ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("score")));
-                    }
-                }
-            }
-            System.out.println("Successful: Retrieved my high scores for the difficulty");
-
-        } catch (SQLException e) {
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            throw new RuntimeException(e);
-        }
-        return scores;
-    }
-
-
-    /** Retrieves all user scores from user dataset for Novice, Seasoned and Expert and sorts them in descending order
-     * @return int scores*/
-    public List<Model.ScoreEntry> getTop16scores(){
-        List<Model.ScoreEntry> scores = new ArrayList<>();
-        if(user ==null){
-            System.out.println("Error: User is null, Cannot Retireve high scores");
-            return scores;
-        }
-        if(currentDifficulty ==null){
-            System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
-            currentDifficulty = DIFFICULTY.NOVICE;
-        }
-        String column;
-        switch (currentDifficulty) {
-            case NOVICE:
-                column = "N_high_score";
-                break;
-            case SEASONAL:
-                column = "S_high_score";
-                break;
-            default:
-                column = "E_high_score";
-                break;
-        }
-
-        String query = "SELECT username, " + column + " FROM sql3765767.users ORDER BY " + column +" DESC LIMIT 16";
-
-        try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("Connected to database");
-
-            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
-                try(ResultSet rs = stmt.executeQuery()) {
-                    while (rs.next()) {
-                        scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt(column)));
-                    }
-                }
-            }
-            System.out.println("Successful: Retrieved my high scores for the difficulty");
-
-        } catch (SQLException | ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        return scores;
-    }
-
+    /** PERSONAL HIGHSCORES */
     public void CheckForPersonalBest(int score){
         String difficulty = "";
         try {
@@ -599,6 +544,156 @@ public class Model {
         }
     }
 
+    /** Modifies data entry in database according to which difficulty level
+     * the user set a new high score in
+     * @return true or false based on success */
+    public boolean adjustHighScore(){
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+
+            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            System.out.println("Connected to database");
+            if (currentDifficulty == DIFFICULTY.NOVICE) {
+                String query = "UPDATE sql3765767.users SET N_high_score = ? WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setInt(1, user.getNoviceHighscore());
+                stmt.setString(2, user.getUsername());
+                stmt.executeUpdate();
+                System.out.println("Adjusted a rookie high score!");
+            }
+            else if (currentDifficulty == DIFFICULTY.SEASONAL){
+                String query = "UPDATE sql3765767.users SET S_high_score = ? WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                System.out.println("This is my username" + user.getUsername());
+                System.out.println("This is my high score" + user.getSeasonalHighscore());
+                stmt.setInt(1, user.getSeasonalHighscore());
+                stmt.setString(2, user.getUsername());
+                stmt.executeUpdate();
+                System.out.println("Adjusted a intermediate high score! of " + user.getSeasonalHighscore());
+            }
+            else{
+                String query = "UPDATE sql3765767.users SET E_high_score = ? WHERE username = ?";
+                PreparedStatement stmt = con.prepareStatement(query);
+                stmt.setInt(1, user.getExpertHighscore());
+                stmt.setString(2, user.getUsername());
+                stmt.executeUpdate();
+                System.out.println("Adjusted a expert high score!");
+            }
+        } catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+        return true;
+    }
+
+
+    /** LEADERBOARDS */
+    public class ScoreEntry{
+        public String username;
+        public int score;
+
+        public ScoreEntry(String username, int score){
+            this.username = username;
+            this.score = score;
+        }
+    }
+
+    /** Retrieves current user scores for a specific round from user and their scores in Novice, Seasoned ad Expert and sorts them in descending order
+     * @return int scores*/
+    public List<Model.ScoreEntry> getHighScoresRound(int numberRound){
+        List<Model.ScoreEntry> scores = new ArrayList<>();
+        if(user ==null){
+            System.out.println("Error: User is null, Cannot Retireve high scores");
+            return scores;
+        }
+        if(currentDifficulty ==null){
+            System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
+            currentDifficulty = DIFFICULTY.NOVICE;
+        }
+
+        String query;
+        if (currentDifficulty == DIFFICULTY.NOVICE){
+            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Novice' ORDER BY score DESC LIMIT 8";
+        }
+
+        else if (currentDifficulty == DIFFICULTY.SEASONAL){
+            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Seasonal' ORDER BY score DESC LIMIT 8";
+        }
+        else{
+            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Expert' ORDER BY score DESC LIMIT 8";
+        }
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("Connected to database");
+
+            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
+                stmt.setString(1, user.getUsername());
+
+                try (ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt("score")));
+                    }
+                }
+            }
+            System.out.println("Successful: Retrieved my high scores for the difficulty");
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            throw new RuntimeException(e);
+        }
+        return scores;
+    }
+
+    /** Retrieves all user scores from user dataset for Novice, Seasoned and Expert and sorts them in descending order
+     * @return int scores*/
+    public List<Model.ScoreEntry> getTop16scores(){
+        List<Model.ScoreEntry> scores = new ArrayList<>();
+        if(user ==null){
+            System.out.println("Error: User is null, Cannot Retireve high scores");
+            return scores;
+        }
+        if(currentDifficulty ==null){
+            System.out.println("Error: currentDificulty is Null. Defaulting to NOVICE");
+            currentDifficulty = DIFFICULTY.NOVICE;
+        }
+        String column;
+        switch (currentDifficulty) {
+            case NOVICE:
+                column = "N_high_score";
+                break;
+            case SEASONAL:
+                column = "S_high_score";
+                break;
+            default:
+                column = "E_high_score";
+                break;
+        }
+
+        String query = "SELECT username, " + column + " FROM sql3765767.users ORDER BY " + column +" DESC LIMIT 16";
+
+        try {
+            Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("Connected to database");
+
+            try (Connection con = getConnection(); PreparedStatement stmt = con.prepareStatement(query)) {
+                try(ResultSet rs = stmt.executeQuery()) {
+                    while (rs.next()) {
+                        scores.add(new Model.ScoreEntry(rs.getString("username"), rs.getInt(column)));
+                    }
+                }
+            }
+            System.out.println("Successful: Retrieved my high scores for the difficulty");
+
+        } catch (SQLException | ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return scores;
+    }
+
+    /** Saves history information of a game at completion to the users account in database
+     * @param score the score of the game played */
     public void saveHistory(int score){
         String difficulty = "";
         try {
@@ -641,51 +736,7 @@ public class Model {
         }
     }
 
-
-    /** GETTERS */
-    public DISPLAY getCurrentWindow() {
-        return currentWindow;
-    }
-    public DIFFICULTY getCurrentDifficulty(){
-        return currentDifficulty;
-    }
-    public int getRound() {
-        return round;
-    }
-    public boolean getInternetStatus() {
-        return this.internet;
-    }
-    public Picture getCurrentPicture() {
-        return currentPicture;
-    }
-    public int getTotalScore() {
-        return this.totalScore;
-    }
-    public int getRecentScore() {
-        return this.recentScore;
-    }
-    public User getUser() {
-        return this.user;
-    }
-    public int getOpponentScore() {
-        return this.opponentScore;
-    }
-
-
-    // PICTURE METHODS
-    /** Gets the next picture from the shuffled array
-     * Works such that we won't get duplicates in the same round
-     * and doesn't skip the first one */
-    public Picture getNextPic() {
-        if (pictures.isEmpty()) {
-            return null;
-        }
-        Picture current = this.pictures.get(this.picIndex);
-        this.picIndex++;
-        this.currentPicture = current;
-        return current;
-    }
-
+    /** PIN */
     /** Adds current photo to the users pinned */
     public void pin() {
         Picture current = this.getCurrentPicture();
@@ -740,71 +791,56 @@ public class Model {
         notifySubscribers();
     }
 
-    ///* METHODS TO CHANGE VIEW *\\\
-    /** Prompts View to show start-up display */
-    public void showStartupWindow() {
-        this.currentWindow = DISPLAY.STARTUP;
-        notifySubscribers();
-    }
-    /** Prompts View to show select difficulty display */
-    public void showDifficultyWindow() {
-        this.currentWindow = DISPLAY.DIFF;
-        notifySubscribers();
-    }
-    /** Prompts View to show main gameplay window */
-    public void showGameplayWindow() {
-        this.currentWindow = DISPLAY.GAMEPLAY;
-        notifySubscribers();
-    }
-    /** Prompts View to show Login window */
-    public void showLoginWindow() {
-        this.currentWindow = DISPLAY.LOGIN;
-        notifySubscribers();
-    }
-    /** Prompts View to show Create Acc window */
-    public void showCreateAccWindow() {
-        this.currentWindow = DISPLAY.CREATE;
-        notifySubscribers();
-    }
-    /** Prompts View to show logged in window */
-    public void showLoggedInWindow() {
-//        if (this.chat != null) {
-//            this.chat.exitChatWindow();
-//        }
-        this.chat = null;
-        this.currentWindow = DISPLAY.LOGGED_IN;
-        notifySubscribers();
-    }
-    /** ... History window */
-    public void showHistoryWindow() {
-        this.currentWindow = DISPLAY.HISTORY;
-        notifySubscribers();
-    }
-    /** ... Pinned locations */
-    public void showPinnedWindow() {
-        this.currentWindow = DISPLAY.PINNED;
-        notifySubscribers();
-    }
-    /** ... Leaderboard */
-    public void showLeaderboard() {
-        this.currentWindow = DISPLAY.LEADERBOARD;
-        notifySubscribers();
-    }
-    /** Prompts endgame screen for offline mode */
-    public void showEndWindow() {
-        this.currentWindow = DISPLAY.END;
-        notifySubscribers();
-    }
-    public void showMatchmakingWindow(){
-        this.currentWindow = DISPLAY.MATCHMAKING;
-        notifySubscribers();
-    }
-    public void showMultiplayerWindow() {
-        this.currentWindow = DISPLAY.MULTIPLAYER;
-        notifySubscribers();
+
+    /** PICTURE METHODS */
+    /** Populates pictures array with the passed csv to it
+     * @param csv filepath to appropriate csv */
+    public void selectPictureSet(String csv) {
+        this.pictures.clear(); // clear any existing data before loading new data
+        this.picIndex = 0;
+
+        // FileReader needs to catch IO Errors so we'll use try/catch
+        try (BufferedReader br = new BufferedReader(new InputStreamReader(Objects.requireNonNull(getClass().getResourceAsStream(csv))))) {
+            String line;
+            // Read csv file line-by-line and populate picture array
+            while ((line = br.readLine()) != null) {
+                String[] parts = line.split(",");
+
+                String path = parts[0].trim();
+                double latitude = Double.parseDouble(parts[1].trim());
+                double longitude = Double.parseDouble(parts[2].trim());
+
+                pictures.add(new Picture(path, latitude, longitude));
+            }
+        } catch (IOException | NumberFormatException e) {
+            System.err.println("Error loading pictures: " + e.getMessage());
+        }
+        if (!multiplayerMode) {
+            Collections.shuffle(this.pictures); // put in random order
+        }
+        // This gets called on every consecutive play so we will reset model stats
+        this.recentScore = 0;
+        this.totalScore = 0;
+        this.round = 1;
+        this.getNextPic();
+        this.showGameplayWindow();
     }
 
-    ///* MAP METHODS *\\\
+    /** Gets the next picture from the shuffled array
+     * Works such that we won't get duplicates in the same round
+     * and doesn't skip the first one */
+    public Picture getNextPic() {
+        if (pictures.isEmpty()) {
+            return null;
+        }
+        Picture current = this.pictures.get(this.picIndex);
+        this.picIndex++;
+        this.currentPicture = current;
+        return current;
+    }
+
+
+    /** MAP METHODS */
     /** Get distance from guessed point to true point */
     public double getDistance() {
         // make sure it exists
@@ -840,6 +876,7 @@ public class Model {
         return distance;
     }
 
+    /** Load next round of gameplay */
     public void loadNextRound() {
         this.round++;
         if (this.round > 5) {
@@ -873,35 +910,23 @@ public class Model {
         }
     }
 
-    /** Setter for java connector **/
-    public void setJavaConnector(JavaConnector connector) {
-        this.connector = connector;
+    /** MULTIPLAYER */
+    /** set mutliplayer mode, takes boolean parameter */
+    public void setMultiplayerMode(boolean mode) {
+        this.multiplayerMode = mode;
+    }
+    /** returns boolean true if multiplayer mode and false otherwise */
+    public boolean isMultiplayerMode() {
+        return multiplayerMode;
+    }
+    /** sets for current match id */
+    public void setCurrentMatchId(String matchId) {
+        this.currentMatchId = matchId;
+    }
+    public String getCurrentMatchId() {
+        return currentMatchId;
     }
 
-    /** Getter for java connector **/
-    public JavaConnector getJavaConnector() {
-        return connector;
-    }
-
-    /** Tests to see if the user is connected to the internet **/
-    private boolean isInternetConnected() {
-        try {
-            URL test = new URL("https://git.cs.usask.ca");
-            URLConnection connection = test.openConnection();
-            connection.connect();
-            return true;
-
-        } catch (RuntimeException e) {
-            // failed to connect due to network
-            return false;
-        } catch (IOException e) {
-            // failed due to error in URL
-            System.out.println("Error in getting URL connection test");
-            return false;
-        }
-    }
-
-    // MULTIPLAYER
     /** constantly polls the db to check if there are more than two people
      * waiting in the queue, if yes, attempt to host the match, the player who
      * joined the wait list first should have a lower time stamp and will be the
@@ -1003,39 +1028,28 @@ public class Model {
     public double[] getOpponentGuess() {
         return opponentGuess;
     }
+
+    /** Gets the username of the player we are playing against
+     * @return the username or "Opponent" if null */
     public String getOpponentUserName() {
         if (this.multiplayer.getOpponentUid() == null) {
             return "Opponent";
         }
         return this.multiplayer.getOpponentUid();
     }
-    // clears the guesses in firebase
+    /** clears the guesses in firebase for the next round */
     public void clearMultiplayerGuesses() {
         if (currentMatchId != null) {
             multiplayer.clearGuesses(currentMatchId);
         }
     }
-
+    /** Clears the database of all completed matches */
     public void clearAllMatches() {
         multiplayer.clearMatches();
     }
-    // set mutliplayer mode, takes boolean parameter
-    public void setMultiplayerMode(boolean mode) {
-        this.multiplayerMode = mode;
-    }
-    // returns boolean true if multiplayer mode and false otherwise
-    public boolean isMultiplayerMode() {
-        return multiplayerMode;
-    }
-    // setter for current match id
-    public void setCurrentMatchId(String matchId) {
-        this.currentMatchId = matchId;
-    }
-    // getter for currentMatchId
-    public String getCurrentMatchId() {
-        return currentMatchId;
-    }
 
+
+    /** CHAT */
     /** send a message to the other player */
     public void sendMessage(String msg) {
         this.multiplayer.sendChatMessage(this.getCurrentMatchId(), msg);
@@ -1057,7 +1071,6 @@ public class Model {
             // killed from controller when user hits 'exit'
         }, 0, 2, TimeUnit.SECONDS); // check every 2 seconds
     }
-
     /** Toggle the visibility of the chat window
      * Called by controller when user presses chat button in gameplay window */
     public void toggleChatVisibility() {
