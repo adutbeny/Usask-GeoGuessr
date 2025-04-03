@@ -912,6 +912,7 @@ public class Model {
         setMultiplayerMode(true);
         this.opponentScore = 0;
         this.multiplayer = new Multiplayer(this.user.getUsername());
+        clearAllMatches();
         this.multiplayer.joinWaitQueue();
 
         // this uses a scheduler to run every second so that we are constantly polling
