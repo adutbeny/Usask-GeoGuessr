@@ -1014,6 +1014,10 @@ public class Model {
             multiplayer.clearGuesses(currentMatchId);
         }
     }
+
+    public void clearAllMatches() {
+        multiplayer.clearMatches();
+    }
     // set mutliplayer mode, takes boolean parameter
     public void setMultiplayerMode(boolean mode) {
         this.multiplayerMode = mode;

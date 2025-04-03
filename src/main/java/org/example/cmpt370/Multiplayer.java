@@ -160,6 +160,12 @@ public class Multiplayer {
                 if (players.containsValue(playerUid)) {
                     currentMatchId = matchId; // store it for later use
                     System.out.println("found match for opponent " + matchId);
+                    if (players.get("playerA").equals(playerUid)) {
+                        this.opponentUid = players.get("playerB");
+                    } else {
+                        this.opponentUid = players.get("playerA");
+                    }
+                    System.out.println("Found match for opponent: " + matchId);
                     return matchId;
                 }
             }
@@ -259,7 +265,10 @@ public class Multiplayer {
 
         return null;
     }
-
+    public void clearMatches() {
+        fbHelper.writeData("matches", "null");
+        System.out.println("All matches cleared from Firebase.");
+    }
     public String getOpponentUid() {
         return this.opponentUid;
     }

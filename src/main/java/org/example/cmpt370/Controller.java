@@ -157,6 +157,7 @@ public class Controller {
 
         view.multiplayer.setOnAction(event ->{
             this.model.showMatchmakingWindow();
+            this.model.clearAllMatches();
             this.model.startMatchmaking();
         });
 
