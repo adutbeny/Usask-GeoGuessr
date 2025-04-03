@@ -10,6 +10,7 @@ module org.example.cmpt370 {
     requires org.json;
     requires java.net.http;
     requires com.google.gson;
+    requires org.checkerframework.checker.qual;
 
 
     opens org.example.cmpt370 to javafx.fxml;

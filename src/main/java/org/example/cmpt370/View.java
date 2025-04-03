@@ -3,6 +3,7 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
@@ -10,10 +11,7 @@ import javafx.scene.control.*;
 import javafx.scene.effect.DropShadow;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.CycleMethod;
 import javafx.scene.paint.LinearGradient;
@@ -39,6 +37,7 @@ import javafx.animation.Animation;
 import javafx.scene.text.Text;
 import javafx.scene.text.Font;
 import javafx.util.Duration;
+import org.checkerframework.checker.units.qual.C;
 
 import javax.swing.*;
 import javax.swing.plaf.IconUIResource;
@@ -921,16 +920,32 @@ public class View extends StackPane implements Subscriber {
         //TODO - add conditional here to see if user has history to pull
         // ie. if (history empty) show "No History"
         // else { (do all this)
-        int hboxSpacer = 200;
-        Text date = new Text("Date");
-        date.setFont(new Font("Segoe UI This", 32));
-        Text diff = new Text("Difficulty");
-        diff.setFont(new Font("Segoe UI This", 32));
-        Text score = new Text("Score");
-        score.setFont(new Font("Segoe UI This", 32));
-        HBox header = new HBox(hboxSpacer, date, diff, score);
 
-        HBox[] entries = new HBox[5];
+        //title box for Date Difficulty and Score formatting
+        HBox titleBox = new HBox(100);
+        titleBox.setAlignment(Pos.CENTER);
+        Text dateTitle = new Text("Date");
+        dateTitle.setTranslateX(5);
+        Text difficultyTitle = new Text("Difficulty");
+        difficultyTitle.setTranslateX(100);
+        Text scoreTitle = new Text("Score");
+        scoreTitle.setTranslateX(120);
+
+        for (Text title: new Text[]{dateTitle, difficultyTitle, scoreTitle}){
+            title.setFont(Font.font("Segoe UI Bold", 35));
+            title.setFill(Color.WHITE);
+        }
+        titleBox.getChildren().addAll(dateTitle, difficultyTitle, scoreTitle);
+
+
+        //gridpane for entries
+        GridPane historyGrid = new GridPane();
+        historyGrid.setHgap(200);
+        historyGrid.setVgap(20);
+        historyGrid.setAlignment(Pos.CENTER);
+
+        int rowIndex = 0;
+
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -942,8 +957,11 @@ public class View extends StackPane implements Subscriber {
             stmt.setString(1, this.model.getUser().getUsername());
             ResultSet rs = stmt.executeQuery();
 
+            boolean hasHistory = false;
+
             int i = 0;
-            while (rs.next() && i < 5) {
+            while (rs.next() && rowIndex < 5) {
+                hasHistory = true;
                 Timestamp userdate = rs.getTimestamp("userdate");
                 Date nonMilitaryDate = new Date(userdate.getTime());
                 SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy hh:mm a");
@@ -951,40 +969,37 @@ public class View extends StackPane implements Subscriber {
 
                 String userdifficulty = rs.getString("userdifficulty");
                 int userscore = rs.getInt("gamescore");
-                String scoreString = Integer.toString(userscore);
 
                 Text timeLabel = new Text(finalDate);
-                timeLabel.setStyle("-fx-font-size: 15px; -fx-fill: white; -fx-font-weight: bold;");
                 Text difficultyLabel = new Text(userdifficulty);
-                difficultyLabel.setStyle("-fx-font-size: 17px; -fx-fill: white; -fx-font-weight: bold;");
-                Text scoreLabel = new Text(scoreString);
-                scoreLabel.setStyle("-fx-font-size: 17px; -fx-fill: white; -fx-font-weight: bold;");
+                Text scoreLabel = new Text(String.valueOf(userscore));
+
+                for (Text t : new Text[]{timeLabel, difficultyLabel, scoreLabel}) {
+                    t.setStyle("-fx-font-size: 25px; -fx-fill: white; -fx-font-weight: bold;");
+                    t.setTextAlignment(TextAlignment.CENTER);
+                }
 
 
-                entries[i] = new HBox(200);
-                entries[i].getChildren().addAll(timeLabel, difficultyLabel, scoreLabel);
-                i++;
+                HBox rowBox = new HBox(160, timeLabel, difficultyLabel, scoreLabel);
+                rowBox.setPadding(new Insets(10));
+                rowBox.setBackground(new Background(new BackgroundFill(Color.rgb(30, 30, 30, 0.6), new CornerRadii(8), Insets.EMPTY)));
+                rowBox.setAlignment(Pos.CENTER);
+
+                historyGrid.add(rowBox, 0, rowIndex, 3, 1);
+                rowIndex++;
+
             }
-            if (i == 0){
-
+            if (!hasHistory){
                 Text noHistory = new Text("No History Found");
-                Text Blank = new Text("");
-                Text Blank2 = new Text("");
                 noHistory.setStyle("-fx-font-size: 30px; -fx-fill: white; -fx-font-weight: bold;");
-                entries[i] = new HBox(200);
-                entries[i].getChildren().addAll(Blank, noHistory, Blank2);
+                historyGrid.add(noHistory, 0, rowIndex,3,1);
             }
         } catch (Exception e){
                 System.out.println(e.toString());
         }
 
-        VBox entryContainer = new VBox(25, header);
-        for (HBox entry: entries) {
-            if (entry != null){
-                entryContainer.getChildren().add(entry);
-            }
-        }
-        entryContainer.setTranslateX(250);
+        VBox entryContainer = new VBox(20, titleBox, historyGrid);
+        historyGrid.setAlignment(Pos.CENTER);
         entryContainer.setTranslateY(175);
 
         // Back button in bottom-left corner
@@ -1002,7 +1017,7 @@ public class View extends StackPane implements Subscriber {
 
         // Title
         this.gc.setFill(Color.WHITE);
-        this.gc.setFont(new Font("Segoe UI This", 55));
+        this.gc.setFont(Font.font("Segoe UI Bold", 55));
         this.gc.fillText("Pinned Locations", 680, 105);
 
         VBox entryBox = new VBox(50);
