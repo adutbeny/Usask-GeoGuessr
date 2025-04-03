@@ -3,8 +3,6 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
-import javafx.application.Platform;
-
 /** Class that handles all user inputs and delegates it
  * to whatever the model needs to do to process it */
 public class Controller {
@@ -72,7 +70,6 @@ public class Controller {
             }
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            // TODO: need to add handling for incorrect password
         });
         // create a new account in database
         view.submitCreate.setOnAction(event -> {
@@ -86,7 +83,7 @@ public class Controller {
         view.googleSignIn.setOnAction(event -> {
             this.model.initiateGoogleSignIn();
         });
-        // Available after successful log-in
+        // Menu options
         view.history.setOnAction(event -> {
             this.model.showHistoryWindow();
         });
@@ -95,6 +92,10 @@ public class Controller {
         });
         view.leaderboard.setOnAction(event -> {
             this.model.showLeaderboard();
+        });
+        view.multiplayer.setOnAction(event ->{
+            this.model.showMatchmakingWindow();
+            this.model.startMatchmaking();
         });
         // return to logged in menu
         view.back2.setOnAction(event -> this.model.showLoggedInWindow());
@@ -154,12 +155,6 @@ public class Controller {
         view.addChat.setOnAction(event -> {
             this.model.toggleChatVisibility();
         });
-
-        view.multiplayer.setOnAction(event ->{
-            this.model.showMatchmakingWindow();
-            this.model.startMatchmaking();
-        });
-
         view.addPin.setOnAction(event -> {
             this.model.pin();
             view.showPinFeedback();
