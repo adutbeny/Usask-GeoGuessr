@@ -1,49 +1,28 @@
-# CMPT370 SWAGTOWN
+# Usask GeoGuessr
 
-## PULL BEFORE YOU START WORKING
+## Overview
+    Usask GeoGuessr is a program developped for CMPT370 Winter 2025 at the University of Saskatchewan by Matt Berry,
+    Jake Evertman, Adut Beny, Laaiba Shaikh and Ben Krysak. The program was inpsired by the popular webgame GeoGeussr,
+    where players are given a random location and after looking around must guess the location on a global map. We 
+    intended for this to be a variation of that game where the scope was limited to locations around the University
+    of Saskatchewan campus. It is both a learning tool for new or upcoming students to familiarize themselves with
+    central locations, and a way for experienced students and alumni to challenge themselves to locate more obscure
+    areas of campus. 
+    For more introductory information, please see Deliverable_0 on the wiki pages. For User Stories please see 
+    Deliverable_1. Deliverable_2 contains various diagrams, some of which are outdated. Deliverable_3 contains
+    our test plan and code reviews. Deliverable_4 has some final amendments to the test plan and Acceptance Test
+    validation from Deliverable_1.
 
-# Branches:
-IntelliJ doesn't let you work out of the main branch, so keep all of the work in the master branch, then everytime we hit like a certain checkpoint, we can merge back a good copy into the main branch. Once we have more things going on we can worry about working within our own branches and whatnot.
+## Installing & Running
+    To install the game, simply download the .jar file from the main branch of this git repository and run it.
+    No other dependencies should be needed.
 
-I left the default readme in case anyone needs the info.
-
-## Getting started
-
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
-
-## Add your files
-
-- [ ] [Create](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#create-a-file) or [upload](https://docs.gitlab.com/ee/user/project/repository/web_editor.html#upload-a-file) files
-- [ ] [Add files using the command line](https://docs.gitlab.com/ee/gitlab-basics/add-file.html#add-a-file-using-the-command-line) or push an existing Git repository with the following command:
-
-```
-cd existing_repo
-git remote add origin https://git.cs.usask.ca/jxa417/cmpt370.git
-git branch -M main
-git push -uf origin main
-```
-
-## Integrate with your tools
-
-- [ ] [Set up project integrations](https://git.cs.usask.ca/jxa417/cmpt370/-/settings/integrations)
-
-## Collaborate with your team
-
-- [ ] [Invite team members and collaborators](https://docs.gitlab.com/ee/user/project/members/)
-- [ ] [Create a new merge request](https://docs.gitlab.com/ee/user/project/merge_requests/creating_merge_requests.html)
-- [ ] [Automatically close issues from merge requests](https://docs.gitlab.com/ee/user/project/issues/managing_issues.html#closing-issues-automatically)
-- [ ] [Enable merge request approvals](https://docs.gitlab.com/ee/user/project/merge_requests/approvals/)
-- [ ] [Set auto-merge](https://docs.gitlab.com/ee/user/project/merge_requests/merge_when_pipeline_succeeds.html)
-
-## Test and Deploy
-
-Use the built-in continuous integration in GitLab.
-
-- [ ] [Get started with GitLab CI/CD](https://docs.gitlab.com/ee/ci/quick_start/index.html)
-- [ ] [Analyze your code for known vulnerabilities with Static Application Security Testing (SAST)](https://docs.gitlab.com/ee/user/application_security/sast/)
-- [ ] [Deploy to Kubernetes, Amazon EC2, or Amazon ECS using Auto Deploy](https://docs.gitlab.com/ee/topics/autodevops/requirements.html)
-- [ ] [Use pull-based deployments for improved Kubernetes management](https://docs.gitlab.com/ee/user/clusters/agent/)
-- [ ] [Set up protected environments](https://docs.gitlab.com/ee/ci/environments/protected_environments.html)
+## Architecture
+    Since this game is primarly event driven, relying on button presses and mouse clicks, we used a Model-View-Controlller
+    design pattern for the majority of program. This was at times hard to work under and created some added complexities
+    in the code, but overall made the program easier to develop as we added more and more pieces to it. The Model class
+    also served as the client polling two servers, one for Google Log-in Authentification (written in Python) 
+    and one for the Multiplayer real-time database (Google Firebase). 
+    UML Diagrams for both this architecture and other use cases can be found on the Wiki under Deliverable_3, although
+    some of these diagrams are depricated.
 
