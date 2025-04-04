@@ -151,17 +151,15 @@ public class View extends StackPane implements Subscriber {
         pinImageView.setFitWidth(20);
         pinImageView.setFitHeight(20);
         this.addPin = new Button();
-        addPin.setGraphic(pinImageView);
-        addPin.setTranslateX(-540);
-        addPin.setTranslateY(100);
-        //
+        this.addPin.setGraphic(pinImageView);
+        this.addPin.setTranslateX(-540);
+        this.addPin.setTranslateY(100);
 
+        // toggle chat visibility
         Image chatImage = new Image(getClass().getResource("/icon/whitemessage.png").toExternalForm());
         ImageView chatImageView = new ImageView(chatImage);
-
         chatImageView.setFitWidth(20);
         chatImageView.setFitHeight(20);
-
         this.addChat = new Button();
         addChat.setGraphic(chatImageView);
         addChat.setPrefWidth(25);
@@ -1136,6 +1134,7 @@ public class View extends StackPane implements Subscriber {
 
     }
 
+
     /** GAMEPLAY WINDOW & ASSOCIATED METHODS */
     /**
      * Displays window that will be used during main playing area runtime
@@ -1330,7 +1329,7 @@ public class View extends StackPane implements Subscriber {
         layout.getChildren().add(0, c);
         layout.getChildren().add(this.mapView);
         layout.getChildren().add(logo);
-        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack, this.addChat, addPin, this.back2);
+        this.getChildren().addAll(this.myCanvas, c, layout, buttonStack, this.addChat, this.addPin, this.back2);
     }
 
     /**
@@ -1362,15 +1361,14 @@ public class View extends StackPane implements Subscriber {
     public void showPinFeedback() {
         // TODO fix this
         // swap to check mark button
-        Image pinImage = new Image(getClass().getResource("/icon/whitecheck.png").toExternalForm());
-        System.out.println(getClass().getResource("/icon/whitecheck.png").toExternalForm());
+        Image pinImage = new Image(getClass().getResource("/icon/whitecheck2.png").toExternalForm());
         ImageView pinImageView = new ImageView(pinImage);
         pinImageView.setFitWidth(20);
         pinImageView.setFitHeight(20);
         this.addPin.setGraphic(pinImageView);
 
         // Reset the style after 500ms
-        javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.millis(1000));
+        javafx.animation.PauseTransition delay = new javafx.animation.PauseTransition(javafx.util.Duration.millis(2000));
         delay.setOnFinished(event -> {
             Image pin = new Image(getClass().getResource("/icon/whitepin.png").toExternalForm());
             ImageView pinView = new ImageView(pin);
