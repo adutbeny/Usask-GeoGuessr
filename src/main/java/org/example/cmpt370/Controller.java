@@ -156,8 +156,12 @@ public class Controller {
             this.model.toggleChatVisibility();
         });
         view.addPin.setOnAction(event -> {
-            this.model.pin();
-            view.showPinFeedback();
+            if (this.model.pin() == false){
+                view.showAlert("HEADS UP!","This picture has already been pinned!");
+            }
+            else {
+                view.showPinFeedback();
+            }
         });
         view.unpin.setOnAction(event -> {
             this.model.unpin(this.model.getUser().getUsername(), this.model.getCurrentPicture().getPath());

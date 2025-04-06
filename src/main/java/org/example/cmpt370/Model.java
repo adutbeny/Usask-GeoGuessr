@@ -738,7 +738,7 @@ public class Model {
 
     /** PIN */
     /** Adds current photo to the users pinned */
-    public void pin() {
+    public boolean pin() {
         Picture current = this.getCurrentPicture();
         String picturePath = current.getPath();
 
@@ -758,10 +758,16 @@ public class Model {
             stmt.executeUpdate();
             System.out.println("Path added to pinned database!");
 
-        } catch (Exception e) {
-            System.out.println(e.toString());
+        } catch (SQLException e) {
+            if (e.getErrorCode() == 1062){
+                return false;
+            }
         }
-
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+        return true;
         // TODO add current to the database
     }
 

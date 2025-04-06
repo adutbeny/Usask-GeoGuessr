@@ -1380,6 +1380,23 @@ public class View extends StackPane implements Subscriber {
     }
 
     /**
+     * Displays a dialogBox of information of the users choosing
+     * @param header The string header for the dialog box
+     * @param message The string message displaying the main information
+     */
+    public void showAlert(String header, String message){
+        Alert alert = new Alert(Alert.AlertType.WARNING);
+        alert.setTitle("Important Information");
+        alert.setHeaderText(header);
+        alert.setContentText(message);
+
+        DialogPane alertPane = alert.getDialogPane();
+        alertPane.getStylesheets().add(Objects.requireNonNull(getClass().getResource("/dialogboxstyle.css")).toExternalForm());
+        alertPane.getStyleClass().add("alert");
+        alert.showAndWait();
+    }
+
+    /**
      * Creates end screen to display score and option to play again, exit
      * Mostly probably actually used if playing offline and cant show leaderboard
      */
