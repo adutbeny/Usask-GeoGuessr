@@ -828,10 +828,10 @@ public class View extends StackPane implements Subscriber {
                 unpin.setStyle("-fx-background-color: red; -fx-text-fill: white; -fx-font-size: 18px; -fx-font-family: 'Segoe UI';");
                 unpin.setOnAction(e -> this.model.unpin(this.model.getUser().getUsername(), picturepath));
 
-                imageView.setFitWidth(300);
-                imageView.setFitHeight(300);
-                mapView.setPrefWidth(300);
-                mapView.setPrefHeight(300);
+                imageView.setFitWidth(500);
+                imageView.setFitHeight(500);
+                mapView.setPrefWidth(500);
+                mapView.setPrefHeight(500);
 
                 HBox entryRow = new HBox(imageView, mapView, unpin);
                 entryBox.getChildren().add(entryRow);
@@ -842,6 +842,7 @@ public class View extends StackPane implements Subscriber {
         if (value == 0) {
             Text noPins = new Text("No Locations Pinned");
             noPins.setFont(new Font("Segoe UI This", 32));
+            noPins.setFill(Color.WHITE);
             entryBox.getChildren().add(noPins);
         }
 
@@ -1384,8 +1385,8 @@ public class View extends StackPane implements Subscriber {
      * @param header The string header for the dialog box
      * @param message The string message displaying the main information
      */
-    public void showAlert(String header, String message){
-        Alert alert = new Alert(Alert.AlertType.WARNING);
+    public void showAlert(String header, String message, Alert.AlertType alertType){
+        Alert alert = new Alert(alertType);
         alert.setTitle("Important Information");
         alert.setHeaderText(header);
         alert.setContentText(message);

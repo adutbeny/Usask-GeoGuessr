@@ -311,11 +311,11 @@ public class Model {
     }
 
     /** Creates a new entry in the database with the provided login */
-    public void createAccount(String username, String password) {
+    public boolean createAccount(String username, String password) {
         try {
-            if (username.length() > 50 || password.length() > 50){
+            if (username.isEmpty() || username.length() > 50 || password.isEmpty()|| password.length() > 50){
                 System.out.println("User and password must be less than 50 characters");
-                return;
+                return false;
             }
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -329,7 +329,7 @@ public class Model {
 
             if (rs.next() && rs.getInt(1) > 0){
                 System.out.println("User already exists!");
-                return;
+                return false;
             }
             user = new User(username, 0, 0, 0, 0);
             String querycreate = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
@@ -344,7 +344,9 @@ public class Model {
             showLoggedInWindow();
         } catch (Exception e) {
             System.out.println(e);
+            return false;
         }
+        return true;
     }
 
     /** Checks if a user already exists in the database

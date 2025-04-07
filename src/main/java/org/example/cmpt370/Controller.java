@@ -3,6 +3,8 @@ package org.example.cmpt370;
 /* Property of swagtown
  * CMPT370 */
 
+import javafx.scene.control.Alert;
+
 /** Class that handles all user inputs and delegates it
  * to whatever the model needs to do to process it */
 public class Controller {
@@ -58,6 +60,7 @@ public class Controller {
                 }
                 else{
                     System.out.println("Login failed!");
+                    view.showAlert("Unsuccessful Attempt", "Login Failed! Please Try Again!", Alert.AlertType.ERROR);
                 }
             }
             else {
@@ -65,6 +68,7 @@ public class Controller {
                     System.out.println("Login successful!");
                 }
                 else{
+                    view.showAlert("Unsuccessful Attempt", "Login Failed! Please Try Again!", Alert.AlertType.ERROR);
                     System.out.println("Login failed!");
                 }
             }
@@ -77,7 +81,12 @@ public class Controller {
             String password = view.passwordCreate.getText();
 
             System.out.println("Login attempted with username: " + username + ", password: " + password);
-            this.model.createAccount(username, password);
+            if (this.model.createAccount(username, password) == true){
+                view.showAlert("Success", "Account Created!", Alert.AlertType.INFORMATION);
+            }
+            else{
+                view.showAlert("Unsuccessful Attempt", "Username or password not between 0-50 characters or username already in use. Try again.", Alert.AlertType.ERROR);
+            }
         });
         // cues google sign in
         view.googleSignIn.setOnAction(event -> {
@@ -157,7 +166,7 @@ public class Controller {
         });
         view.addPin.setOnAction(event -> {
             if (this.model.pin() == false){
-                view.showAlert("HEADS UP!","This picture has already been pinned!");
+                view.showAlert("HEADS UP!","This picture has already been pinned!", Alert.AlertType.WARNING);
             }
             else {
                 view.showPinFeedback();
