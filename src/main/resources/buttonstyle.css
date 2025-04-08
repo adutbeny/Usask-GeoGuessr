@@ -1,0 +1,47 @@
+/* Property of swagtown
+ * Style layout for buttons
+ * dont ask me about it */
+
+.button {
+    -fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-family: "Segoe UI This";
+    /*-fx-font-weight: bold;*/
+    -fx-background-radius: 10;
+    -fx-padding: 10;
+    -fx-border-color: #06321E;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 5, 0, 0, 1);
+    -fx-cursor: hand;
+}
+
+.button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 2);
+}
+
+.button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #084A2E, #0A6A42);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+/* Font styling */
+@font-face {
+    font-family: "Segoe UI This";
+    src: url("/fonts/segoeuithis.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "Segoe UI Bold";
+    src: url("/fonts/segoeuibold.ttf") format("truetype");
+}
+
+/* should apply to all */
+.root {
+    -fx-font-family: "Segoe UI This";
+}
+
+.bold {     /* for titles */
+    -fx-font-family: "Segoe UI Bold";
+}
