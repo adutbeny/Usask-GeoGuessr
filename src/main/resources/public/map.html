@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Campus Map</title>
+    <style>
+        html, body {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            background-color: #005100;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+        }
+    </style>
+    <script>
+        let marker;
+        let map;
+        let resultLine;
+        let correctMarker;
+        let distanceInfoWindow;
+
+        let resultLine1;
+        let resultLine2;
+        let p1Marker;
+        let p2Marker;
+        let distanceInfoWindow1;
+        let distanceInfoWindow2;
+        function initMap() {
+            const campusBounds = {
+                north: 52.139,
+                south: 52.125,
+                west: -106.6547,
+                east: -106.6215
+            };
+
+            // creates the map
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: { lat: 52.13, lng: -106.63 },
+                zoom: 15,
+                mapTypeId: "satellite",
+
+                // this makes so zooming in doesnt turn the view sideways
+                tilt: 0,
+                heading: 0,
+
+                restriction: {
+                    latLngBounds: campusBounds,
+                    strictBounds: true
+                },
+                // making the map a little cleaner by removing default things
+                streetViewControl: false,
+                mapTypeControl: false,
+                rotateControl: false,
+                fullscreenControl: false,
+                zoomControl: false,
+
+            });
+            // this prints to console the coords of where a mouse was clicked on the map
+            // we need to use this information to calculate the distances from real point to point clicked
+            map.addListener("click", (event) => {
+                const lat = event.latLng.lat();
+                const lng = event.latLng.lng();
+                alert(`Coordinates: ${lat}, ${lng}`);
+
+                if (!marker) { // creates new marker if we havnt already made one
+                    marker = new google.maps.Marker({
+                        position: event.latLng,
+                        map: map,
+                    });
+                } else {    // if marker already exists then move the existing one to new clicked position
+                    marker.setPosition(event.latLng)
+                }
+                if (window.javaApp && typeof window.javaApp.updateMarkerCoordinates == "function") {
+                    alert("Calling updateMarkerCoordinates..."); // debugging
+                    window.javaApp.updateMarkerCoordinates(lat, lng);
+                } else {
+                    alert("Calling updateMarkerCoordinates... FAILED"); //debugging
+                }
+            });
+        }
+        function showResult(guessedLat, guessedLng, correctLat, correctLng, precomputedDistance) {
+            alert(`showResult called with: ${guessedLat} ${guessedLng} ${correctLat} ${correctLng} ${precomputedDistance}`)
+            const guessedLocation = new google.maps.LatLng(guessedLat, guessedLng);
+            const correctLocation = new google.maps.LatLng(correctLat, correctLng);
+
+            // creates the dash symbol
+            const dashSymbol = {
+                path: 'M 0,0 L15,0',
+                strokeOpacity: 1,
+                strokeColor: '#149563',
+                strokeWeight: 8,
+                scale: 1,
+                fixedRotation: true,
+                rotation: 90,
+            };
+
+            // will remove existing line
+            if (resultLine) {
+                resultLine.setMap(null);
+            }
+
+            // draws out the actual line
+            resultLine = new google.maps.Polyline({
+                path: [guessedLocation, correctLocation],
+                strokeOpacity: 0,
+                icons: [{
+                    icon: dashSymbol,
+                    offset: '0',
+                    repeat: '20px'
+                }],
+                map: map
+            });
+
+            // removes any markers that may exist
+            if (correctMarker) {
+                correctMarker.setMap(null);
+            }
+
+            // draws correct marker
+            correctMarker = new google.maps.Marker({
+                position: correctLocation,
+                map: map,
+                title: "Correct Location",
+                icon: {
+                    url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                    scaledSize: new google.maps.Size(64, 64)
+                }
+
+            });
+            const midLat = (guessedLat + correctLat) / 2;
+            const midLng = (guessedLng + correctLng) / 2;
+            const contentString = `<div style="color: #0A6A42; font-weight: bold;">YOU GOT ${precomputedDistance.toFixed(0)}m AWAY!</div>`;
+
+            // removes any existing InfoWindow
+            if (distanceInfoWindow) {
+                distanceInfoWindow.close();
+            }
+            distanceInfoWindow = new google.maps.InfoWindow({
+                content: contentString,
+                position: {lat: midLat, lng: midLng}
+            });
+            distanceInfoWindow.open(map);
+        }
+
+        function showMultiplayerResult(p1_markerLat, p1_markerLng, p2_markerLat, p2_markerLng,
+                                       pictureLat, pictureLng, p1_dist, p2_dist) {
+
+            // make latlng objs
+            const p1Guess = new google.maps.LatLng(p1_markerLat, p1_markerLng);
+            const p2Guess = new google.maps.LatLng(p2_markerLat, p2_markerLng);
+            const correctLocation = new google.maps.LatLng(pictureLat, pictureLng);
+
+            // make the dashed symbol again, same as singleplayer one
+            const dashSymbol = {
+                path: 'M 0,0 L15,0',
+                strokeOpacity: 1,
+                strokeColor: '#149563',
+                strokeWeight: 8,
+                scale: 1,
+                fixedRotation: true,
+                rotation: 90
+            };
+
+            // clear previous lines (this shouldn't ever happen but yeah)
+            if (resultLine1) { resultLine1.setMap(null); }
+            if (resultLine2) { resultLine2.setMap(null); }
+
+            // draws line from p1 to correct location
+            resultLine1 = new google.maps.Polyline({
+                path: [p1Guess, correctLocation],
+                strokeOpacity: 0,  // Hide the continuous line.
+                icons: [{
+                    icon: dashSymbol,
+                    offset: '0',
+                    repeat: '20px' // Adjust spacing between dashes as needed.
+                }],
+                map: map
+            });
+
+            // draws line from p2 to correct location
+            resultLine2 = new google.maps.Polyline({
+                path: [p2Guess, correctLocation],
+                strokeOpacity: 0,
+                icons: [{
+                    icon: dashSymbol,
+                    offset: '0',
+                    repeat: '20px'
+                }],
+                map: map
+            });
+
+            // clear previous markers again this shouldn't every be the case since our view resets
+            if (p1Marker) { p1Marker.setMap(null); }
+            if (p2Marker) { p2Marker.setMap(null); }
+
+            // draw marker for p1
+            p1Marker = new google.maps.Marker({
+                position: p1Guess,
+                map: map,
+                title: "Player 1 Guess",
+                icon: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"
+            });
+
+            // draw marker for p2 in blue we can change the colour its weird
+            p2Marker = new google.maps.Marker({
+                position: p2Guess,
+                map: map,
+                title: "Player 2 Guess",
+                icon: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png"
+            });
+
+            // draw marker for correct coords in green and scaled up a bit so it shows better
+            if (correctMarker) { correctMarker.setMap(null); }
+            correctMarker = new google.maps.Marker({
+                position: correctLocation,
+                map: map,
+                title: "Correct Location",
+                icon: {
+                    url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png",
+                    scaledSize: new google.maps.Size(64, 64)
+                }
+            });
+
+            // get midpoints for the lines
+            const mid_lat_1 = (pictureLat + p1_markerLat) / 2;
+            const mid_lng_1 = (pictureLng + p1_markerLng) / 2;
+
+            const mid_lat_2 = (pictureLat + p2_markerLat) / 2;
+            const mid_lng_2 = (pictureLat + p2_markerLng) / 2;
+
+            // build info windows for each line
+            const infoContent1 = "<div style='color: #0A6A42; font-weight: bold;'>You got: " + p1_dist.toFixed(0) + " m away!</div>";
+            const infoContent2 = "<div style='color: #0A6A42; font-weight: bold;'>Opponent got: " + p2_dist.toFixed(0) + " m away!</div>";
+
+            // clear existing windows, this again probably shouldnt ever happen since view resets
+            if (distanceInfoWindow1) { distanceInfoWindow1.close(); }
+            if (distanceInfoWindow2) { distanceInfoWindow2.close(); }
+
+            // draw info windows for both players
+            distanceInfoWindow1 = new google.maps.InfoWindow({
+                content: infoContent1,
+                position: {lat: mid_lat_1, lng: mid_lng_1}
+            });
+            distanceInfoWindow2 = new google.maps.InfoWindow({
+                content: infoContent2,
+                position: {lat: mid_lat_2, lng: mid_lng_2}
+            });
+
+            // Open the InfoWindows.
+            distanceInfoWindow1.open(map);
+            distanceInfoWindow2.open(map);
+        }
+        function clearMapOverlays() {
+            if (resultLine) { resultLine.setMap(null); resultLine = null; }
+            if (correctMarker) { correctMarker.setMap(null); correctMarker = null; }
+            if (distanceInfoWindow) { distanceInfoWindow.close(); distanceInfoWindow = null; }
+        }
+    </script>
+    <script
+            defer
+            src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAKAGrVlkSOCmxmG8yPlGZ1A_j4GkKvzGE&callback=initMap">
+    </script>
+</head>
+<body>
+<div id="map"></div>
+</body>
+</html>

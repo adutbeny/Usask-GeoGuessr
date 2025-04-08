@@ -1,0 +1,30 @@
+.alert{
+    -fx-background-color: linear-gradient(to right,  #0A6A42, #149664);
+    -fx-text-fill: white;
+    -fx-font-size: 18px;
+    -fx-font-family: "Segoe UI This";
+}
+.alert .button {
+    -fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E);
+    -fx-text-fill: white;
+}
+.alert .button:hover {
+    -fx-background-color: linear-gradient(to bottom, #0C7A4F, #0A6A42);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.6), 8, 0, 0, 2);
+}
+
+.alert .button:pressed {
+    -fx-background-color: linear-gradient(to bottom, #084A2E, #0A6A42);
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 3, 0, 0, 1);
+}
+
+.alert .label {
+    -fx-text-fill: white;
+}
+
+.alert .header-panel{
+    -fx-background-color: linear-gradient(to right,  #0A6A42, #149664);
+    -fx-text-fill: white;
+}
+
+

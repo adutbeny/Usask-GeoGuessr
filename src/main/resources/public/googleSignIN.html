@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Google Sign-In</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            color: white;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
+            width: 90%;
+            max-width: 400px;
+        }
+        h2 {
+            margin-bottom: 20px;
+        }
+        #g-signin {
+            margin-top: 15px;
+        }
+        .info-text {
+            margin-top: 20px;
+            font-size: 14px;
+            opacity: 0.8;
+        }
+    </style>
+    <script>
+        function handleCredentialResponse(response) {
+            console.log("Encoded JWT ID token: " + response.credential);
+
+            // Send token back to JavaFX app via local server
+            fetch('http://localhost:63347/auth', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ token: response.credential })
+            });
+        }
+
+        function loadGoogleSignIn() {
+            google.accounts.id.initialize({
+                client_id: "914912264180-ll51299mvckh8b5ckt0pjntmatlgct1e.apps.googleusercontent.com",
+                callback: handleCredentialResponse
+            });
+
+            google.accounts.id.renderButton(
+                document.getElementById("g-signin"),
+                { theme: "filled_blue", size: "large", shape: "pill" }
+            );
+
+            google.accounts.id.prompt();
+        }
+    </script>
+</head>
+<body onload="loadGoogleSignIn()">
+<div class="container">
+    <h2>Sign in with Google</h2>
+    <div id="g-signin"></div>
+    <p class="info-text">Securely sign in using your Google account</p>
+</div>
+</body>
+</html>
