@@ -6,11 +6,8 @@ target/
 credentials.txt
 
 ### IntelliJ IDEA ###
-<<<<<<< HEAD
 .idea/
-=======
 .idea/misc.xml
->>>>>>> 29c10add3b102629cb5d3c0ad0038a640e2f3799
 .idea/modules.xml
 .idea/jarRepositories.xml
 .idea/compiler.xml
@@ -46,6 +43,17 @@ build/
 
 .mvn/wrapper
 
+# Configuration files
+/src/main/resources/config.properties
+*.properties
+!*.properties.template
+
+# Credentials
 credentials.txt
+token.txt
+
+# Build files
+target/
 mvnw
 mvnw.cmd
+/src/main/resources/config.properties
