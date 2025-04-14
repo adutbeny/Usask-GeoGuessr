@@ -50,9 +50,9 @@
             });
         }
 
-        function loadGoogleSignIn() {
+        function loadGoogleSignIn(clientId) {
             google.accounts.id.initialize({
-                client_id: "914912264180-ll51299mvckh8b5ckt0pjntmatlgct1e.apps.googleusercontent.com",
+                client_id: clientId,
                 callback: handleCredentialResponse
             });
 
@@ -65,11 +65,24 @@
         }
     </script>
 </head>
-<body onload="loadGoogleSignIn()">
+<body>
 <div class="container">
     <h2>Sign in with Google</h2>
     <div id="g-signin"></div>
     <p class="info-text">Securely sign in using your Google account</p>
 </div>
+<script>
+    // Add an endpoint in your server to serve the client ID
+    fetch('http://localhost:63347/config')
+        .then(response => response.json())
+        .then(data => {
+            loadGoogleSignIn(data.clientId);
+        })
+        .catch(error => {
+            console.error('Error loading client ID:', error);
+            // Fallback to a hardcoded client ID
+            loadGoogleSignIn("914912264180-ll51299mvckh8b5ckt0pjntmatlgct1e.apps.googleusercontent.com");
+        });
+</script>
 </body>
 </html>

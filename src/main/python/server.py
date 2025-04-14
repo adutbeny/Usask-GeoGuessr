@@ -10,34 +10,59 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
    POST /auth               -> Receives and saves the authentication token.
    """
     def do_GET(self):
-        """
-       Handles GET requests.
-
-       If the requested path is "/googleSignIN.html", it serves the corresponding HTML file.
-       Otherwise, it returns a 404 error.
-       """
-
         if self.path == "/googleSignIN.html":
             try:
-                # get the dir
+                # Get the directory
                 script_dir = os.path.dirname(os.path.abspath(__file__))
-
-                #  relative path to the HTML file
+                
+                # Relative path to the HTML file
                 relative_path = os.path.join(script_dir, "..", "resources", "public", "googleSignIN.html")
-
-                # mormalize the path
+                
+                # Normalize the path
                 html_file_path = os.path.normpath(relative_path)
-
-                #  read the HTML file
+                
+                # Read the HTML file
                 with open(html_file_path, "rb") as file:
-                    self.send_response(200)
-                    self.send_header("Content-type", "text/html")
-                    self.end_headers()
-                    self.wfile.write(file.read())
+                    html_content = file.read().decode("utf-8")
+                
+                # Read config file to get the client ID
+                config_path = os.path.join(script_dir, "..", "resources", "config.properties")
+                config_path = os.path.normpath(config_path)
+                client_id = ""
+                
+                try:
+                    with open(config_path, "r") as config_file:
+                        for line in config_file:
+                            if line.startswith("GOOGLE_CLIENT_ID="):
+                                client_id = line.split("=", 1)[1].strip()
+                                break
+                except FileNotFoundError:
+                    print("Config file not found.")
+                
+                # Inject the client ID into the HTML
+                if client_id:
+                    # Replace placeholder or add script to call loadGoogleSignIn
+                    script_tag = f"""
+                    <script>
+                        window.onload = function() {{
+                            loadGoogleSignIn("{client_id}");
+                        }}
+                    </script>
+                    </body>
+                    """
+                    html_content = html_content.replace("</body>", script_tag)
+                
+                self.send_response(200)
+                self.send_header("Content-type", "text/html")
+                self.send_header("Access-Control-Allow-Origin", "*")
+                self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+                self.send_header("Access-Control-Allow-Headers", "Content-Type")
+                self.end_headers()
+                self.wfile.write(html_content.encode("utf-8"))
             except FileNotFoundError:
-                self.send_error(404, "File Not Found")   # Send a 404 error if the file is not found
+                self.send_error(404, "File Not Found")
         else:
-            self.send_error(404, "Endpoint Not Found")   # Send a 404 error if the endpoint is not recognized
+            self.send_error(404, "Endpoint Not Found")
 
     def do_POST(self):
         """
@@ -60,11 +85,21 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             # Send a response back to the client
             self.send_response(200)   # 200 means OK
             self.send_header("Content-type", "application/json")
+            self.send_header("Access-Control-Allow-Origin", "*")
+            self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+            self.send_header("Access-Control-Allow-Headers", "Content-Type")
             self.end_headers()
             response = json.dumps({"status": "success"})
             self.wfile.write(response.encode("utf-8"))
         else:
             self.send_error(404, "Endpoint Not Found")  # Send a 404 error if the endpoint is not recognized
+
+    def do_OPTIONS(self):
+        self.send_response(200)
+        self.send_header("Access-Control-Allow-Origin", "*")
+        self.send_header("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+        self.send_header("Access-Control-Allow-Headers", "Content-Type")
+        self.end_headers()
 
 def run(server_class=HTTPServer, handler_class=SimpleHTTPRequestHandler, port=63347):
     """

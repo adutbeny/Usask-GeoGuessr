@@ -90,9 +90,14 @@
             }
         }
     </script>
-    <script
-        defer
-        src="https://maps.googleapis.com/maps/api/js?key=AIzaSyCTZX06rG8Xci6r-8B4KdkGRHI6ax7hNNU&callback=initMap">
+    <script>
+        // Add this function
+        function loadGoogleMapsScript(apiKey) {
+            const script = document.createElement('script');
+            script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initMap`;
+            script.defer = true;
+            document.head.appendChild(script);
+        }
     </script>
 </head>
 

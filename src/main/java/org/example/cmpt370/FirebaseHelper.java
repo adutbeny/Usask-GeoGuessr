@@ -4,15 +4,25 @@ import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /** this will handle all requests for multiplayer cloud database
  * will be using REST API to do this**/
 public class FirebaseHelper {
-    private static final String FIREBASE_DB_URL = "https://usask-geoguesser-default-rtdb.firebaseio.com/";
+    private static String FIREBASE_DB_URL;
     private HttpClient client;
 
     public FirebaseHelper() {
-        client = HttpClient.newHttpClient();
+        try {
+            Properties props = new Properties();
+            props.load(new FileInputStream("src/main/resources/config.properties"));
+            FIREBASE_DB_URL = props.getProperty("FIREBASE_DB_URL");
+            client = HttpClient.newHttpClient();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /** this is for writing data to the cloud server for multiplayer

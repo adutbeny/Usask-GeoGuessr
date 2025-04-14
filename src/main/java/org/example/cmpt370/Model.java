@@ -18,6 +18,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import javafx.application.Platform;
+import java.util.Properties;
+import java.io.FileInputStream;
 
 /** enum to signal different states within the model
  * Each value corresponds to a response from the view */
@@ -144,9 +146,18 @@ public class Model {
         return this.opponentScore;
     }
     /** Gets the URL connection to the Database */
-    private Connection getConnection() throws SQLException{
-        return DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
-
+    private Connection getConnection() throws SQLException {
+        Properties props = new Properties();
+        try {
+            props.load(new FileInputStream("src/main/resources/config.properties"));
+            return DriverManager.getConnection(
+                props.getProperty("DB_URL"),
+                props.getProperty("DB_USER"),
+                props.getProperty("DB_PASSWORD")
+            );
+        } catch (IOException e) {
+            throw new SQLException("Could not load database configuration", e);
+        }
     }
     /** Getter for java connector, needed for Map API **/
     public JavaConnector getJavaConnector() {
@@ -272,7 +283,7 @@ public class Model {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
 
             // retrieve user and password
@@ -320,7 +331,7 @@ public class Model {
             String hashPassword = BCrypt.hashpw(password, BCrypt.gensalt());
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
             String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
@@ -355,7 +366,7 @@ public class Model {
     private boolean userExists(String username) {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
 
             String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
@@ -403,8 +414,7 @@ public class Model {
                 System.out.println("User already exists. Logging in...");
 
                 // DIRECTLY LOGIN GOOGLE USER WITH NO PASSWORD
-                Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306",
-                        "sql3765767", "McsStSMGU6");
+                Connection con = getConnection();
 
                 // LOAD USER DATA
                 String query = "SELECT N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
@@ -427,8 +437,7 @@ public class Model {
             }
 
             // Create new Google user account (no password needed)
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306",
-                    "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
 
             String query = "INSERT INTO sql3765767.users(username, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(query);
@@ -500,7 +509,7 @@ public class Model {
             }
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
 
             String deleteOldest = "DELETE FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ? ORDER BY score ASC LIMIT 1";
