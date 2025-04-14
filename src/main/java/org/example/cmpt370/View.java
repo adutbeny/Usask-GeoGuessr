@@ -30,6 +30,9 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.Properties;
+import java.io.FileInputStream;
+import java.io.IOException;
 
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
@@ -557,6 +560,16 @@ public class View extends StackPane implements Subscriber {
         layout.getChildren().addAll(this.usernameField, this.passwordField, this.submitLogin, this.googleSignIn, this.back1, this.RememberMe);
         this.getChildren().addAll(this.myCanvas, layout);
 
+        // Add listener to inject client ID after page loads
+        WebView webView = new WebView();
+        WebEngine webEngine = webView.getEngine();
+        webEngine.load(Objects.requireNonNull(getClass().getResource("/public/googleSignIN.html")).toExternalForm());
+
+        webEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                injectGoogleClientId(webEngine);
+            }
+        });
     }
 
     /**
@@ -680,7 +693,6 @@ public class View extends StackPane implements Subscriber {
         this.gc.setFont(new Font("Segoe UI Bold", 55));
         this.gc.fillText("History", 680, 105);
 
-        //title box for Date Difficulty and Score formatting
         HBox titleBox = new HBox(100);
         titleBox.setAlignment(Pos.CENTER);
         Text dateTitle = new Text("Date");
@@ -690,14 +702,12 @@ public class View extends StackPane implements Subscriber {
         Text scoreTitle = new Text("Score");
         scoreTitle.setTranslateX(120);
 
-        for (Text title: new Text[]{dateTitle, difficultyTitle, scoreTitle}){
+        for (Text title : new Text[]{dateTitle, difficultyTitle, scoreTitle}) {
             title.setFont(Font.font("Segoe UI Bold", 35));
             title.setFill(Color.WHITE);
         }
         titleBox.getChildren().addAll(dateTitle, difficultyTitle, scoreTitle);
 
-
-        //gridpane for entries
         GridPane historyGrid = new GridPane();
         historyGrid.setHgap(200);
         historyGrid.setVgap(20);
@@ -705,11 +715,16 @@ public class View extends StackPane implements Subscriber {
 
         int rowIndex = 0;
 
-
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Properties props = new Properties();
+            props.load(new FileInputStream("src/main/resources/config.properties"));
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = DriverManager.getConnection(
+                props.getProperty("DB_URL"),
+                props.getProperty("DB_USER"),
+                props.getProperty("DB_PASSWORD")
+            );
+
             System.out.println("Connected to database");
             String query = "SELECT userdate, userdifficulty, gamescore FROM sql3765767.userhistory WHERE username = ? ORDER BY userdate DESC LIMIT 5";
             PreparedStatement stmt = con.prepareStatement(query);
@@ -718,7 +733,6 @@ public class View extends StackPane implements Subscriber {
 
             boolean hasHistory = false;
 
-            int i = 0;
             while (rs.next() && rowIndex < 5) {
                 hasHistory = true;
                 Timestamp userdate = rs.getTimestamp("userdate");
@@ -738,7 +752,6 @@ public class View extends StackPane implements Subscriber {
                     t.setTextAlignment(TextAlignment.CENTER);
                 }
 
-
                 HBox rowBox = new HBox(160, timeLabel, difficultyLabel, scoreLabel);
                 rowBox.setPadding(new Insets(10));
                 rowBox.setBackground(new Background(new BackgroundFill(Color.rgb(30, 30, 30, 0.6), new CornerRadii(8), Insets.EMPTY)));
@@ -746,14 +759,13 @@ public class View extends StackPane implements Subscriber {
 
                 historyGrid.add(rowBox, 0, rowIndex, 3, 1);
                 rowIndex++;
-
             }
-            if (!hasHistory){
+            if (!hasHistory) {
                 Text noHistory = new Text("No History Found");
                 noHistory.setStyle("-fx-font-size: 30px; -fx-fill: white; -fx-font-weight: bold;");
-                historyGrid.add(noHistory, 0, rowIndex,3,1);
+                historyGrid.add(noHistory, 0, rowIndex, 3, 1);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
 
@@ -761,7 +773,6 @@ public class View extends StackPane implements Subscriber {
         historyGrid.setAlignment(Pos.CENTER);
         entryContainer.setTranslateY(175);
 
-        // Back button in bottom-left corner
         VBox buttonContainer = new VBox(this.back2);
         buttonContainer.setTranslateX(500);
         buttonContainer.setTranslateY(720);
@@ -773,7 +784,6 @@ public class View extends StackPane implements Subscriber {
     private void createPinnedWindow() {
         this.createUserInfoBackground();
 
-        // Title
         this.gc.setFill(Color.WHITE);
         this.gc.setFont(Font.font("Segoe UI Bold", 55));
         this.gc.fillText("Pinned Locations", 680, 105);
@@ -783,18 +793,23 @@ public class View extends StackPane implements Subscriber {
         entryBox.setPrefWidth(800);
         entryBox.setFillWidth(true);
 
-        ArrayList<Picture> pinnedLocations = new ArrayList<Picture>();
         int value = 0;
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Properties props = new Properties();
+            props.load(new FileInputStream("src/main/resources/config.properties"));
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = DriverManager.getConnection(
+                props.getProperty("DB_URL"),
+                props.getProperty("DB_USER"),
+                props.getProperty("DB_PASSWORD")
+            );
+
             System.out.println("Connected to database");
             String query = "SELECT pinnedlocation, latitude, longitude FROM sql3765767.userpinned WHERE username = ? ORDER BY id DESC";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, this.model.getUser().getUsername());
             ResultSet rs = stmt.executeQuery();
-            int mapCount = 0;
+
             while (rs.next()) {
                 value++;
                 String picturepath = rs.getString("pinnedlocation");
@@ -806,19 +821,18 @@ public class View extends StackPane implements Subscriber {
                 imageView.setFitWidth(400);
 
                 WebView mapView = new WebView();
-                mapView.setPrefSize(400,300);
+                mapView.setPrefSize(400, 300);
                 WebEngine mapEngine = mapView.getEngine();
 
                 mapEngine.load(Objects.requireNonNull(getClass().getResource("/public/pinMap.html")).toExternalForm());
 
                 mapEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
                     if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                        // Execute JavaScript to place the marker on the map
                         String script = String.format("showCorrect(%f, %f);", latitude, longitude);
+                        injectGoogleMapsApiKey(mapEngine);
                         mapEngine.executeScript(script);
                     }
                 });
-
 
                 Label latLabel = new Label("Latitude: " + latitude);
                 latLabel.setFont(new Font("Segoe UI This", 25));
@@ -836,7 +850,7 @@ public class View extends StackPane implements Subscriber {
                 HBox entryRow = new HBox(imageView, mapView, unpin);
                 entryBox.getChildren().add(entryRow);
             }
-        } catch (Exception e){
+        } catch (Exception e) {
             System.out.println(e.toString());
         }
         if (value == 0) {
@@ -850,7 +864,6 @@ public class View extends StackPane implements Subscriber {
         entryContainer.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E)");
         entryBox.setStyle("-fx-background-color: linear-gradient(to bottom, #0A6A42, #084A2E)");
 
-
         entryContainer.setFitToWidth(true);
         entryContainer.setFitToHeight(true);
         entryContainer.setPrefWidth(800);
@@ -858,7 +871,6 @@ public class View extends StackPane implements Subscriber {
         entryContainer.setMaxHeight(500);
         entryContainer.setLayoutY(150);
 
-        // Back button in bottom-left corner
         VBox buttonContainer = new VBox(this.back2);
         buttonContainer.setTranslateX(500);
         buttonContainer.setTranslateY(720);
@@ -1284,6 +1296,7 @@ public class View extends StackPane implements Subscriber {
         JavaConnector connector = new JavaConnector();
         mapEngine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
             if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                injectGoogleMapsApiKey(mapEngine);
                 JSObject window = (JSObject) mapEngine.executeScript("window");
                 window.setMember("javaApp", connector);
                 // for debugging
@@ -1477,5 +1490,27 @@ public class View extends StackPane implements Subscriber {
 
     private void setSelectedRound(int numberRound){
         this.selectedRound = numberRound;
+    }
+
+    private void injectGoogleMapsApiKey(WebEngine engine) {
+        Properties props = new Properties();
+        try {
+            props.load(new FileInputStream("src/main/resources/config.properties"));
+            String apiKey = props.getProperty("GOOGLE_MAPS_API_KEY");
+            engine.executeScript("loadGoogleMapsScript('" + apiKey + "');");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void injectGoogleClientId(WebEngine engine) {
+        Properties props = new Properties();
+        try {
+            props.load(new FileInputStream("src/main/resources/config.properties"));
+            String clientId = props.getProperty("GOOGLE_CLIENT_ID");
+            engine.executeScript("loadGoogleSignIn('" + clientId + "');");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
