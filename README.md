@@ -10,8 +10,8 @@ of Saskatchewan campus. It is both a learning tool for new or upcoming students 
 central locations, and a way for experienced students and alumni to challenge themselves to locate more obscure
 areas of campus. 
 
-# Gameplay Sample
-![Gameplay Sample](videos/Gameplay_Example.mp4)
+## Gameplay Sample
+![Gameplay Sample](Gameplay/Gameplay_Example.mp4)
 
 ## Installing & Running
     
