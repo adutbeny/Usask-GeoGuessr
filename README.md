@@ -10,6 +10,9 @@ of Saskatchewan campus. It is both a learning tool for new or upcoming students 
 central locations, and a way for experienced students and alumni to challenge themselves to locate more obscure
 areas of campus. 
 
+# Gameplay Sample
+![Gameplay Sample](videos/Gameplay_Example.mp4)
+
 ## Installing & Running
     
 To install the game, simply download the .jar file from the main branch of this git repository and run it.
