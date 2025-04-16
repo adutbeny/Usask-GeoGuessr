@@ -562,10 +562,10 @@ public class Model {
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
             if (currentDifficulty == DIFFICULTY.NOVICE) {
-                String query = "UPDATE sql3765767.users SET N_high_score = ? WHERE username = ?";
+                String query = "UPDATE myDB.users SET N_high_score = ? WHERE username = ?";
                 PreparedStatement stmt = con.prepareStatement(query);
                 stmt.setInt(1, user.getNoviceHighscore());
                 stmt.setString(2, user.getUsername());
@@ -573,7 +573,7 @@ public class Model {
                 System.out.println("Adjusted a rookie high score!");
             }
             else if (currentDifficulty == DIFFICULTY.SEASONAL){
-                String query = "UPDATE sql3765767.users SET S_high_score = ? WHERE username = ?";
+                String query = "UPDATE myDB.users SET S_high_score = ? WHERE username = ?";
                 PreparedStatement stmt = con.prepareStatement(query);
                 System.out.println("This is my username" + user.getUsername());
                 System.out.println("This is my high score" + user.getSeasonalHighscore());
@@ -583,7 +583,7 @@ public class Model {
                 System.out.println("Adjusted a intermediate high score! of " + user.getSeasonalHighscore());
             }
             else{
-                String query = "UPDATE sql3765767.users SET E_high_score = ? WHERE username = ?";
+                String query = "UPDATE myDB.users SET E_high_score = ? WHERE username = ?";
                 PreparedStatement stmt = con.prepareStatement(query);
                 stmt.setInt(1, user.getExpertHighscore());
                 stmt.setString(2, user.getUsername());
@@ -624,14 +624,14 @@ public class Model {
 
         String query;
         if (currentDifficulty == DIFFICULTY.NOVICE){
-            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Novice' ORDER BY score DESC LIMIT 8";
+            query = "SELECT username, score FROM myDB.userhscorehistory WHERE username = ? AND difficulty = 'Novice' ORDER BY score DESC LIMIT 8";
         }
 
         else if (currentDifficulty == DIFFICULTY.SEASONAL){
-            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Seasonal' ORDER BY score DESC LIMIT 8";
+            query = "SELECT username, score FROM myDB.userhscorehistory WHERE username = ? AND difficulty = 'Seasonal' ORDER BY score DESC LIMIT 8";
         }
         else{
-            query = "SELECT username, score FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = 'Expert' ORDER BY score DESC LIMIT 8";
+            query = "SELECT username, score FROM myDB.userhscorehistory WHERE username = ? AND difficulty = 'Expert' ORDER BY score DESC LIMIT 8";
         }
 
         try {
@@ -682,7 +682,7 @@ public class Model {
                 break;
         }
 
-        String query = "SELECT username, " + column + " FROM sql3765767.users ORDER BY " + column +" DESC LIMIT 16";
+        String query = "SELECT username, " + column + " FROM myDB.users ORDER BY " + column +" DESC LIMIT 16";
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
@@ -719,11 +719,11 @@ public class Model {
             }
             Class.forName("com.mysql.cj.jdbc.Driver");
 
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
 
-            String deleteOldest = "DELETE FROM sql3765767.userhistory WHERE username = ? ORDER BY userdate ASC LIMIT 1";
-            String countquery = "SELECT COUNT(*) FROM sql3765767.userhistory WHERE username = ?";
+            String deleteOldest = "DELETE FROM myDB.userhistory WHERE username = ? ORDER BY userdate ASC LIMIT 1";
+            String countquery = "SELECT COUNT(*) FROM myDB.userhistory WHERE username = ?";
 
             PreparedStatement countstmt = con.prepareStatement(countquery);
             countstmt.setString(1, user.getUsername());
@@ -735,7 +735,7 @@ public class Model {
                 deletestmt.executeUpdate();
             }
 
-            String querycreate = "INSERT INTO sql3765767.userhistory(username, userdate, userdifficulty, gamescore) " + "VALUES (?, CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', 'America/Regina'), ?, ?)";
+            String querycreate = "INSERT INTO myDB.userhistory(username, userdate, userdifficulty, gamescore) " + "VALUES (?, CONVERT_TZ(UTC_TIMESTAMP(), 'UTC', 'America/Regina'), ?, ?)";
             PreparedStatement createstmt = con.prepareStatement(querycreate);
             createstmt.setString(1, user.getUsername());
             createstmt.setString(2, difficulty);
@@ -757,10 +757,10 @@ public class Model {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             // replace with actual DB username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
 
-            String addQuery = "INSERT into sql3765767.userpinned(username, pinnedlocation, latitude, longitude) VALUES (?, ?, ?, ?)";
+            String addQuery = "INSERT into myDB.userpinned(username, pinnedlocation, latitude, longitude) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(addQuery);
             stmt.setString(1, user.getUsername());
             stmt.setString(2, picturePath);
@@ -793,10 +793,10 @@ public class Model {
             Class.forName("com.mysql.cj.jdbc.Driver");
 
             // replace with actual DB username and password
-            Connection con = DriverManager.getConnection("jdbc:mysql://sql3.freesqldatabase.com:3306", "sql3765767", "McsStSMGU6");
+            Connection con = getConnection();
             System.out.println("Connected to database");
             notifySubscribers();
-            String delete = "DELETE FROM sql3765767.userpinned WHERE username = ? AND pinnedlocation = ?";
+            String delete = "DELETE FROM myDB.userpinned WHERE username = ? AND pinnedlocation = ?";
             PreparedStatement query = con.prepareStatement(delete);
             query.setString(1, username);
             query.setString(2, path);
