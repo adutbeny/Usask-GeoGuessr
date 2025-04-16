@@ -70,16 +70,26 @@
     <h2>Sign in with Google</h2>
     <div id="g-signin"></div>
     <p class="info-text">Securely sign in using your Google account</p>
+    <p id="error-message" style="color: red; display: none;">Unable to connect to authentication service</p>
 </div>
 <script>
     fetch('http://localhost:63347/config')
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+            return response.json();
+        })
         .then(data => {
+            if (!data.clientId) {
+                throw new Error('No client ID received');
+            }
             loadGoogleSignIn(data.clientId);
+            document.getElementById('error-message').style.display = 'none';
         })
         .catch(error => {
             console.error('Error loading client ID:', error);
-            loadGoogleSignIn("914912264180-ll51299mvckh8b5ckt0pjntmatlgct1e.apps.googleusercontent.com");
+            document.getElementById('error-message').style.display = 'block';
         });
 </script>
 </body>
