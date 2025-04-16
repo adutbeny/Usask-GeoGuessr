@@ -3,7 +3,7 @@
 ## Overview
     
 Usask GeoGuessr is a program developed for CMPT370 Winter 2025 at the University of Saskatchewan by Matt Berry,
-Jake Evertman, Adut Beny, Laaiba Shaikh and Ben Krysak. The program was inpsired by the popular webgame GeoGeussr,
+Jake Evertman, Adut Beny, Laaiba Shaikh and Ben Krysak. The program was inspired by the popular webgame GeoGuessr,
 where players are given a random location and after looking around must guess the location on a global map. We 
 intended for this to be a variation of that game where the scope was limited to locations around the University
 of Saskatchewan campus. It is both a learning tool for new or upcoming students to familiarize themselves with
@@ -15,11 +15,11 @@ areas of campus.
 
 ## Installing & Running
     
-To install the game, simply download the .jar file from the main branch of this git repository and run it.
+To install and run the game, your own instances of google maps API, MySQL database are required to maintain scores and use the map. 
+Fill in this information after creating newfile config.template under src/main/resources. Use the config.properties.template under resources to build your file.
+Create a .jar file and run the application.
 
 No other dependencies should be needed.
-
-## Example Run
 
 ## Architecture
     
