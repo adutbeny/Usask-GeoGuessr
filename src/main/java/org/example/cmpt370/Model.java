@@ -287,7 +287,7 @@ public class Model {
             System.out.println("Connected to database");
 
             // retrieve user and password
-            String query = "SELECT password, N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
+            String query = "SELECT password, N_high_score, S_high_score, E_high_score FROM myDB.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -333,7 +333,7 @@ public class Model {
 
             Connection con = getConnection();
             System.out.println("Connected to database");
-            String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
+            String query = "SELECT COUNT(*) FROM myDB.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -343,7 +343,7 @@ public class Model {
                 return false;
             }
             user = new User(username, 0, 0, 0, 0);
-            String querycreate = "INSERT INTO sql3765767.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
+            String querycreate = "INSERT INTO myDB.users(username, password, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?, ?)";
             PreparedStatement createstmt = con.prepareStatement(querycreate);
             createstmt.setString(1, username);
             createstmt.setString(2, hashPassword);
@@ -369,7 +369,7 @@ public class Model {
             Connection con = getConnection();
             System.out.println("Connected to database");
 
-            String query = "SELECT COUNT(*) FROM sql3765767.users WHERE username = ?";
+            String query = "SELECT COUNT(*) FROM myDB.users WHERE username = ?";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             ResultSet rs = stmt.executeQuery();
@@ -417,7 +417,7 @@ public class Model {
                 Connection con = getConnection();
 
                 // LOAD USER DATA
-                String query = "SELECT N_high_score, S_high_score, E_high_score FROM sql3765767.users WHERE username = ?";
+                String query = "SELECT N_high_score, S_high_score, E_high_score FROM myDB.users WHERE username = ?";
                 PreparedStatement stmt = con.prepareStatement(query);
                 stmt.setString(1, username);
                 ResultSet rs = stmt.executeQuery();
@@ -439,7 +439,7 @@ public class Model {
             // Create new Google user account (no password needed)
             Connection con = getConnection();
 
-            String query = "INSERT INTO sql3765767.users(username, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?)";
+            String query = "INSERT INTO myDB.users(username, N_high_score, S_high_score, E_high_score) VALUES (?, ?, ?, ?)";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, username);
             stmt.setInt(2, 0);
@@ -512,9 +512,9 @@ public class Model {
             Connection con = getConnection();
             System.out.println("Connected to database");
 
-            String deleteOldest = "DELETE FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ? ORDER BY score ASC LIMIT 1";
-            String countquery = "SELECT COUNT(*) FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ?";
-            String findLowest = "SELECT MIN(score) FROM sql3765767.userhscorehistory WHERE username = ? AND difficulty = ?";
+            String deleteOldest = "DELETE FROM myDB.userhscorehistory WHERE username = ? AND difficulty = ? ORDER BY score ASC LIMIT 1";
+            String countquery = "SELECT COUNT(*) FROM myDB.userhscorehistory WHERE username = ? AND difficulty = ?";
+            String findLowest = "SELECT MIN(score) FROM myDB.userhscorehistory WHERE username = ? AND difficulty = ?";
 
             PreparedStatement loweststmt = con.prepareStatement(findLowest);
             loweststmt.setString(1, user.getUsername());
@@ -543,7 +543,7 @@ public class Model {
                 deletestmt.executeUpdate();
             }
 
-            String querycreate = "INSERT INTO sql3765767.userhscorehistory(username, difficulty, score) " + "VALUES (?, ?, ?)";
+            String querycreate = "INSERT INTO myDB.userhscorehistory(username, difficulty, score) VALUES (?, ?, ?)";
             PreparedStatement createstmt = con.prepareStatement(querycreate);
             createstmt.setString(1, user.getUsername());
             createstmt.setString(2, difficulty);

@@ -726,7 +726,7 @@ public class View extends StackPane implements Subscriber {
             );
 
             System.out.println("Connected to database");
-            String query = "SELECT userdate, userdifficulty, gamescore FROM sql3765767.userhistory WHERE username = ? ORDER BY userdate DESC LIMIT 5";
+            String query = "SELECT userdate, userdifficulty, gamescore FROM myDB.userhistory WHERE username = ? ORDER BY userdate DESC LIMIT 5";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, this.model.getUser().getUsername());
             ResultSet rs = stmt.executeQuery();
@@ -805,7 +805,7 @@ public class View extends StackPane implements Subscriber {
             );
 
             System.out.println("Connected to database");
-            String query = "SELECT pinnedlocation, latitude, longitude FROM sql3765767.userpinned WHERE username = ? ORDER BY id DESC";
+            String query = "SELECT pinnedlocation, latitude, longitude FROM myDB.userpinned WHERE username = ? ORDER BY id DESC";
             PreparedStatement stmt = con.prepareStatement(query);
             stmt.setString(1, this.model.getUser().getUsername());
             ResultSet rs = stmt.executeQuery();
