@@ -15,9 +15,10 @@ areas of campus.
 
 ## Installing & Running
     
-To install and run the game, your own instances of google maps API, MySQL database are required to maintain scores and use the map. 
-Fill in this information after creating newfile config.template under src/main/resources. Use the config.properties.template under resources to build your file.
-Create a .jar file and run the application.
+To install and run the game, your own instances of google maps API, MySQL database are required to maintain scores and use the map.  
+
+- Fill in this information after creating newfile config.template under src/main/resources. Use the config.properties.template under resources to build your file.
+- Create a .jar file and run the application.
 
 No other dependencies should be needed.
 
