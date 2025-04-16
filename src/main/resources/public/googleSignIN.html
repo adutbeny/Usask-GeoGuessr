@@ -72,7 +72,6 @@
     <p class="info-text">Securely sign in using your Google account</p>
 </div>
 <script>
-    // Add an endpoint in your server to serve the client ID
     fetch('http://localhost:63347/config')
         .then(response => response.json())
         .then(data => {
@@ -80,7 +79,6 @@
         })
         .catch(error => {
             console.error('Error loading client ID:', error);
-            // Fallback to a hardcoded client ID
             loadGoogleSignIn("914912264180-ll51299mvckh8b5ckt0pjntmatlgct1e.apps.googleusercontent.com");
         });
 </script>
